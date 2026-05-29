@@ -4,37 +4,37 @@ import { useRef } from "react";
 
 const testimonials = [
   {
-    text: "Innerhalb von 2 Tagen hatte ich ein besseres Angebot. Unkompliziert und wirklich persönlich.",
+    text: "Ich hab ehrlich gesagt nicht viel erwartet — aber nach zwei Tagen lag ein Angebot im Postfach, das günstiger war als alles was ich selbst gefunden hatte. Und den Wechsel haben die einfach komplett übernommen.",
     name: "Michael K.",
     city: "München",
     savings: "78 €/Jahr gespart",
   },
   {
-    text: "Endlich jemand, der den Wechsel komplett übernimmt. Ich musste nichts tun.",
+    text: "Nach der letzten Abrechnung dachte ich, ich muss da selbst was tun. Hab die Rechnung hochgeladen, kurz telefoniert — und irgendwann kam die Bestätigung, dass alles erledigt ist. Ich hab buchstäblich nichts gemacht.",
     name: "Sandra L.",
     city: "Hamburg",
     savings: "54 €/Jahr gespart",
   },
   {
-    text: "Als Hausverwaltung haben wir 3 Liegenschaften optimiert. Der Aufwand war minimal.",
+    text: "Wir verwalten mehrere Liegenschaften und hatten das Thema Energie immer wieder auf dem Tisch. Plasma hat das für drei Objekte auf einmal geregelt. Kein Hin und Her, kein Papierchaos.",
     name: "Thomas B.",
     city: "Berlin",
-    savings: "Mehrere Einheiten",
+    savings: "3 Liegenschaften",
   },
   {
-    text: "Kein Vergleichsportal hat mir das geboten. Der persönliche Kontakt macht den Unterschied.",
+    text: "Ich hab vorher auf jedem Portal nachgeschaut — irgendwie war da nie wirklich jemand. Hier hat sich tatsächlich jemand die Zeit genommen und mir erklärt, was wie warum besser ist. Das war anders.",
     name: "Anna M.",
     city: "Frankfurt",
     savings: "62 €/Jahr gespart",
   },
   {
-    text: "Für unser Unternehmen haben wir jetzt planbare Energiekosten. Das war längst überfällig.",
+    text: "Als Betrieb willst du einfach wissen, was dich Energie kostet — ohne dass sich das jeden Monat ändert. Jetzt haben wir einen festen Tarif, einen Ansprechpartner und keine bösen Überraschungen mehr.",
     name: "Robert S.",
     city: "Köln",
     savings: "Gewerbekunde",
   },
   {
-    text: "Skeptisch war ich schon. Aber das Angebot war wirklich besser als alles, was ich selbst gefunden hatte.",
+    text: "War am Anfang skeptisch, ob das wirklich kostenlos ist. Ist es. Und das Angebot war besser als mein aktueller Vertrag. Hätte ich früher machen sollen.",
     name: "Julia W.",
     city: "Stuttgart",
     savings: "91 €/Jahr gespart",
