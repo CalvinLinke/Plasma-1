@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const attachments: nodemailer.Attachment[] = [];
+    const attachments: { filename: string; content: Buffer; contentType: string }[] = [];
     if (file && file.size > 0) {
       const buffer = Buffer.from(await file.arrayBuffer());
       attachments.push({
