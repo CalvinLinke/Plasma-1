@@ -51,45 +51,42 @@ export default function ProcessSteps() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {steps.map((step, i) => {
             const Icon = step.icon;
-            const Wrapper = i === 0 ? Link : "div";
-            const wrapperProps = i === 0 ? { href: "/angebot-erhalten" } : {};
-            return (
-              <Wrapper
-                key={i}
-                {...wrapperProps}
-                className="relative bg-white rounded-3xl p-7 shadow-ambient border border-gray-100 group card-hover"
-              >
-                {/* Connector line (hidden on last) */}
+            const cardContent = (
+              <>
                 {i < steps.length - 1 && (
                   <div className="hidden lg:block absolute top-12 -right-3 w-6 h-0.5 bg-gradient-to-r from-violet-brand/30 to-transparent z-10" />
                 )}
-
-                {/* Step number */}
                 <span className="text-6xl font-black text-gray-100 select-none absolute top-4 right-5 leading-none">
                   {step.number}
                 </span>
-
-                {/* Icon */}
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 relative z-10 transition-all duration-300 group-hover:scale-110"
                   style={{ background: "linear-gradient(135deg, rgba(75,0,130,0.12), rgba(123,97,255,0.12))" }}
                 >
                   <Icon className="w-6 h-6 text-violet-brand transition-colors duration-300" />
                 </div>
-
                 <h3 className="font-bold text-marine mb-2 relative z-10">{step.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed relative z-10">
-                  {step.description}
-                </p>
-
-                {/* Hover violet circle indicator */}
+                <p className="text-sm text-gray-500 leading-relaxed relative z-10">{step.description}</p>
                 <div
                   className="absolute bottom-5 right-5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
                   style={{ background: "linear-gradient(135deg, #4B0082, #7B61FF)" }}
                 >
                   <span className="text-white text-xs font-bold">{i + 1}</span>
                 </div>
-              </Wrapper>
+              </>
+            );
+
+            if (i === 0) {
+              return (
+                <Link key={i} href="/angebot-erhalten" className="relative bg-white rounded-3xl p-7 shadow-ambient border border-gray-100 group card-hover">
+                  {cardContent}
+                </Link>
+              );
+            }
+            return (
+              <div key={i} className="relative bg-white rounded-3xl p-7 shadow-ambient border border-gray-100 group card-hover">
+                {cardContent}
+              </div>
             );
           })}
         </div>
