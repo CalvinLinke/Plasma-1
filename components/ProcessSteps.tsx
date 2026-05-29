@@ -51,9 +51,12 @@ export default function ProcessSteps() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {steps.map((step, i) => {
             const Icon = step.icon;
+            const Wrapper = i === 0 ? Link : "div";
+            const wrapperProps = i === 0 ? { href: "/angebot-erhalten" } : {};
             return (
-              <div
+              <Wrapper
                 key={i}
+                {...wrapperProps}
                 className="relative bg-white rounded-3xl p-7 shadow-ambient border border-gray-100 group card-hover"
               >
                 {/* Connector line (hidden on last) */}
@@ -86,7 +89,7 @@ export default function ProcessSteps() {
                 >
                   <span className="text-white text-xs font-bold">{i + 1}</span>
                 </div>
-              </div>
+              </Wrapper>
             );
           })}
         </div>
