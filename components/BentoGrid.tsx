@@ -129,8 +129,27 @@ export default function BentoGrid() {
             </div>
           </div>
 
-          {/* Trennlinie — nur Mobile */}
-          <div className="md:hidden col-span-1 border-t-2 border-gray-100 my-2" />
+          {/* Geschwungene Trennlinie — nur Mobile */}
+          <div className="md:hidden col-span-1 w-full py-2 -mx-1">
+            <svg width="100%" height="40" viewBox="0 0 400 40" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0 20 C40 4, 80 36, 130 20 S210 4, 270 20 S340 36, 400 20"
+                stroke="url(#cableGradFull)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <circle cx="0" cy="20" r="4" fill="#7B61FF" opacity="0.5" />
+              <circle cx="400" cy="20" r="4" fill="#7B61FF" opacity="0.5" />
+              <defs>
+                <linearGradient id="cableGradFull" x1="0" y1="0" x2="400" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#4B0082" stopOpacity="0.4" />
+                  <stop offset="50%" stopColor="#7B61FF" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="#4B0082" stopOpacity="0.4" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
 
           {/* Karten 3–5 — Drei Zielgruppen */}
           {zielgruppen.map(({ icon: Icon, label, text, href, iconBg, iconColor, linkColor }) => (
