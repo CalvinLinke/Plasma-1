@@ -60,6 +60,20 @@ export default function Kontakt() {
   return (
     <div className="min-h-screen pt-24 pb-20 bg-white relative overflow-hidden">
 
+      {/* Dekoration oben-rechts — identisch Hero */}
+      <div className="absolute top-0 right-0 pointer-events-none" aria-hidden>
+        <div style={{ position: "absolute", top: "-10%", right: "-5%", width: "700px", height: "600px", background: "radial-gradient(ellipse at center, rgba(123,97,255,0.18) 0%, transparent 70%)", borderRadius: "50%" }} />
+        <svg
+          style={{ position: "absolute", top: 0, right: 0, width: "700px", height: "700px", overflow: "visible" }}
+          viewBox="0 0 700 700"
+          fill="none"
+        >
+          <circle cx="700" cy="0" r="500" stroke="rgba(123,97,255,0.22)" strokeWidth="1.5" fill="none" />
+          <circle cx="700" cy="0" r="380" stroke="rgba(123,97,255,0.14)" strokeWidth="1.5" fill="none" />
+          <circle cx="700" cy="0" r="260" stroke="rgba(123,97,255,0.08)" strokeWidth="1" fill="none" />
+        </svg>
+      </div>
+
       {/* Dekoration unten-links — Farbblob + Kreisbögen (identisch Hero) */}
       <div className="absolute bottom-0 left-0 pointer-events-none" aria-hidden>
         {/* Farbwolken */}
