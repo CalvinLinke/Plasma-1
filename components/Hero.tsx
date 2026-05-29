@@ -210,7 +210,7 @@ export default function Hero() {
 
               {/* Floating Card 1 — Kündigung übernommen */}
               <div
-                className="absolute left-2 sm:-left-10 top-14 glass rounded-2xl p-4 shadow-ambient-md animate-float border border-white/40"
+                className="absolute right-2 top-3 sm:-left-10 sm:right-auto sm:top-14 glass rounded-2xl p-4 shadow-ambient-md animate-float border border-white/40"
                 style={{ minWidth: "155px" }}
               >
                 <div className="flex items-center gap-2 mb-1.5">
