@@ -154,7 +154,7 @@ export default function Navigation() {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden glass border-t border-white/20 overflow-hidden transition-all duration-300 ${
+        className={`md:hidden border-t border-gray-100 overflow-hidden transition-all duration-300 bg-white ${
           mobileOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
         }`}
       >
