@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Mail, Phone, MapPin, CheckCircle } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Mail, Phone, MapPin, CheckCircle, ChevronDown } from "lucide-react";
 
 const contactReasons = [
   "Allgemeine Anfrage",
@@ -15,6 +15,18 @@ export default function Kontakt() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [reason, setReason] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,28 +101,49 @@ export default function Kontakt() {
             ) : (
               <form onSubmit={handleSubmit} className="bg-surface rounded-3xl p-8 border border-gray-100 space-y-4">
 
-                {/* Grund der Kontaktaufnahme */}
-                <div>
+                {/* Grund der Kontaktaufnahme — Dropdown */}
+                <div ref={dropdownRef} className="relative">
                   <label className="block text-sm font-semibold text-marine mb-2">
                     Grund der Kontaktaufnahme
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {contactReasons.map((r) => (
-                      <button
-                        key={r}
-                        type="button"
-                        onClick={() => setReason(r === reason ? "" : r)}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border"
-                        style={
-                          reason === r
-                            ? { backgroundColor: "#7B61FF", borderColor: "#7B61FF", color: "white" }
-                            : { backgroundColor: "white", borderColor: "#E5E7EB", color: "#9CA3AF" }
-                        }
-                      >
-                        {r}
-                      </button>
-                    ))}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="w-full px-4 py-3 rounded-xl border text-sm font-medium flex items-center justify-between transition-all duration-200"
+                    style={{
+                      borderColor: dropdownOpen ? "#7B61FF" : "#E5E7EB",
+                      backgroundColor: "white",
+                      color: reason ? "#1A1B4B" : "#9CA3AF",
+                    }}
+                  >
+                    <span>{reason || "Bitte wählen…"}</span>
+                    <ChevronDown
+                      className="w-4 h-4 transition-transform duration-200"
+                      style={{ color: "#9CA3AF", transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                    />
+                  </button>
+
+                  {dropdownOpen && (
+                    <div className="absolute z-20 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-ambient-md overflow-hidden">
+                      {contactReasons.map((r) => (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => { setReason(r); setDropdownOpen(false); }}
+                          className="w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex items-center gap-3"
+                          style={{
+                            backgroundColor: reason === r ? "rgba(123,97,255,0.08)" : "white",
+                            color: reason === r ? "#7B61FF" : "#374151",
+                            fontWeight: reason === r ? 600 : 400,
+                          }}
+                        >
+                          {reason === r && <CheckCircle className="w-4 h-4 text-violet-brand shrink-0" />}
+                          {reason !== r && <span className="w-4 h-4 shrink-0" />}
+                          {r}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
