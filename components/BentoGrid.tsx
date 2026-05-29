@@ -72,25 +72,25 @@ export default function BentoGrid() {
             </h3>
 
             {/* Tabellenkopf */}
-            <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 mb-2 px-4">
+            <div className="grid grid-cols-[1fr_52px_80px] sm:grid-cols-[1fr_80px_112px] mb-2 px-4">
               <span />
-              <span className="text-xs font-bold text-violet-brand text-center w-20">Plasma</span>
-              <span className="text-xs font-semibold text-gray-400 text-center w-28">Vergleichsportal</span>
+              <span className="text-xs font-bold text-violet-brand text-center">Plasma</span>
+              <span className="text-xs font-semibold text-gray-400 text-center">Vergleichsportal</span>
             </div>
 
             <div className="space-y-2">
               {comparisons.map(({ feature, plasma, portal }) => (
                 <div
                   key={feature}
-                  className="grid grid-cols-[1fr_auto_auto] gap-x-4 items-center bg-gray-50 rounded-2xl px-4 py-3"
+                  className="grid grid-cols-[1fr_52px_80px] sm:grid-cols-[1fr_80px_112px] items-center bg-gray-50 rounded-2xl px-4 py-3"
                 >
                   <span className="text-sm text-gray-700">{feature}</span>
-                  <div className="w-20 flex justify-center">
+                  <div className="flex justify-center">
                     {plasma
                       ? <CheckCircle className="w-5 h-5 text-emerald-500" />
                       : <XCircle className="w-5 h-5 text-gray-300" />}
                   </div>
-                  <div className="w-28 flex justify-center">
+                  <div className="flex justify-center">
                     {portal
                       ? <CheckCircle className="w-5 h-5 text-emerald-400" />
                       : <XCircle className="w-5 h-5 text-gray-300" />}
