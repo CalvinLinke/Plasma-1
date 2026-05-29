@@ -60,7 +60,7 @@ export default function BentoGrid() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4 md:gap-4">
 
           {/* Karte 1 — Plasma vs. Portal */}
           <div className="md:col-span-2 bg-white rounded-3xl p-8 shadow-ambient card-hover border border-gray-100">
@@ -128,6 +128,9 @@ export default function BentoGrid() {
               </span>
             </div>
           </div>
+
+          {/* Trennlinie — nur Mobile */}
+          <div className="md:hidden col-span-1 border-t-2 border-gray-100 my-2" />
 
           {/* Karten 3–5 — Drei Zielgruppen */}
           {zielgruppen.map(({ icon: Icon, label, text, href, iconBg, iconColor, linkColor }) => (
