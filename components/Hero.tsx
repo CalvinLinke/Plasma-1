@@ -210,7 +210,7 @@ export default function Hero() {
 
               {/* Floating Card 1 — Kündigung übernommen */}
               <div
-                className="absolute right-2 top-3 sm:-left-10 sm:right-auto sm:top-14 glass rounded-2xl p-4 shadow-ambient-md animate-float border border-white/40"
+                className="hidden sm:block absolute -left-10 top-14 glass rounded-2xl p-4 shadow-ambient-md animate-float border border-white/40"
                 style={{ minWidth: "155px" }}
               >
                 <div className="flex items-center gap-2 mb-1.5">
@@ -223,7 +223,7 @@ export default function Hero() {
 
               {/* Floating Card 2 — Reaktionszeit */}
               <div
-                className="absolute -right-8 bottom-14 glass rounded-2xl p-4 shadow-ambient-md animate-float-delayed border border-white/40"
+                className="hidden sm:block absolute -right-8 bottom-14 glass rounded-2xl p-4 shadow-ambient-md animate-float-delayed border border-white/40"
                 style={{ minWidth: "145px" }}
               >
                 <div className="flex items-center gap-2 mb-1.5">
@@ -232,6 +232,28 @@ export default function Hero() {
                 </div>
                 <p className="text-2xl font-bold text-marine">48h</p>
                 <p className="text-xs text-gray-400">bis zum Angebot</p>
+              </div>
+            </div>
+
+            {/* Mobile Keyfacts — ersetzen die schwebenden Karten */}
+            <div className="sm:hidden w-full max-w-sm mt-4 space-y-2">
+              <div className="flex items-center gap-3 glass rounded-2xl p-3.5 border border-white/40 shadow-ambient">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(22,163,74,0.12)" }}>
+                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-marine leading-tight">Kündigung erledigt</p>
+                  <p className="text-xs text-gray-400">vom alten Vertrag — wir übernehmen das</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 glass rounded-2xl p-3.5 border border-white/40 shadow-ambient">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(123,97,255,0.12)" }}>
+                  <Clock className="w-4 h-4 text-violet-brand" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-marine leading-tight">Angebot in 48h</p>
+                  <p className="text-xs text-gray-400">schnelle Reaktionszeit garantiert</p>
+                </div>
               </div>
             </div>
           </div>
