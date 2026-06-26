@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { getPartner } from "@/lib/partners";
+import { buildDownloadUrl } from "@/lib/blob-download";
 
 export const runtime = "nodejs";
 
@@ -13,7 +14,19 @@ export async function POST(request: NextRequest) {
     const email = (formData.get("email") as string) || "";
     const telefon = (formData.get("telefon") as string) || "";
     const anmerkungen = (formData.get("anmerkungen") as string) || "";
-    const file = formData.get("file") as File | null;
+
+    // Die Datei liegt bereits im privaten Blob-Store (Direkt-Upload vom Browser).
+    // Hier kommt nur noch der Pfad an — kein großer Request, kein 4,5-MB-Limit.
+    const filePathname = (formData.get("filePathname") as string) || "";
+    const fileName = (formData.get("fileName") as string) || "";
+    const fileSize = parseInt((formData.get("fileSize") as string) || "0", 10);
+    const hasFile = filePathname.length > 0;
+    const sizeLabel = fileSize > 1024 * 1024
+      ? `${(fileSize / 1024 / 1024).toFixed(1)} MB`
+      : `${Math.max(1, Math.round(fileSize / 1024))} KB`;
+    const downloadUrl = hasFile
+      ? buildDownloadUrl(request.nextUrl.origin, filePathname)
+      : null;
 
     // Provisionszuordnung: zuerst das Formular-Feld (aktuelle Absicht der
     // Partner-Seite), dann der Cookie (älterer Erstkontakt) als Fallback.
@@ -33,16 +46,6 @@ export async function POST(request: NextRequest) {
         pass: process.env.SMTP_PASS,
       },
     });
-
-    const attachments: { filename: string; content: Buffer; contentType: string }[] = [];
-    if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      attachments.push({
-        filename: file.name,
-        content: buffer,
-        contentType: file.type,
-      });
-    }
 
     await transporter.sendMail({
       from: `"Plasma Website" <${process.env.SMTP_USER}>`,
@@ -78,7 +81,7 @@ export async function POST(request: NextRequest) {
               </tr>
               <tr style="${anmerkungen ? "border-bottom: 1px solid #E5E7EB;" : ""}">
                 <td style="padding: 10px 0; color: #9CA3AF;">Datei</td>
-                <td style="padding: 10px 0;">${file && file.size > 0 ? `${file.name} (${(file.size / 1024).toFixed(0)} KB) — siehe Anhang` : "Keine Datei hochgeladen"}</td>
+                <td style="padding: 10px 0;">${hasFile ? `${fileName} (${sizeLabel})` : "Keine Datei hochgeladen"}</td>
               </tr>
               ${anmerkungen ? `
               <tr>
@@ -86,10 +89,17 @@ export async function POST(request: NextRequest) {
                 <td style="padding: 10px 0;">${anmerkungen.replace(/\n/g, "<br>")}</td>
               </tr>` : ""}
             </table>
+            ${hasFile ? (downloadUrl ? `
+            <div style="margin-top: 24px; text-align: center;">
+              <a href="${downloadUrl}" style="display: inline-block; background: #7B61FF; color: #fff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">Rechnung herunterladen</a>
+              <p style="color: #9CA3AF; font-size: 12px; margin: 12px 0 0;">Link 30 Tage gültig · danach wird die Datei automatisch gelöscht.</p>
+            </div>` : `
+            <div style="margin-top: 24px; padding: 12px 16px; background: #FEF3C7; border-radius: 8px; font-size: 13px; color: #92400E;">
+              Datei liegt im Blob-Store unter <strong>${fileName}</strong> (Pfad: ${filePathname}). Download-Link nicht verfügbar — bitte DOWNLOAD_SECRET prüfen.
+            </div>`) : ""}
           </div>
         </div>
       `,
-      attachments,
     });
 
     return NextResponse.json({ success: true });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { upload } from "@vercel/blob/client";
 import { Upload, Shield, Clock, CheckCircle, File, X } from "lucide-react";
 
 const trustBadges = [
@@ -8,6 +9,10 @@ const trustBadges = [
   { icon: CheckCircle, label: "Unverbindlich", sub: "Kein Vertragszwang" },
   { icon: Clock, label: "48h Antwort", sub: "Schnelle Rückmeldung" },
 ];
+
+const MAX_MB = 25;
+const MAX_BYTES = MAX_MB * 1024 * 1024;
+const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
 
 type AngebotFormProps = {
   /**
@@ -20,15 +25,26 @@ type AngebotFormProps = {
 
 export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
   const [file, setFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [phase, setPhase] = useState<"idle" | "uploading" | "sending">("idle");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (f: File) => {
-    if (f.type.startsWith("image/") || f.type === "application/pdf") {
-      setFile(f);
+    if (!ALLOWED_TYPES.includes(f.type)) {
+      setFileError("Bitte laden Sie eine PDF oder ein Bild (JPG, PNG) hoch.");
+      return;
     }
+    if (f.size > MAX_BYTES) {
+      setFileError(
+        `Die Datei ist zu groß (${(f.size / 1024 / 1024).toFixed(1)} MB). Maximal ${MAX_MB} MB.`,
+      );
+      return;
+    }
+    setFileError(null);
+    setFile(f);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -43,8 +59,20 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
     setLoading(true);
     const form = e.currentTarget;
     const data = new FormData(form);
-    if (file) data.set("file", file, file.name);
     try {
+      // Schritt 1: Datei direkt in den privaten Blob-Store laden (umgeht 4,5-MB-Limit).
+      if (file) {
+        setPhase("uploading");
+        const blob = await upload(file.name, file, {
+          access: "private",
+          handleUploadUrl: "/api/upload",
+        });
+        data.set("filePathname", blob.pathname);
+        data.set("fileName", file.name);
+        data.set("fileSize", String(file.size));
+      }
+      // Schritt 2: nur die Felder + den Blob-Pfad an die API (winziger Request).
+      setPhase("sending");
       const res = await fetch("/api/angebot", { method: "POST", body: data });
       if (res.ok) {
         setSubmitted(true);
@@ -52,9 +80,10 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
         alert("Fehler beim Senden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt.");
       }
     } catch {
-      alert("Verbindungsfehler. Bitte prüfen Sie Ihre Internetverbindung.");
+      alert("Verbindungsfehler oder Datei-Upload fehlgeschlagen. Bitte versuchen Sie es erneut.");
     } finally {
       setLoading(false);
+      setPhase("idle");
     }
   };
 
@@ -126,7 +155,7 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
             <input
               ref={inputRef}
               type="file"
-              accept=".pdf,image/*"
+              accept=".pdf,image/jpeg,image/png"
               className="hidden"
               onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
             />
@@ -140,7 +169,7 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
                 </div>
                 <button
                   type="button"
-                  onClick={(e) => { e.stopPropagation(); setFile(null); }}
+                  onClick={(e) => { e.stopPropagation(); setFile(null); setFileError(null); }}
                   className="ml-4 p-1 rounded-full hover:bg-gray-100 transition-colors"
                 >
                   <X className="w-4 h-4 text-gray-400" />
@@ -153,10 +182,13 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
                   Datei hier ablegen oder{" "}
                   <span className="text-violet-brand underline">auswählen</span>
                 </p>
-                <p className="text-xs text-gray-400 mt-1">PDF oder Bild (JPG, PNG) · Max. 10 MB</p>
+                <p className="text-xs text-gray-400 mt-1">PDF oder Bild (JPG, PNG) · Max. {MAX_MB} MB</p>
               </>
             )}
           </div>
+          {fileError && (
+            <p className="text-xs text-red-500 mt-2">{fileError}</p>
+          )}
         </div>
 
         {/* Form Fields */}
@@ -229,7 +261,7 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              Wird gesendet…
+              {phase === "uploading" ? "Rechnung wird hochgeladen…" : "Wird gesendet…"}
             </>
           ) : (
             <>
