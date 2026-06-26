@@ -3,7 +3,7 @@ import { Handshake, TrendingUp, Users, Check, ArrowRight } from "lucide-react";
 
 const benefits = [
   "Mehrwert für Ihre eigenen Kunden durch einen echten Mehrwert",
-  "Mögliche Zusatzvergütung für erfolgreiche Empfehlungen",
+  "Zufriedene Kontakte, die sich an Ihre Empfehlung erinnern",
   "Langfristige und verlässliche Zusammenarbeit",
   "Kein Aufwand für Sie — wir erledigen alles",
   "Geeignet für Hausverwaltungen, Netzwerke und Empfehlungsgeber",
@@ -57,9 +57,9 @@ export default function PartnerWerden() {
           >
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "rgba(0,240,255,0.7)" }}>Ihr Vorteil</p>
-              <h2 className="text-2xl font-bold mb-4 leading-snug">Empfehlen.<br />Verdienen.<br />Fertig.</h2>
+              <h2 className="text-2xl font-bold mb-4 leading-snug">Empfehlen.<br />Entlasten.<br />Fertig.</h2>
               <p className="text-white/60 text-sm leading-relaxed mb-3">
-                Sie bringen uns in Kontakt — wir übernehmen den Rest. Analyse, Angebot, Wechsel, alles. Für jede erfolgreiche Vermittlung erhalten Sie eine Vergütung.
+                Sie bringen uns in Kontakt — den Rest machen wir. Analyse, Angebot, Wechsel. Ihre Kontakte bekommen ein besseres Energieangebot, ohne sich um Papierkram oder Anbieterwechsel kümmern zu müssen.
               </p>
               <p className="text-white/40 text-xs leading-relaxed mb-6">
                 Kein Aufwand. Keine Haftung. Echter Mehrwert für Ihr Netzwerk.

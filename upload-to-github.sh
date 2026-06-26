@@ -11,7 +11,7 @@ if [ -z "$TOKEN" ]; then
   exit 1
 fi
 
-REPO_NAME="plasma-energie-solution"
+REPO_NAME="Plasma-1"
 REPO_DESC="Plasma Energie Solution – Website"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKIP_DIRS="node_modules|.next|.git"

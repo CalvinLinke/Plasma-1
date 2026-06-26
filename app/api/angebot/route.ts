@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { getPartner } from "@/lib/partners";
 
 export const runtime = "nodejs";
 
@@ -13,6 +14,15 @@ export async function POST(request: NextRequest) {
     const telefon = (formData.get("telefon") as string) || "";
     const anmerkungen = (formData.get("anmerkungen") as string) || "";
     const file = formData.get("file") as File | null;
+
+    // Provisionszuordnung: zuerst das Formular-Feld (aktuelle Absicht der
+    // Partner-Seite), dann der Cookie (älterer Erstkontakt) als Fallback.
+    // Der Name stammt immer aus der Registry — nie aus rohem User-Input.
+    const partnerSlug =
+      (formData.get("partner") as string) ||
+      request.cookies.get("plasma_partner")?.value ||
+      "";
+    const partner = getPartner(partnerSlug);
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || "smtp.gmail.com",
@@ -38,13 +48,20 @@ export async function POST(request: NextRequest) {
       from: `"Plasma Website" <${process.env.SMTP_USER}>`,
       to: "box@plasma-energie.de",
       replyTo: email,
-      subject: `Angebot ${vorname} ${nachname}`,
+      subject: partner
+        ? `[PARTNER: ${partner.name}] Angebot ${vorname} ${nachname}`
+        : `Angebot ${vorname} ${nachname}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; color: #1A1B4B;">
           <div style="background: linear-gradient(135deg, #4B0082, #1A1B4B); padding: 24px 32px; border-radius: 12px 12px 0 0;">
             <h1 style="color: white; margin: 0; font-size: 20px;">Neue Angebotsanfrage</h1>
             <p style="color: rgba(255,255,255,0.6); margin: 4px 0 0; font-size: 13px;">Plasma Energie Solution — Website</p>
           </div>
+          ${partner ? `
+          <div style="background: #7B61FF; padding: 12px 32px; color: white; font-size: 14px;">
+            <strong>Vermittelt durch: ${partner.name}</strong>
+            <span style="color: rgba(255,255,255,0.7);"> — Provisionszuordnung</span>
+          </div>` : ""}
           <div style="background: #F8FAFC; padding: 32px; border-radius: 0 0 12px 12px; border: 1px solid #E5E7EB; border-top: none;">
             <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
               <tr style="border-bottom: 1px solid #E5E7EB;">
