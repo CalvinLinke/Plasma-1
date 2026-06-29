@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import TonyMForm from "@/components/TonyMForm";
 
 export const metadata: Metadata = {
@@ -10,35 +11,55 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// Inhalts-Container: füllt die Seite vollflächig (Sektions-Hintergründe über die
+// ganze Breite), Inhalt selbst zentriert bei max. 1080px.
+const CONTENT = "mx-auto w-full max-w-[1080px]";
+
 export default function VarianteC() {
   return (
-    <div className="min-h-screen bg-[#eef0f4] px-4 py-6 sm:py-10">
-      <div className="mx-auto max-w-[1080px] overflow-hidden rounded-md bg-white shadow-[0_4px_24px_rgba(0,0,0,.08)]">
-        {/* ── Co-Brand-Leiste ── */}
-        <div className="flex items-center justify-between gap-4 border-b border-[#f1f1f5] px-5 py-[18px] sm:px-10">
-          <Image
-            src="/tonym/plasma-logo.png"
-            alt="Plasma Energie"
-            width={67}
-            height={34}
-            className="h-[34px] w-auto object-contain"
-          />
+    <div className="min-h-screen bg-white">
+      {/* ── Co-Brand-Leiste ── */}
+      <header className="border-b border-[#f1f1f5]">
+        <div className={`${CONTENT} flex items-center justify-between gap-4 px-5 py-[18px] sm:px-10`}>
+          <Link
+            href="/"
+            aria-label="Zur Startseite von Plasma Energie"
+            className="transition-opacity hover:opacity-80"
+          >
+            <Image
+              src="/tonym/plasma-logo.png"
+              alt="Plasma Energie"
+              width={67}
+              height={34}
+              className="h-[34px] w-auto object-contain"
+            />
+          </Link>
           <div className="flex items-center gap-[14px]">
-            <span className="text-[12px] font-medium tracking-[.04em] text-[#9ca3af]">
+            <span className="hidden text-[12px] font-medium tracking-[.04em] text-[#9ca3af] sm:inline">
               EXKLUSIVER ZUGANG VON
             </span>
-            <Image
-              src="/tonym/tonyM-logo.png"
-              alt="tonyM Versicherungsmakler"
-              width={59}
-              height={42}
-              className="h-[42px] w-auto object-contain"
-            />
+            <a
+              href="https://tonym.de/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="tonyM Versicherungsmakler (öffnet in neuem Tab)"
+              className="transition-opacity hover:opacity-80"
+            >
+              <Image
+                src="/tonym/tonyM-logo.png"
+                alt="tonyM Versicherungsmakler"
+                width={59}
+                height={42}
+                className="h-[42px] w-auto object-contain"
+              />
+            </a>
           </div>
         </div>
+      </header>
 
-        {/* ── Bento-Hero ── */}
-        <div className="bg-surface p-5 sm:p-10">
+      {/* ── Bento-Hero ── */}
+      <section className="bg-surface">
+        <div className={`${CONTENT} p-5 sm:p-10`}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-[1.15fr_1.15fr_1fr]">
             {/* Kachel A — Headline */}
             <div className="relative overflow-hidden rounded-[22px] border border-[#efeafd] p-6 sm:p-[34px] sm:col-span-2 lg:col-span-2 lg:col-start-1 lg:row-start-1"
@@ -188,9 +209,11 @@ export default function VarianteC() {
             </div>
           </div>
         </div>
+      </section>
 
-        {/* ── Vergleichs-Streifen ── */}
-        <div className="bg-white px-5 py-[50px] sm:px-10">
+      {/* ── Vergleichs-Streifen ── */}
+      <section className="bg-white">
+        <div className={`${CONTENT} px-5 py-[50px] sm:px-10`}>
           <div className="mb-[30px] text-center">
             <div className="mb-[10px] text-[12px] font-semibold tracking-[.08em] text-[#7B61FF]">
               AUFWAND IM VERGLEICH
@@ -251,9 +274,11 @@ export default function VarianteC() {
             </div>
           </div>
         </div>
+      </section>
 
-        {/* ── Formular ── */}
-        <div id="formC" className="bg-surface px-5 py-[50px] sm:px-10">
+      {/* ── Formular ── */}
+      <section id="formC" className="bg-surface">
+        <div className={`${CONTENT} px-5 py-[50px] sm:px-10`}>
           <div className="mx-auto max-w-[560px]">
             <div className="mb-[22px] text-center">
               <h2 className="mb-2 text-[24px] font-extrabold tracking-[-0.02em] text-marine sm:text-[28px]">
@@ -266,9 +291,11 @@ export default function VarianteC() {
             <TonyMForm />
           </div>
         </div>
+      </section>
 
-        {/* ── Footer ── */}
-        <div className="flex flex-col items-start justify-between gap-4 bg-[#0A0B1E] px-5 py-[30px] sm:flex-row sm:items-center sm:px-10">
+      {/* ── Footer ── */}
+      <footer className="bg-[#0A0B1E]">
+        <div className={`${CONTENT} flex flex-col items-start justify-between gap-4 px-5 py-[30px] sm:flex-row sm:items-center sm:px-10`}>
           <div className="flex items-center gap-4">
             <Image
               src="/tonym/plasma-logo.png"
@@ -284,7 +311,7 @@ export default function VarianteC() {
           </div>
           <div className="text-[12px] text-white/40">Impressum · Datenschutz · AGB</div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }
