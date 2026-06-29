@@ -163,8 +163,12 @@ export default function TonyMForm() {
               : "Kostenlos Angebot anfordern"}
           </button>
 
-          <div className="text-[11.5px] text-gray-400 text-center mt-[11px]">
-            Keine Weitergabe an Dritte · Vermittelt durch tonyM Versicherungsmakler
+          <div className="text-[11.5px] text-gray-400 text-center mt-[11px] leading-relaxed">
+            Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Daten gemäß unserer{" "}
+            <a href="/datenschutz" className="text-[#7B61FF] hover:underline">
+              Datenschutzerklärung
+            </a>{" "}
+            zu. Keine Weitergabe an Dritte · Vermittelt durch tonyM Versicherungsmakler
           </div>
         </form>
       )}
