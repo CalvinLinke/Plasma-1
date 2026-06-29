@@ -1,3 +1,5 @@
+import { CookieSettingsButton } from "@/components/CookieConsent";
+
 export default function Datenschutz() {
   return (
     <div className="min-h-screen pt-24 pb-20 bg-white">
@@ -103,10 +105,10 @@ export default function Datenschutz() {
           <section>
             <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">6. Google Maps</h2>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
-              Auf unserer Kontaktseite verwenden wir Google Maps, einen Kartendienst der Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA (bzw. Google Ireland Limited für Nutzer im EWR). Wenn Sie unsere Kontaktseite aufrufen, stellt Ihr Browser eine Verbindung zu den Servern von Google her. Dabei kann Google Ihre IP-Adresse und Informationen über Ihren Browser erfassen.
+              Auf unserer Kontaktseite binden wir Google Maps ein, einen Kartendienst der Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA (bzw. Google Ireland Limited für Nutzer im EWR). Die Karte wird <strong>nicht automatisch</strong> geladen: Sie wird erst dargestellt, nachdem Sie aktiv zugestimmt haben (über den Cookie-Hinweis oder per Klick auf „Karte laden"). Erst dann stellt Ihr Browser eine Verbindung zu den Servern von Google her, wobei Google Ihre IP-Adresse und Informationen über Ihren Browser erfassen kann.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
-              Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Darstellung unseres Standortes). Der Datentransfer in die USA erfolgt auf Grundlage der EU-Standardvertragsklauseln.
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung) i. V. m. § 25 Abs. 1 TTDSG. Die Einwilligung ist freiwillig und kann jederzeit mit Wirkung für die Zukunft widerrufen werden (siehe Abschnitt „Cookies"). Der Datentransfer in die USA erfolgt auf Grundlage der EU-Standardvertragsklauseln.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed">
               Weitere Informationen zur Datenverarbeitung durch Google finden Sie unter: https://policies.google.com/privacy
@@ -114,10 +116,17 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">7. Cookies</h2>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Unsere Website verwendet technisch notwendige Cookies, die für den Betrieb der Website erforderlich sind. Diese Cookies speichern keine personenbezogenen Daten und werden nach Ende der Browsersitzung gelöscht. Eine Einwilligung ist für technisch notwendige Cookies gemäß § 25 Abs. 2 TTDSG nicht erforderlich. Wir verwenden keine Tracking- oder Analyse-Cookies von Drittanbietern.
+            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">7. Cookies &amp; Einwilligungen</h2>
+            <p className="text-gray-600 text-sm leading-relaxed mb-3">
+              Unsere Website verwendet ausschließlich technisch notwendige Cookies sowie funktionale Speichertechniken (z. B. einen Eintrag im lokalen Browser-Speicher, der sich Ihre Cookie-Auswahl merkt, sowie einen Sitzungs-Hinweis für unser Hilfe-Fenster). Diese speichern keine personenbezogenen Daten zu Werbe- oder Analysezwecken. Eine Einwilligung ist hierfür gemäß § 25 Abs. 2 TTDSG nicht erforderlich. Wir verwenden keine Tracking- oder Analyse-Cookies von Drittanbietern.
             </p>
+            <p className="text-gray-600 text-sm leading-relaxed mb-3">
+              Externe Inhalte, die Daten an Dritte übertragen können — insbesondere die Google-Maps-Karte auf der Kontaktseite — werden erst nach Ihrer ausdrücklichen Einwilligung geladen (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TTDSG). Beim ersten Besuch fragt Sie hierzu ein Cookie-Hinweis. Ihre Auswahl wird ausschließlich lokal in Ihrem Browser gespeichert.
+            </p>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen oder ändern (Art. 7 Abs. 3 DSGVO):
+            </p>
+            <CookieSettingsButton />
           </section>
 
           <section>

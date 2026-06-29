@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Mail, Phone, MapPin, CheckCircle, ChevronDown } from "lucide-react";
+import ContactMap from "@/components/ContactMap";
 
 const contactReasons = [
   "Allgemeine Anfrage",
@@ -239,19 +240,8 @@ export default function Kontakt() {
               </div>
             ))}
 
-            {/* Google Maps */}
-            <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-ambient">
-              <iframe
-                src="https://maps.google.com/maps?q=Gr%C3%BCne+Stra%C3%9Fe+13b%2C+01067+Dresden&hl=de&z=16&output=embed"
-                width="100%"
-                height="240"
-                style={{ border: 0, display: "block" }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Plasma Energie Solution – Standort Dresden"
-              />
-            </div>
+            {/* Google Maps — lädt erst nach Einwilligung (Click-to-load) */}
+            <ContactMap />
           </div>
 
         </div>

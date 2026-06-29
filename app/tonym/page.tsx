@@ -309,7 +309,14 @@ export default function VarianteC() {
               Zugang vermittelt durch tonyM Versicherungsmakler
             </span>
           </div>
-          <div className="text-[12px] text-white/40">Impressum · Datenschutz · AGB</div>
+          <div className="flex gap-4 text-[12px]">
+            <Link href="/impressum" className="text-white/40 transition-colors hover:text-white/70">
+              Impressum
+            </Link>
+            <Link href="/datenschutz" className="text-white/40 transition-colors hover:text-white/70">
+              Datenschutz
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
