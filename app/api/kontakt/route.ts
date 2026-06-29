@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { sendMailViaGraph } from "@/lib/graph-mail";
 
 export const runtime = "nodejs";
 
@@ -8,20 +8,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { vorname, nachname, email, nachricht, grund } = body;
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.gmail.com",
-      port: parseInt(process.env.SMTP_PORT || "587"),
-      secure: process.env.SMTP_SECURE === "true",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
     const grundLabel = grund ? `${grund} ` : "";
 
-    await transporter.sendMail({
-      from: `"Plasma Website" <${process.env.SMTP_USER}>`,
+    // Versand über Microsoft Graph (Client-Credentials) statt SMTP — sendet als
+    // box@plasma-energie.de, ohne Benutzer-Login, daher MFA-unabhängig.
+    await sendMailViaGraph({
       to: "box@plasma-energie.de",
       replyTo: email,
       subject: `Anfrage ${grundLabel}${vorname} ${nachname}`,
