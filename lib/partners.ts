@@ -1,9 +1,10 @@
 // Partner-Registry — einzige Wahrheitsquelle für Kooperationspartner.
 // Neuer Partner = ein Eintrag hier. Keine Datenbank nötig.
 //
-// Der Slug ist Teil der Landing-Page-URL: /p/<slug>  (z. B. /p/tony).
-// Der `name` landet in der Angebots-E-Mail ("[PARTNER: …]") — er stammt
-// IMMER aus dieser Liste, nie aus rohem User-Input.
+// Der Slug wird im Formular als verstecktes Feld `partner` mitgesendet (z. B.
+// auf der Co-Branding-Seite /tonym sendet das Formular partner="tony"). Der
+// `name` landet in der Angebots-E-Mail ("[PARTNER: …]") — er stammt IMMER aus
+// dieser Liste, nie aus rohem User-Input.
 
 export type Partner = {
   /** Anzeigename, erscheint in der Provisions-E-Mail. */
