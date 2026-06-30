@@ -172,9 +172,9 @@ export default function VarianteC() {
               </div>
             </div>
 
-            {/* Kachel D — Was TonyM Kunden bekommen */}
+            {/* Kachel D — Was tonyM Kunden bekommen */}
             <div className="rounded-[22px] border border-[#eef] bg-white p-6 lg:col-start-2 lg:row-start-2">
-              <div className="mb-4 text-[15px] font-bold text-marine">Was TonyM Kunden bekommen</div>
+              <div className="mb-4 text-[15px] font-bold text-marine">Was tonyM Kunden bekommen</div>
               <div className="flex flex-col gap-[14px]">
                 {[
                   {
