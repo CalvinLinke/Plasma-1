@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       to: "box@plasma-energie.de",
       replyTo: email,
       subject: partner
-        ? `[PARTNER: ${partner.name}] Angebot ${vorname} ${nachname}`
+        ? `[Partner ${partner.name}] Angebot ${vorname} ${nachname}`
         : `Angebot ${vorname} ${nachname}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; color: #1A1B4B;">

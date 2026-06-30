@@ -17,7 +17,7 @@ export type Partner = {
 };
 
 export const PARTNERS = {
-  tony: { name: "Tony M.", active: true },
+  tony: { name: "TonyM", active: true },
 } as const satisfies Record<string, Partner>;
 
 export type PartnerSlug = keyof typeof PARTNERS;
