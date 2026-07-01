@@ -3,10 +3,10 @@ import { list, del } from "@vercel/blob";
 
 export const runtime = "nodejs";
 
-const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 Tage
+const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000; // 90 Tage
 
 // Täglich per Vercel Cron aufgerufen (vercel.json). Löscht hochgeladene
-// Rechnungen, die älter als 30 Tage sind — Datenschutz. Vercel sendet bei
+// Rechnungen, die älter als 90 Tage sind — Datenschutz. Vercel sendet bei
 // Cron-Aufrufen automatisch "Authorization: Bearer <CRON_SECRET>".
 export async function GET(request: NextRequest) {
   const auth = request.headers.get("authorization");

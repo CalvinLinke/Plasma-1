@@ -9,6 +9,16 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
 
+    // DSGVO-Einwilligung ist Pflicht — ohne aktive Zustimmung keine Verarbeitung (Art. 7 DSGVO).
+    if (formData.get("datenschutz") !== "on") {
+      return NextResponse.json(
+        { success: false, error: "Bitte bestätigen Sie die Datenschutzerklärung." },
+        { status: 400 },
+      );
+    }
+    // Zeitpunkt des Eingangs als Nachweis, dass und wann eingewilligt wurde.
+    const einwilligungAm = new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
+
     const vorname = (formData.get("vorname") as string) || "";
     const nachname = (formData.get("nachname") as string) || "";
     const email = (formData.get("email") as string) || "";
@@ -83,11 +93,14 @@ export async function POST(request: NextRequest) {
             ${hasFile ? (downloadUrl ? `
             <div style="margin-top: 24px; text-align: center;">
               <a href="${downloadUrl}" style="display: inline-block; background: #7B61FF; color: #fff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">Rechnung herunterladen</a>
-              <p style="color: #9CA3AF; font-size: 12px; margin: 12px 0 0;">Link 30 Tage gültig · danach wird die Datei automatisch gelöscht.</p>
+              <p style="color: #9CA3AF; font-size: 12px; margin: 12px 0 0;">Link 90 Tage gültig · danach wird die Datei automatisch gelöscht.</p>
             </div>` : `
             <div style="margin-top: 24px; padding: 12px 16px; background: #FEF3C7; border-radius: 8px; font-size: 13px; color: #92400E;">
               Datei liegt im Blob-Store unter <strong>${fileName}</strong> (Pfad: ${filePathname}). Download-Link nicht verfügbar — bitte DOWNLOAD_SECRET prüfen.
             </div>`) : ""}
+            <p style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #E5E7EB; color: #6B7280; font-size: 12px;">
+              <strong style="color: #1A1B4B;">Einwilligung Datenschutz:</strong> erteilt (Opt-in-Checkbox im Formular) · Eingang ${einwilligungAm}
+            </p>
           </div>
         </div>
       `,

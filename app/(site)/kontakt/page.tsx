@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Mail, Phone, MapPin, CheckCircle, ChevronDown } from "lucide-react";
 import ContactMap from "@/components/ContactMap";
+import ConsentCheckbox from "@/components/ConsentCheckbox";
 
 const contactReasons = [
   "Allgemeine Anfrage",
@@ -17,6 +18,7 @@ export default function Kontakt() {
   const [loading, setLoading] = useState(false);
   const [reason, setReason] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [consent, setConsent] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,6 +41,7 @@ export default function Kontakt() {
       email: (form.elements.namedItem("email") as HTMLInputElement)?.value || "",
       nachricht: (form.elements.namedItem("nachricht") as HTMLTextAreaElement)?.value || "",
       grund: reason,
+      datenschutz: consent,
     };
     try {
       const res = await fetch("/api/kontakt", {
@@ -205,6 +208,9 @@ export default function Kontakt() {
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-marine placeholder-gray-300 transition-all duration-300 resize-none"
                   />
                 </div>
+
+                {/* Datenschutz-Einwilligung — Pflicht (Opt-in) */}
+                <ConsentCheckbox checked={consent} onChange={setConsent} />
 
                 <button type="submit" disabled={loading} className="w-full btn-primary py-4 text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none">
                   {loading ? (

@@ -8,7 +8,7 @@ export default function Datenschutz() {
         <div className="mb-12">
           <p className="text-xs font-semibold uppercase tracking-widest text-violet-brand mb-3">Rechtliches</p>
           <h1 className="text-4xl font-bold text-marine mb-3">Datenschutzerklärung</h1>
-          <p className="text-sm text-gray-400">Stand: Juni 2025 · gemäß DSGVO, BDSG und TMG</p>
+          <p className="text-sm text-gray-400">Stand: Juli 2026 · gemäß DSGVO, BDSG und TDDDG</p>
         </div>
 
         <div className="space-y-10">
@@ -55,7 +55,7 @@ export default function Datenschutz() {
             </ul>
             <p className="text-gray-600 text-sm leading-relaxed mt-3">
               Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse am ordnungsgemäßen Betrieb). Die Daten werden nach spätestens 30 Tagen gelöscht.<br /><br />
-              <strong>Hosting:</strong> Diese Website wird bei Vercel Inc., 340 Pine Street Suite 601, San Francisco, CA 94104, USA gehostet. Vercel verarbeitet Verbindungsdaten auf ihren Servern. Mit Vercel besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO. Der Datentransfer in die USA erfolgt auf Grundlage der EU-Standardvertragsklauseln.
+              <strong>Hosting &amp; Datei-Speicherung (Vercel):</strong> Diese Website wird bei Vercel Inc., 340 Pine Street Suite 601, San Francisco, CA 94104, USA gehostet. Vercel verarbeitet Verbindungsdaten (Server-Logfiles) auf ihren Servern und speichert die von Ihnen hochgeladenen Energierechnungen in einem privaten Datei-Speicher (Vercel Blob), der nicht öffentlich abrufbar ist (siehe Abschnitt „Angebot anfordern / Datei-Upload"). Mit Vercel besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO. Die Übermittlung in die USA erfolgt auf Grundlage des EU-US Data Privacy Framework (Vercel ist zertifiziert) sowie ergänzend der EU-Standardvertragsklauseln als zusätzliche Garantie.
             </p>
           </section>
 
@@ -71,7 +71,7 @@ export default function Datenschutz() {
               <li>Optionaler Grund der Kontaktaufnahme</li>
             </ul>
             <p className="text-gray-600 text-sm leading-relaxed mt-3">
-              Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) bzw. Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Bearbeitung von Anfragen). Die Daten werden ausschließlich zur Bearbeitung Ihrer Anfrage verwendet und nicht an Dritte weitergegeben. Sobald Ihre Anfrage abschließend bearbeitet ist, werden die Daten gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten bestehen.
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Ihre Einwilligung über die Bestätigungs-Checkbox im Formular) sowie Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) bzw. Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Bearbeitung von Anfragen). Ein Absenden ist erst nach aktiver Bestätigung der Datenschutzhinweise möglich; den Zeitpunkt Ihrer Einwilligung dokumentieren wir als Nachweis. Ihre Anfrage wird uns per E-Mail zugestellt und in unserem Postfach gespeichert (siehe Abschnitt „E-Mail-Verarbeitung über Microsoft 365"). Die Daten werden ausschließlich zur Bearbeitung Ihrer Anfrage verwendet und nicht an Dritte weitergegeben. Sobald Ihre Anfrage abschließend bearbeitet ist, werden die Daten gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten bestehen.
             </p>
           </section>
 
@@ -92,10 +92,13 @@ export default function Datenschutz() {
               <strong>Zweck:</strong> Die übermittelten Daten werden ausschließlich zur Analyse des bestehenden Tarifs, zum Vergleich mit verfügbaren Angeboten und zur Erstellung eines konkreten Angebots an Sie verwendet.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed mt-3">
-              <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Durchführung vorvertraglicher Maßnahmen auf Anfrage der betroffenen Person) sowie Art. 6 Abs. 1 lit. a DSGVO (Einwilligung durch aktives Hochladen der Datei).
+              <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Durchführung vorvertraglicher Maßnahmen auf Anfrage der betroffenen Person) sowie Art. 6 Abs. 1 lit. a DSGVO (Ihre ausdrückliche Einwilligung über die Bestätigungs-Checkbox im Formular). Ohne diese Bestätigung ist ein Absenden nicht möglich; den Zeitpunkt der Einwilligung dokumentieren wir als Nachweis. Die Einwilligung ist freiwillig und jederzeit mit Wirkung für die Zukunft widerrufbar.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed mt-3">
               <strong>Datenweitergabe an Energieanbieter:</strong> Sofern Sie sich für einen Tarifwechsel entscheiden und uns beauftragen, den Wechselprozess zu übernehmen, werden die für den Vertragsabschluss erforderlichen Daten an den jeweiligen Energieanbieter übermittelt. Dies erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) und ausdrücklich nur nach Ihrer Zustimmung.
+            </p>
+            <p className="text-gray-600 text-sm leading-relaxed mt-3">
+              <strong>Speicherort &amp; Übermittlung:</strong> Die hochgeladene Datei wird in einem privaten Datei-Speicher (Vercel Blob) abgelegt, der nicht öffentlich zugänglich ist. Ein Abruf ist ausschließlich über einen kryptografisch signierten, nicht fälschbaren Link möglich. Zur Bearbeitung Ihrer Anfrage wird eine Benachrichtigung mit einem solchen Download-Link per E-Mail über Microsoft 365 an unser Postfach zugestellt (siehe Abschnitt „E-Mail-Verarbeitung über Microsoft 365").
             </p>
             <p className="text-gray-600 text-sm leading-relaxed mt-3">
               <strong>Speicherdauer:</strong> Hochgeladene Dokumente und die darin enthaltenen Daten werden nach Abschluss des Beratungsprozesses oder spätestens nach 90 Tagen ohne weitere Aktivität gelöscht, sofern keine gesetzliche Aufbewahrungspflicht entgegensteht (z. B. handels- oder steuerrechtliche Aufbewahrungsfristen von bis zu 10 Jahren für vertragsrelevante Unterlagen).
@@ -103,12 +106,25 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">6. Google Maps</h2>
+            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">6. E-Mail-Verarbeitung über Microsoft 365</h2>
+            <p className="text-gray-600 text-sm leading-relaxed mb-3">
+              Anfragen aus dem Kontakt- und dem Angebotsformular werden uns per E-Mail zugestellt und in unserem Postfach (box@plasma-energie.de) gespeichert. Für Versand und Speicherung dieser E-Mails nutzen wir Microsoft 365 bzw. die Microsoft-Graph-Schnittstelle. Verarbeitet werden dabei die von Ihnen übermittelten Angaben sowie — bei einer Angebotsanfrage — ein Link zur hochgeladenen Rechnung.
+            </p>
+            <p className="text-gray-600 text-sm leading-relaxed mb-3">
+              <strong>Auftragsverarbeiter:</strong> Microsoft Ireland Operations Limited, One Microsoft Place, South County Business Park, Leopardstown, Dublin 18, Irland (Vertragspartner im EWR), ggf. unter Einbindung der Microsoft Corporation, USA. Mit Microsoft besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO. Eine etwaige Übermittlung in die USA erfolgt auf Grundlage des EU-US Data Privacy Framework (Microsoft ist zertifiziert) sowie ergänzend der EU-Standardvertragsklauseln.
+            </p>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Bearbeitung Ihrer Anfrage) sowie Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer zuverlässigen und sicheren E-Mail-Kommunikation). <strong>Speicherdauer:</strong> Nachrichten in unserem Postfach werden gelöscht, sobald sie zur Bearbeitung nicht mehr erforderlich sind und keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">7. Google Maps</h2>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
               Auf unserer Kontaktseite binden wir Google Maps ein, einen Kartendienst der Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA (bzw. Google Ireland Limited für Nutzer im EWR). Die Karte wird <strong>nicht automatisch</strong> geladen: Sie wird erst dargestellt, nachdem Sie aktiv zugestimmt haben (über den Cookie-Hinweis oder per Klick auf „Karte laden"). Erst dann stellt Ihr Browser eine Verbindung zu den Servern von Google her, wobei Google Ihre IP-Adresse und Informationen über Ihren Browser erfassen kann.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
-              Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung) i. V. m. § 25 Abs. 1 TTDSG. Die Einwilligung ist freiwillig und kann jederzeit mit Wirkung für die Zukunft widerrufen werden (siehe Abschnitt „Cookies"). Der Datentransfer in die USA erfolgt auf Grundlage der EU-Standardvertragsklauseln.
+              Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung) i. V. m. § 25 Abs. 1 TDDDG. Die Einwilligung ist freiwillig und kann jederzeit mit Wirkung für die Zukunft widerrufen werden (siehe Abschnitt „Cookies"). Die Übermittlung in die USA erfolgt auf Grundlage des EU-US Data Privacy Framework (Google ist zertifiziert) sowie ergänzend der EU-Standardvertragsklauseln.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed">
               Weitere Informationen zur Datenverarbeitung durch Google finden Sie unter: https://policies.google.com/privacy
@@ -116,12 +132,12 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">7. Cookies &amp; Einwilligungen</h2>
+            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">8. Cookies &amp; Einwilligungen</h2>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
-              Unsere Website verwendet ausschließlich technisch notwendige Cookies sowie funktionale Speichertechniken (z. B. einen Eintrag im lokalen Browser-Speicher, der sich Ihre Cookie-Auswahl merkt, sowie einen Sitzungs-Hinweis für unser Hilfe-Fenster). Diese speichern keine personenbezogenen Daten zu Werbe- oder Analysezwecken. Eine Einwilligung ist hierfür gemäß § 25 Abs. 2 TTDSG nicht erforderlich. Wir verwenden keine Tracking- oder Analyse-Cookies von Drittanbietern.
+              Unsere Website verwendet ausschließlich technisch notwendige Cookies sowie funktionale Speichertechniken (z. B. einen Eintrag im lokalen Browser-Speicher, der sich Ihre Cookie-Auswahl merkt, sowie einen Sitzungs-Hinweis für unser Hilfe-Fenster). Wird unsere Seite über einen Partner-Link aufgerufen, speichern wir zusätzlich einen funktionalen Erstanbieter-Cookie („plasma_partner"), der ausschließlich der korrekten Zuordnung der Vermittlung dient. Diese Techniken speichern keine personenbezogenen Daten zu Werbe- oder Analysezwecken. Eine Einwilligung ist hierfür gemäß § 25 Abs. 2 TDDDG nicht erforderlich. Wir verwenden keine Tracking- oder Analyse-Cookies von Drittanbietern.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
-              Externe Inhalte, die Daten an Dritte übertragen können — insbesondere die Google-Maps-Karte auf der Kontaktseite — werden erst nach Ihrer ausdrücklichen Einwilligung geladen (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TTDSG). Beim ersten Besuch fragt Sie hierzu ein Cookie-Hinweis. Ihre Auswahl wird ausschließlich lokal in Ihrem Browser gespeichert.
+              Externe Inhalte, die Daten an Dritte übertragen können — insbesondere die Google-Maps-Karte auf der Kontaktseite — werden erst nach Ihrer ausdrücklichen Einwilligung geladen (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Beim ersten Besuch fragt Sie hierzu ein Cookie-Hinweis. Ihre Auswahl wird ausschließlich lokal in Ihrem Browser gespeichert.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed">
               Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen oder ändern (Art. 7 Abs. 3 DSGVO):
@@ -130,14 +146,14 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">8. Datensicherheit</h2>
+            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">9. Datensicherheit</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Wir setzen technische und organisatorische Maßnahmen ein, um Ihre Daten gegen Verlust, Manipulation und unberechtigten Zugriff zu schützen. Die Übertragung zwischen Ihrem Browser und unseren Servern erfolgt verschlüsselt über HTTPS (TLS). Hochgeladene Dokumente werden ausschließlich auf gesicherten Servern gespeichert und sind nur autorisierten Mitarbeitern zugänglich.
+              Wir setzen technische und organisatorische Maßnahmen ein, um Ihre Daten gegen Verlust, Manipulation und unberechtigten Zugriff zu schützen. Die Übertragung zwischen Ihrem Browser und unseren Servern erfolgt verschlüsselt über HTTPS (TLS). Hochgeladene Dokumente werden in einem privaten Speicher ohne öffentliche URL abgelegt und sind ausschließlich über kryptografisch signierte, nicht fälschbare Links sowie nur für autorisierte Mitarbeiter zugänglich.
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">9. Ihre Rechte als betroffene Person</h2>
+            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">10. Ihre Rechte als betroffene Person</h2>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
               Sie haben gegenüber uns folgende Rechte hinsichtlich Ihrer personenbezogenen Daten:
             </p>
@@ -156,7 +172,7 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">10. Beschwerderecht bei der Aufsichtsbehörde</h2>
+            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">11. Beschwerderecht bei der Aufsichtsbehörde</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
               Sie haben das Recht, sich bei der zuständigen Datenschutz-Aufsichtsbehörde über die Verarbeitung Ihrer personenbezogenen Daten zu beschweren. Die für uns zuständige Aufsichtsbehörde ist:<br /><br />
               Sächsischer Datenschutz- und Transparenzbeauftragter (SDTB)<br />
@@ -167,9 +183,9 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">11. Aktualität und Änderungen</h2>
+            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">12. Aktualität und Änderungen</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Wir behalten uns vor, diese Datenschutzerklärung bei Änderungen unserer Datenverarbeitungspraktiken oder bei Änderungen der gesetzlichen Anforderungen anzupassen. Die jeweils aktuelle Fassung ist auf dieser Seite abrufbar. Stand: Juni 2025.
+              Wir behalten uns vor, diese Datenschutzerklärung bei Änderungen unserer Datenverarbeitungspraktiken oder bei Änderungen der gesetzlichen Anforderungen anzupassen. Die jeweils aktuelle Fassung ist auf dieser Seite abrufbar. Stand: Juli 2026.
             </p>
           </section>
 

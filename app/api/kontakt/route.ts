@@ -6,7 +6,17 @@ export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { vorname, nachname, email, nachricht, grund } = body;
+    const { vorname, nachname, email, nachricht, grund, datenschutz } = body;
+
+    // DSGVO-Einwilligung ist Pflicht — ohne aktive Zustimmung keine Verarbeitung (Art. 7 DSGVO).
+    if (!datenschutz) {
+      return NextResponse.json(
+        { success: false, error: "Bitte bestätigen Sie die Datenschutzerklärung." },
+        { status: 400 },
+      );
+    }
+    // Zeitpunkt des Eingangs als Nachweis, dass und wann eingewilligt wurde.
+    const einwilligungAm = new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
 
     const grundLabel = grund ? `${grund} ` : "";
 
@@ -44,6 +54,9 @@ export async function POST(request: NextRequest) {
                 <td style="padding: 10px 0;">${(nachricht || "–").replace(/\n/g, "<br>")}</td>
               </tr>
             </table>
+            <p style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #E5E7EB; color: #6B7280; font-size: 12px;">
+              <strong style="color: #1A1B4B;">Einwilligung Datenschutz:</strong> erteilt (Opt-in-Checkbox im Formular) · Eingang ${einwilligungAm}
+            </p>
           </div>
         </div>
       `,

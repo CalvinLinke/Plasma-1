@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { upload } from "@vercel/blob/client";
+import ConsentCheckbox from "@/components/ConsentCheckbox";
 
 // Co-Branding-Formular für die Variante-C-Landingpage (/tonym).
 // Optik 1:1 aus dem Design-Handoff; Submit hängt an der bestehenden
@@ -17,6 +18,7 @@ export default function TonyMForm() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState<"idle" | "uploading" | "sending">("idle");
+  const [consent, setConsent] = useState(false);
   const fileRef = useRef<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -150,6 +152,15 @@ export default function TonyMForm() {
             <input name="plzort" required placeholder="PLZ / Wohnort" className={`${inputClass} sm:col-span-2`} />
           </div>
 
+          {/* Datenschutz-Einwilligung — Pflicht (Opt-in) */}
+          <ConsentCheckbox
+            mitUpload
+            zusatz="Vermittelt durch tonyM Versicherungsmakler."
+            checked={consent}
+            onChange={setConsent}
+            className="mt-[15px]"
+          />
+
           {/* Submit */}
           <button
             type="submit"
@@ -164,11 +175,7 @@ export default function TonyMForm() {
           </button>
 
           <div className="text-[11.5px] text-gray-400 text-center mt-[11px] leading-relaxed">
-            Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Daten gemäß unserer{" "}
-            <a href="/datenschutz" className="text-[#7B61FF] hover:underline">
-              Datenschutzerklärung
-            </a>{" "}
-            zu. Keine Weitergabe an Dritte · Vermittelt durch tonyM Versicherungsmakler
+            Kostenlos &amp; unverbindlich · Keine Weitergabe an Dritte ohne Ihre ausdrückliche Zustimmung
           </div>
         </form>
       )}

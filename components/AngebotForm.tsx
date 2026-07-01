@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { upload } from "@vercel/blob/client";
 import { Upload, Shield, Clock, CheckCircle, File, X } from "lucide-react";
+import ConsentCheckbox from "@/components/ConsentCheckbox";
 
 const trustBadges = [
   { icon: Shield, label: "Kostenlos", sub: "Keine versteckten Gebühren" },
@@ -30,6 +31,7 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState<"idle" | "uploading" | "sending">("idle");
+  const [consent, setConsent] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (f: File) => {
@@ -249,6 +251,9 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
           />
         </div>
 
+        {/* Datenschutz-Einwilligung — Pflicht (Opt-in) */}
+        <ConsentCheckbox mitUpload checked={consent} onChange={setConsent} />
+
         {/* Submit */}
         <button
           type="submit"
@@ -272,9 +277,7 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
         </button>
 
         <p className="text-xs text-gray-400 text-center">
-          Mit dem Absenden stimmen Sie unserer{" "}
-          <a href="/datenschutz" className="text-violet-brand hover:underline">Datenschutzerklärung</a>{" "}
-          zu. Keine Weitergabe an Dritte.
+          Kostenlos &amp; unverbindlich · Keine Weitergabe an Dritte ohne Ihre ausdrückliche Zustimmung.
         </p>
       </form>
     </>
