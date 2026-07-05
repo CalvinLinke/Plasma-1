@@ -119,6 +119,22 @@ export default function Footer() {
             ))}
           </div>
         </div>
+
+        {/* Kooperationspartner */}
+        <div className="mt-6 text-center sm:text-left">
+          <p className="text-[11px] text-gray-600">
+            In Kooperation mit{" "}
+            <a
+              href="https://www.immobilienpartner-sachsen.de/"
+              target="_blank"
+              rel="noopener"
+              className="text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              Immobilienmakler Dresden
+            </a>
+            {" "}– Ihrem regionalen Partner für den Immobilienkauf und -verkauf in Dresden und Sachsen.
+          </p>
+        </div>
       </div>
     </footer>
   );
