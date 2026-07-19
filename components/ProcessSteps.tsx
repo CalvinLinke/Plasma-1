@@ -7,7 +7,7 @@ const steps = [
     icon: Upload,
     title: "Rechnung hochladen",
     description:
-      "Sie laden Ihre letzte Strom- oder Gasrechnung hoch — das dauert unter einer Minute. Keine weiteren Angaben nötig.",
+      "Sie laden Ihre letzte Strom- oder Gasrechnung hoch, das dauert unter einer Minute. Keine weiteren Angaben nötig.",
   },
   {
     number: "02",
@@ -44,7 +44,7 @@ export default function ProcessSteps() {
             Vier Schritte. Kein Aufwand.
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
-            Sie laden Ihre Strom- oder Gasrechnung hoch – wir erledigen den Rest. Vom Vergleich bis zur Anmeldung beim neuen Anbieter.
+            Sie laden Ihre Strom- oder Gasrechnung hoch, wir erledigen den Rest. Vom Vergleich bis zur Anmeldung beim neuen Anbieter.
           </p>
         </div>
 
@@ -96,7 +96,7 @@ export default function ProcessSteps() {
             href="/angebot-erhalten"
             className="btn-primary inline-flex items-center gap-2 text-base px-8 py-4"
           >
-            Jetzt starten — kostenlos & unverbindlich
+            Jetzt starten: kostenlos & unverbindlich
           </Link>
         </div>
       </div>

@@ -10,10 +10,10 @@ const services = [
     tag: "Privatkunden",
     title: "Weniger zahlen. Auf nichts verzichten.",
     description:
-      "Strom und Gas sind Grundbedarf — kein Luxus. Was viele nicht wissen: ein Anbieterwechsel dauert selten länger als zwei Wochen und kostet Sie nichts.",
+      "Strom und Gas sind Grundbedarf, kein Luxus. Was viele nicht wissen: ein Anbieterwechsel dauert selten länger als zwei Wochen und kostet Sie nichts.",
     features: [
       "Kosten dauerhaft senken",
-      "Nachhaltige Tarife verfügbar",
+      "Grüne Tarife verfügbar",
       "Kündigung & Neuanmeldung übernehmen wir",
       "Auch Öko-Strom & Grünes Gas",
       "Kostenlos & unverbindlich",
@@ -29,11 +29,11 @@ const services = [
     tag: "Gewerbekunden",
     title: "Energiekosten als Hebel, nicht als Last.",
     description:
-      "Für Unternehmen sind Strom- und Gaskosten fester Bestandteil der Kalkulation. Mit dem richtigen Partner werden sie planbar — und sinken.",
+      "Für Unternehmen sind Strom- und Gaskosten fester Bestandteil der Kalkulation. Mit dem richtigen Partner werden sie planbar. Und sinken.",
     features: [
       "Wirtschaftliche Optimierung",
       "Planbare Energiekosten",
-      "Professionelle Abwicklung",
+      "Vollständige Abwicklung",
       "Fester Ansprechpartner",
     ],
     cta: "Für Gewerbekunden",

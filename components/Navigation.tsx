@@ -12,6 +12,12 @@ const leistungenLinks = [
   { href: "/leistungen/hausverwaltungen", label: "Hausverwaltungen" },
 ];
 
+const wissenLinks = [
+  { href: "/ratgeber", label: "Ratgeber" },
+  { href: "/wechseln", label: "Wechselanlässe" },
+  { href: "/tarife", label: "Tarife & Verträge" },
+];
+
 const navLinks = [
   { href: "/", label: "Startseite" },
   { href: "/ueber-uns", label: "Über Uns" },
@@ -23,16 +29,24 @@ export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [leistungenOpen, setLeistungenOpen] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [wissenOpen, setWissenOpen] = useState(false);
+  const leistungenTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wissenTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
 
-  const openDropdown = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
+  const openLeistungen = () => {
+    if (leistungenTimer.current) clearTimeout(leistungenTimer.current);
     setLeistungenOpen(true);
   };
-
-  const scheduleClose = () => {
-    closeTimer.current = setTimeout(() => setLeistungenOpen(false), 200);
+  const closeLeistungen = () => {
+    leistungenTimer.current = setTimeout(() => setLeistungenOpen(false), 200);
+  };
+  const openWissen = () => {
+    if (wissenTimer.current) clearTimeout(wissenTimer.current);
+    setWissenOpen(true);
+  };
+  const closeWissen = () => {
+    wissenTimer.current = setTimeout(() => setWissenOpen(false), 200);
   };
 
   useEffect(() => {
@@ -43,6 +57,10 @@ export default function Navigation() {
 
   const isActive = (href: string) => pathname === href;
   const isLeistungenActive = pathname.startsWith("/leistungen");
+  const isWissenActive =
+    pathname.startsWith("/ratgeber") ||
+    pathname.startsWith("/wechseln") ||
+    pathname.startsWith("/tarife");
 
   return (
     <header
@@ -51,7 +69,6 @@ export default function Navigation() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        {/* Logo */}
         <Link
           href="/"
           className="flex items-center transition-transform duration-300 hover:scale-[1.03]"
@@ -69,11 +86,7 @@ export default function Navigation() {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-1">
           {/* Leistungen Dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={openDropdown}
-            onMouseLeave={scheduleClose}
-          >
+          <div className="relative" onMouseEnter={openLeistungen} onMouseLeave={closeLeistungen}>
             <button
               className={`flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 relative group ${
                 isLeistungenActive ? "text-violet-brand" : "text-marine hover:text-violet-brand"
@@ -83,21 +96,20 @@ export default function Navigation() {
               <ChevronDown
                 className={`w-4 h-4 transition-transform duration-200 ${leistungenOpen ? "rotate-180" : ""}`}
               />
-              {/* Active underline */}
               <span
                 className={`absolute bottom-0 left-4 right-4 h-0.5 bg-violet-brand rounded-full transition-transform duration-300 origin-left ${
                   isLeistungenActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                 }`}
               />
             </button>
-
-            {/* Dropdown */}
             <div
               className={`absolute top-full left-0 mt-1 w-52 glass rounded-2xl shadow-ambient-md border border-white/20 py-2 transition-all duration-200 ${
-                leistungenOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
+                leistungenOpen
+                  ? "opacity-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 -translate-y-1 pointer-events-none"
               }`}
-              onMouseEnter={openDropdown}
-              onMouseLeave={scheduleClose}
+              onMouseEnter={openLeistungen}
+              onMouseLeave={closeLeistungen}
             >
               {leistungenLinks.map((link) => (
                 <Link
@@ -105,6 +117,46 @@ export default function Navigation() {
                   href={link.href}
                   className={`block px-4 py-2.5 text-sm font-medium transition-colors duration-200 hover:text-violet-brand hover:bg-violet-brand/5 ${
                     isActive(link.href) ? "text-violet-brand" : "text-marine"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Wissen Dropdown */}
+          <div className="relative" onMouseEnter={openWissen} onMouseLeave={closeWissen}>
+            <button
+              className={`flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 relative group ${
+                isWissenActive ? "text-violet-brand" : "text-marine hover:text-violet-brand"
+              }`}
+            >
+              Wissen
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${wissenOpen ? "rotate-180" : ""}`}
+              />
+              <span
+                className={`absolute bottom-0 left-4 right-4 h-0.5 bg-violet-brand rounded-full transition-transform duration-300 origin-left ${
+                  isWissenActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                }`}
+              />
+            </button>
+            <div
+              className={`absolute top-full left-0 mt-1 w-56 glass rounded-2xl shadow-ambient-md border border-white/20 py-2 transition-all duration-200 ${
+                wissenOpen
+                  ? "opacity-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 -translate-y-1 pointer-events-none"
+              }`}
+              onMouseEnter={openWissen}
+              onMouseLeave={closeWissen}
+            >
+              {wissenLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`block px-4 py-2.5 text-sm font-medium transition-colors duration-200 hover:text-violet-brand hover:bg-violet-brand/5 ${
+                    pathname.startsWith(link.href) ? "text-violet-brand" : "text-marine"
                   }`}
                 >
                   {link.label}
@@ -163,6 +215,20 @@ export default function Navigation() {
             Leistungen
           </p>
           {leistungenLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="block px-3 py-2.5 rounded-xl text-sm font-medium text-marine hover:bg-violet-brand/10 hover:text-violet-brand transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <div className="h-px bg-gray-200 my-2" />
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">
+            Wissen
+          </p>
+          {wissenLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}

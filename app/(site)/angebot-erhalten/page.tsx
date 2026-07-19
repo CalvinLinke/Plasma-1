@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import AngebotForm from "@/components/AngebotForm";
+
+export const metadata: Metadata = {
+  title: "Kostenloses Energie-Angebot erhalten",
+  description:
+    "Rechnung hochladen und unverbindlich ein optimiertes Strom- oder Gasangebot erhalten, persönlich geprüft, kostenlos.",
+  alternates: { canonical: "/angebot-erhalten" },
+};
 
 export default function AngebotErhalten() {
   return (
@@ -10,7 +18,7 @@ export default function AngebotErhalten() {
             Schritt 1 von 1
           </p>
           <h1 className="text-4xl sm:text-5xl font-bold text-marine mb-4">
-            Sie laden Ihre Rechnung hoch –{" "}
+            Sie laden Ihre Rechnung hoch,{" "}
             <span className="text-gradient">wir erledigen den Rest.</span>
           </h1>
           <p className="text-gray-500 text-lg">

@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Strom & Gas für Privatkunden",
+  description:
+    "Günstigere Strom- und Gasverträge für Ihren Haushalt, persönlich vermittelt, inklusive Wechselservice. Kostenlos und unverbindlich.",
+  alternates: { canonical: "/leistungen/privatkunden" },
+};
 import { Check, Leaf, ArrowRight, TrendingDown, Shield, Upload, BarChart2, Shuffle, CheckCircle } from "lucide-react";
 
 const features = [
-  "Strom- und Gaskosten dauerhaft senken — nicht nur einmalig",
-  "Nachhaltige und klimafreundliche Tarife für Strom & Gas",
+  "Strom- und Gaskosten dauerhaft senken, nicht nur einmalig",
+  "Ökologische und klimafreundliche Tarife für Strom & Gas",
   "Auch Öko-Strom und Grünes Gas auf Wunsch",
   "Kündigung und Neuanmeldung übernehmen wir komplett",
   "Exklusive Anbieter, die auf Vergleichsportalen fehlen",
@@ -16,14 +24,14 @@ const process = [
     icon: Upload,
     step: "Sie",
     title: "Rechnung hochladen",
-    desc: "Ihre letzte Strom- oder Gasrechnung — fertig. Mehr brauchen wir nicht.",
+    desc: "Ihre letzte Strom- oder Gasrechnung. Fertig. Mehr brauchen wir nicht.",
     highlight: true,
   },
   {
     icon: BarChart2,
     step: "Wir",
     title: "Analysieren & vergleichen",
-    desc: "Wir prüfen Ihren Verbrauch und vergleichen exklusive Tarife — auch solche, die auf Portalen fehlen.",
+    desc: "Wir prüfen Ihren Verbrauch und vergleichen exklusive Tarife, auch solche, die auf Portalen fehlen.",
     highlight: false,
   },
   {
@@ -37,7 +45,7 @@ const process = [
     icon: Shuffle,
     step: "Wir",
     title: "Übernehmen alles",
-    desc: "Kündigung, Neuanmeldung, Kommunikation mit dem Anbieter — wir erledigen jeden Schritt.",
+    desc: "Kündigung, Neuanmeldung, Kommunikation mit dem Anbieter: wir erledigen jeden Schritt.",
     highlight: false,
   },
 ];
@@ -60,10 +68,10 @@ export default function Privatkunden() {
             </h1>
             <div className="space-y-4 text-gray-500 text-lg leading-relaxed mb-8">
               <p>
-                Strom und Gas gehören zu den wenigen Ausgaben, bei denen Sie mit einem einzigen Schritt dauerhaft sparen können — ohne auf irgendetwas zu verzichten. Kein Techniker, kein Umzug, kein Ausfall. Die Versorgung läuft nahtlos weiter, nur der Preis sinkt.
+                Strom und Gas gehören zu den wenigen Ausgaben, bei denen Sie mit einem einzigen Schritt dauerhaft sparen können, ohne auf irgendetwas zu verzichten. Kein Techniker, kein Umzug, kein Ausfall. Die Versorgung läuft ohne Unterbrechung weiter, nur der Preis sinkt.
               </p>
               <p>
-                Was die meisten nicht wissen: viele Haushalte zahlen seit Jahren mehr als nötig, weil Grundversorger-Tarife selten die günstigsten sind. Wir haben Zugang zu Anbietern, die auf öffentlichen Vergleichsportalen gar nicht auftauchen — und holen für Sie das Angebot, das wirklich zu Ihrem Verbrauch passt.
+                Was die meisten nicht wissen: viele Haushalte zahlen seit Jahren mehr als nötig, weil Grundversorger-Tarife selten die günstigsten sind. Wir haben Zugang zu Anbietern, die auf öffentlichen Vergleichsportalen gar nicht auftauchen, und holen für Sie das Angebot, das wirklich zu Ihrem Verbrauch passt.
               </p>
               <p className="text-base text-gray-400">
                 Ihr Aufwand: eine Rechnung hochladen. Den Rest erledigen wir.
@@ -94,7 +102,7 @@ export default function Privatkunden() {
         <div className="grid grid-cols-3 gap-4 mb-20">
           {[
             { icon: TrendingDown, value: "62 €", label: "Ø Ersparnis pro Jahr" },
-            { icon: Upload, value: "1×", label: "Hochladen — mehr tun Sie nicht" },
+            { icon: Upload, value: "1×", label: "Hochladen, mehr tun Sie nicht" },
             { icon: Shield, value: "0 €", label: "Kein Risiko, keine Kosten" },
           ].map(({ icon: Icon, value, label }) => (
             <div key={label} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-ambient text-center card-hover">
@@ -111,7 +119,7 @@ export default function Privatkunden() {
             <p className="text-xs font-semibold uppercase tracking-widest text-violet-brand mb-3">So einfach geht's</p>
             <h2 className="text-3xl font-bold text-marine mb-3">Vier Schritte. Zwei davon sind unsere.</h2>
             <p className="text-gray-400 text-sm max-w-lg mx-auto">
-              Sie laden Ihre Rechnung hoch und treffen am Ende die Entscheidung — alles dazwischen übernehmen wir.
+              Sie laden Ihre Rechnung hoch und treffen am Ende die Entscheidung, alles dazwischen übernehmen wir.
             </p>
           </div>
 
@@ -165,7 +173,7 @@ export default function Privatkunden() {
         {/* CTA Banner */}
         <div className="rounded-3xl p-10 text-center" style={{ background: "linear-gradient(135deg, #4B0082, #1A1B4B)" }}>
           <h2 className="text-2xl font-bold text-white mb-3">Bereit, weniger zu zahlen?</h2>
-          <p className="text-white/60 mb-6 text-sm">Laden Sie Ihre letzte Energierechnung hoch — in unter 2 Minuten.</p>
+          <p className="text-white/60 mb-6 text-sm">Laden Sie Ihre letzte Energierechnung hoch, in unter 2 Minuten.</p>
           <Link href="/angebot-erhalten" className="btn-primary inline-flex items-center gap-2 px-8 py-4">
             Jetzt kostenlos starten <ArrowRight className="w-4 h-4" />
           </Link>

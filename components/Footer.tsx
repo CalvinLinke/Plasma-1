@@ -8,9 +8,17 @@ const leistungenLinks = [
   { href: "/leistungen/hausverwaltungen", label: "Hausverwaltungen" },
 ];
 
+const wissenLinks = [
+  { href: "/ratgeber", label: "Ratgeber" },
+  { href: "/wechseln", label: "Wechselanlässe" },
+  { href: "/tarife", label: "Tarife & Verträge" },
+  { href: "/vorlagen", label: "Vorlagen & Checklisten" },
+];
+
 const companyLinks = [
   { href: "/ueber-uns", label: "Über Uns" },
   { href: "/partner-werden", label: "Partner werden" },
+  { href: "/fuer-finanzdienstleister", label: "Für Finanzdienstleister" },
   { href: "/angebot-erhalten", label: "Angebot erhalten" },
   { href: "/kontakt", label: "Kontakt" },
 ];
@@ -25,7 +33,7 @@ export default function Footer() {
   return (
     <footer style={{ backgroundColor: "#0A0B1E" }} className="text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Col 1: Logo + Slogan */}
           <div className="space-y-20">
             <Link href="/">
@@ -38,7 +46,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Energieverträge optimiert – persönlich statt anonym. Ihr unabhängiger Partner für Strom und Gas.
+              Energieverträge optimiert: persönlich statt anonym. Ihr unabhängiger Partner für Strom und Gas.
             </p>
           </div>
 
@@ -68,6 +76,25 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5">
               {leistungenLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col: Wissen */}
+          <div>
+            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              Wissen
+            </h4>
+            <ul className="space-y-2.5">
+              {wissenLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -132,7 +159,7 @@ export default function Footer() {
             >
               Immobilienmakler Dresden
             </a>
-            {" "}– Ihrem regionalen Partner für den Immobilienkauf und -verkauf in Dresden und Sachsen.
+            , Ihrem regionalen Partner für den Immobilienkauf und -verkauf in Dresden und Sachsen.
           </p>
         </div>
       </div>

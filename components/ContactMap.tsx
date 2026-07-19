@@ -27,7 +27,7 @@ export default function ContactMap() {
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title="Plasma Energie Solution – Standort Dresden"
+          title="Plasma Energie Solution, Standort Dresden"
         />
       ) : (
         <div

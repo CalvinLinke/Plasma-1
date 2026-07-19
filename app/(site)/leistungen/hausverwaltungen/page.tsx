@@ -1,12 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Energie für Hausverwaltungen",
+  description:
+    "Strom- und Gasverträge für Hausverwaltungen und Objekte, gebündelt, betreut und optimiert von Plasma Energie Solution.",
+  alternates: { canonical: "/leistungen/hausverwaltungen" },
+};
 import { Check, Building2, ArrowRight, Package, TrendingDown, Shield, GitMerge, FileCheck, CalendarCheck } from "lucide-react";
 
 const features = [
   "Bündelverträge für alle Einheiten bei einem Anbieter",
   "Senkung der Gemeinschaftskosten für Eigentümer und Mieter",
   "Bessere Struktur und Übersichtlichkeit für Ihre Verwaltung",
-  "Stichtagsablesung — sauber passend zu Ihrer WEG-Abrechnung",
-  "Skalierbare Lösungen — von 5 bis 7.500 Einheiten",
+  "Stichtagsablesung, sauber passend zu Ihrer WEG-Abrechnung",
+  "Skalierbare Lösungen von 5 bis 7.500 Einheiten",
   "Langfristig planbare Energiekosten für alle Objekte",
   "Ein Ansprechpartner für alle Liegenschaften",
   "Vollständige Abwicklung aller Wechsel und Kündigungen",
@@ -28,7 +36,7 @@ export default function Hausverwaltungen() {
             </h1>
             <div className="space-y-4 text-gray-500 text-lg leading-relaxed mb-8">
               <p>
-                Wer mehrere Einheiten verwaltet, kennt das Problem: jede Liegenschaft läuft bei einem anderen Anbieter, mit eigenen Laufzeiten, eigenen Konditionen — oft seit Jahren unverändert. Das kostet nicht nur Geld. Es kostet vor allem Zeit, die in der Verwaltung fehlt.
+                Wer mehrere Einheiten verwaltet, kennt das Problem: jede Liegenschaft läuft bei einem anderen Anbieter, mit eigenen Laufzeiten, eigenen Konditionen, oft seit Jahren unverändert. Das kostet nicht nur Geld. Es kostet vor allem Zeit, die in der Verwaltung fehlt.
               </p>
               <p>
                 Mit einem Bündelvertrag fassen wir alle Einheiten bei einem einzigen Anbieter zusammen. Das schafft Struktur: einheitliche Laufzeiten, eine zentrale Abrechnung, ein Ansprechpartner für alle Objekte. Und durch das gebündelte Volumen erzielen wir Konditionen, die ein einzelner Haushalt schlicht nicht verhandeln kann.
@@ -57,7 +65,7 @@ export default function Hausverwaltungen() {
 
         <div className="grid grid-cols-3 gap-4 mb-20">
           {[
-            { icon: Package, value: "Bündelvertrag", label: "Alle Einheiten — ein Anbieter" },
+            { icon: Package, value: "Bündelvertrag", label: "Alle Einheiten, ein Anbieter" },
             { icon: TrendingDown, value: "↓↓", label: "Gemeinschaftskosten senken" },
             { icon: Shield, value: "1", label: "Ansprechpartner für alles" },
           ].map(({ icon: Icon, value, label }) => (
@@ -141,7 +149,7 @@ export default function Hausverwaltungen() {
               </div>
               <p className="text-3xl font-bold text-marine mb-1">≈ 10 %</p>
               <p className="text-sm font-semibold text-marine mb-1.5">Günstigere Konditionen durch Volumen</p>
-              <p className="text-xs text-gray-400 leading-relaxed">Mehr Einheiten bedeuten mehr Verhandlungsmacht — und Preise, die kein Einzelhaushalt erzielt.</p>
+              <p className="text-xs text-gray-400 leading-relaxed">Mehr Einheiten bedeuten mehr Verhandlungsmacht: Preise, die kein Einzelhaushalt erzielt.</p>
             </div>
 
             {/* Karte 3 — Übersicht: verteilt vs. zentral */}
@@ -179,8 +187,8 @@ export default function Hausverwaltungen() {
                 </div>
               </div>
               <p className="text-3xl font-bold text-marine mb-1">Alles zentral</p>
-              <p className="text-sm font-semibold text-marine mb-1.5">Gleich viele Rechnungen — volle Übersicht</p>
-              <p className="text-xs text-gray-400 leading-relaxed">Die Anzahl der Rechnungen bleibt gleich — aber alle kommen von einem Anbieter. Kein Zuordnen, kein Suchen.</p>
+              <p className="text-sm font-semibold text-marine mb-1.5">Gleich viele Rechnungen, volle Übersicht</p>
+              <p className="text-xs text-gray-400 leading-relaxed">Die Anzahl der Rechnungen bleibt gleich, aber alle kommen von einem Anbieter. Kein Zuordnen, kein Suchen.</p>
             </div>
 
             {/* Karte 4 — Stichtagsablesung */}
@@ -216,7 +224,7 @@ export default function Hausverwaltungen() {
               </div>
               <p className="text-3xl font-bold text-marine mb-1">1 Stichtag</p>
               <p className="text-sm font-semibold text-marine mb-1.5">Perfekt für Ihre WEG-Abrechnung</p>
-              <p className="text-xs text-gray-400 leading-relaxed">Alle Einheiten werden zum selben Datum abgelesen — keine Zwischenablesungen, sauber passend zu Ihren Jahresterminen.</p>
+              <p className="text-xs text-gray-400 leading-relaxed">Alle Einheiten werden zum selben Datum abgelesen, keine Zwischenablesungen, sauber passend zu Ihren Jahresterminen.</p>
             </div>
 
           </div>
@@ -225,7 +233,7 @@ export default function Hausverwaltungen() {
         <div className="rounded-3xl p-10 text-center" style={{ background: "linear-gradient(135deg, #4B0082, #1A1B4B)" }}>
           <h2 className="text-2xl font-bold text-white mb-2">Mehr Struktur. Mehr Zeit.</h2>
           <p className="text-lg font-semibold mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>Weniger Kosten. Zufriedenere Eigentümer.</p>
-          <p className="text-white/50 mb-6 text-sm max-w-md mx-auto">Treten Sie mit uns in Kontakt — wir analysieren Ihre Situation und liefern das beste Konzept für Ihre Liegenschaften.</p>
+          <p className="text-white/50 mb-6 text-sm max-w-md mx-auto">Treten Sie mit uns in Kontakt, wir analysieren Ihre Situation und liefern das beste Konzept für Ihre Liegenschaften.</p>
           <Link href="/kontakt" className="btn-primary inline-flex items-center gap-2 px-8 py-4">
             Jetzt Kontakt aufnehmen <ArrowRight className="w-4 h-4" />
           </Link>

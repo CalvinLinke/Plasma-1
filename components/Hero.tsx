@@ -103,7 +103,7 @@ export default function Hero() {
             </h1>
 
             <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-lg">
-              Maximale Ersparnis bei Strom & Gas durch unabhängige Marktvergleiche — persönlich betreut, vollständig abgewickelt.
+              Maximale Ersparnis bei Strom & Gas durch unabhängige Marktvergleiche: persönlich betreut, vollständig abgewickelt.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -243,7 +243,7 @@ export default function Hero() {
                 </div>
                 <div>
                   <p className="text-sm font-bold text-marine leading-tight">Kündigung erledigt</p>
-                  <p className="text-xs text-gray-400">vom alten Vertrag — wir übernehmen das</p>
+                  <p className="text-xs text-gray-400">vom alten Vertrag, wir übernehmen das</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 glass rounded-2xl p-3.5 border border-white/40 shadow-ambient">

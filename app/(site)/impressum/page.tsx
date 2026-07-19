@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Impressum",
+  description:
+    "Impressum und Anbieterkennzeichnung von Plasma Energie Solution, Dresden.",
+  alternates: { canonical: "/impressum" },
+};
+
 export default function Impressum() {
   return (
     <div className="min-h-screen pt-24 pb-20 bg-white">

@@ -3,6 +3,7 @@ import TestimonialMarquee from "@/components/TestimonialMarquee";
 import BentoGrid from "@/components/BentoGrid";
 import ServiceSplit from "@/components/ServiceSplit";
 import ProcessSteps from "@/components/ProcessSteps";
+import WissenTeaser from "@/components/WissenTeaser";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <BentoGrid />
       <ServiceSplit />
       <ProcessSteps />
+      <WissenTeaser />
     </>
   );
 }

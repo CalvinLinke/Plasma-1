@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { CookieSettingsButton } from "@/components/CookieConsent";
+
+export const metadata: Metadata = {
+  title: "Datenschutzerklärung",
+  description:
+    "Informationen zum Datenschutz bei Plasma Energie Solution nach DSGVO: Verarbeitung, Rechte und Kontakt.",
+  alternates: { canonical: "/datenschutz" },
+};
 
 export default function Datenschutz() {
   return (
@@ -108,7 +116,7 @@ export default function Datenschutz() {
           <section>
             <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">6. E-Mail-Verarbeitung über Microsoft 365</h2>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
-              Anfragen aus dem Kontakt- und dem Angebotsformular werden uns per E-Mail zugestellt und in unserem Postfach (box@plasma-energie.de) gespeichert. Für Versand und Speicherung dieser E-Mails nutzen wir Microsoft 365 bzw. die Microsoft-Graph-Schnittstelle. Verarbeitet werden dabei die von Ihnen übermittelten Angaben sowie — bei einer Angebotsanfrage — ein Link zur hochgeladenen Rechnung.
+              Anfragen aus dem Kontakt- und dem Angebotsformular werden uns per E-Mail zugestellt und in unserem Postfach (box@plasma-energie.de) gespeichert. Für Versand und Speicherung dieser E-Mails nutzen wir Microsoft 365 bzw. die Microsoft-Graph-Schnittstelle. Verarbeitet werden dabei die von Ihnen übermittelten Angaben sowie, bei einer Angebotsanfrage, ein Link zur hochgeladenen Rechnung.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
               <strong>Auftragsverarbeiter:</strong> Microsoft Ireland Operations Limited, One Microsoft Place, South County Business Park, Leopardstown, Dublin 18, Irland (Vertragspartner im EWR), ggf. unter Einbindung der Microsoft Corporation, USA. Mit Microsoft besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO. Eine etwaige Übermittlung in die USA erfolgt auf Grundlage des EU-US Data Privacy Framework (Microsoft ist zertifiziert) sowie ergänzend der EU-Standardvertragsklauseln.
@@ -137,7 +145,7 @@ export default function Datenschutz() {
               Unsere Website verwendet ausschließlich technisch notwendige Cookies sowie funktionale Speichertechniken (z. B. einen Eintrag im lokalen Browser-Speicher, der sich Ihre Cookie-Auswahl merkt, sowie einen Sitzungs-Hinweis für unser Hilfe-Fenster). Wird unsere Seite über einen Partner-Link aufgerufen, speichern wir zusätzlich einen funktionalen Erstanbieter-Cookie („plasma_partner"), der ausschließlich der korrekten Zuordnung der Vermittlung dient. Diese Techniken speichern keine personenbezogenen Daten zu Werbe- oder Analysezwecken. Eine Einwilligung ist hierfür gemäß § 25 Abs. 2 TDDDG nicht erforderlich. Wir verwenden keine Tracking- oder Analyse-Cookies von Drittanbietern.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed mb-3">
-              Externe Inhalte, die Daten an Dritte übertragen können — insbesondere die Google-Maps-Karte auf der Kontaktseite — werden erst nach Ihrer ausdrücklichen Einwilligung geladen (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Beim ersten Besuch fragt Sie hierzu ein Cookie-Hinweis. Ihre Auswahl wird ausschließlich lokal in Ihrem Browser gespeichert.
+              Externe Inhalte, die Daten an Dritte übertragen können, insbesondere die Google-Maps-Karte auf der Kontaktseite, werden erst nach Ihrer ausdrücklichen Einwilligung geladen (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Beim ersten Besuch fragt Sie hierzu ein Cookie-Hinweis. Ihre Auswahl wird ausschließlich lokal in Ihrem Browser gespeichert.
             </p>
             <p className="text-gray-600 text-sm leading-relaxed">
               Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen oder ändern (Art. 7 Abs. 3 DSGVO):

@@ -30,7 +30,7 @@ export default function CookieConsent() {
       <p className="mb-1 text-sm font-semibold text-marine">Cookies &amp; externe Inhalte</p>
       <p className="mb-3 text-xs leading-relaxed text-gray-500">
         Wir verwenden nur technisch notwendige Cookies. Externe Inhalte wie Google Maps werden erst
-        nach Ihrer Zustimmung geladen — dabei werden Daten an Google übertragen. Details in der{" "}
+        nach Ihrer Zustimmung geladen. Dabei werden Daten an Google übertragen. Details in der{" "}
         <Link href="/datenschutz" className="text-violet-brand underline">
           Datenschutzerklärung
         </Link>

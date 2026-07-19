@@ -6,7 +6,7 @@ import Link from "next/link";
 const comparisons = [
   { feature: "Persönlicher Ansprechpartner", plasma: true, portal: false },
   { feature: "Exklusive Anbieter (nicht auf Portalen)", plasma: true, portal: false },
-  { feature: "Vollständige Abwicklung — Kündigung inklusive", plasma: true, portal: false },
+  { feature: "Vollständige Abwicklung, Kündigung inklusive", plasma: true, portal: false },
   { feature: "Kostenlos & unverbindlich", plasma: true, portal: true },
 ];
 
@@ -14,7 +14,7 @@ const zielgruppen = [
   {
     icon: Home,
     label: "Privatkunden",
-    text: "Strom & Gas für Ihren Haushalt — günstiger, ohne eigenen Aufwand.",
+    text: "Strom & Gas für Ihren Haushalt: günstiger, ohne eigenen Aufwand.",
     href: "/leistungen/privatkunden",
     iconBg: "rgba(22,163,74,0.10)",
     iconColor: "#16a34a",
@@ -23,7 +23,7 @@ const zielgruppen = [
   {
     icon: Building2,
     label: "Gewerbekunden",
-    text: "Planbare Energiekosten für Betriebe — mit echtem Ansprechpartner.",
+    text: "Planbare Energiekosten für Betriebe, mit echtem Ansprechpartner.",
     href: "/leistungen/gewerbekunden",
     iconBg: "rgba(123,97,255,0.12)",
     iconColor: "#7B61FF",
@@ -32,7 +32,7 @@ const zielgruppen = [
   {
     icon: KeyRound,
     label: "Hausverwaltungen",
-    text: "Mehrere Einheiten, eine Lösung — skalierbar und zuverlässig.",
+    text: "Mehrere Einheiten, eine Lösung: skalierbar und zuverlässig.",
     href: "/leistungen/hausverwaltungen",
     iconBg: "rgba(75,0,130,0.10)",
     iconColor: "#4B0082",
@@ -193,7 +193,7 @@ export default function BentoGrid() {
                   2 Minuten. Das war's.
                 </h3>
                 <p className="text-white/65 text-sm leading-relaxed mb-6 max-w-sm">
-                  Rechnung hochladen — wir übernehmen Analyse, Vergleich, Kündigung und Neuanmeldung. Sie müssen: nichts.
+                  Rechnung hochladen, wir übernehmen Analyse, Vergleich, Kündigung und Neuanmeldung. Sie müssen: nichts.
                 </p>
                 <Link href="/angebot-erhalten" className="btn-primary inline-flex items-center gap-2 px-7 py-3">
                   Jetzt kostenlos starten
@@ -228,7 +228,7 @@ export default function BentoGrid() {
                   })}
                 </div>
                 <p className="text-white/30 text-xs mt-4">
-                  Schritt 01 ist Ihres — den Rest erledigen wir.
+                  Schritt 01 ist Ihres, den Rest erledigen wir.
                 </p>
               </div>
             </div>

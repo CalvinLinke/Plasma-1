@@ -1,10 +1,18 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Gewerbestrom & Gewerbegas für Unternehmen",
+  description:
+    "Energiekosten für Ihr Unternehmen senken: unabhängige Vermittlung von Gewerbestrom und Gewerbegas mit persönlicher Betreuung.",
+  alternates: { canonical: "/leistungen/gewerbekunden" },
+};
 import { Check, Zap, ArrowRight, BarChart2, Clock, Users, TrendingDown } from "lucide-react";
 
 const features = [
   "Wirtschaftliche Optimierung von Strom- und Gaskosten",
   "Planbare, stabile Konditionen für Ihre Kalkulation",
-  "Professionelle Abwicklung — ohne Betriebsunterbrechung",
+  "Reibungslose Abwicklung, ohne Betriebsunterbrechung",
   "Fester Ansprechpartner für Ihr Unternehmen",
   "Exklusive B2B-Tarife abseits der Vergleichsportale",
   "Kündigung und Neuanmeldung: wir übernehmen alles",
@@ -40,10 +48,10 @@ export default function Gewerbekunden() {
             </h1>
             <div className="space-y-4 text-gray-500 text-lg leading-relaxed mb-8">
               <p>
-                Strom und Gas sind operative Fixkosten — sie laufen unabhängig davon, wie gut das Geschäft läuft. Was viele Unternehmen nicht wissen: die meisten Gewerbetarife werden still verlängert, oft zu Konditionen, die vor Jahren verhandelt wurden und heute längst nicht mehr marktgerecht sind.
+                Strom und Gas sind operative Fixkosten, sie laufen unabhängig davon, wie gut das Geschäft läuft. Was viele Unternehmen nicht wissen: die meisten Gewerbetarife werden still verlängert, oft zu Konditionen, die vor Jahren verhandelt wurden und heute längst nicht mehr marktgerecht sind.
               </p>
               <p>
-                Der entscheidende Unterschied zu Vergleichsportalen: wir haben Zugang zu Tarifen, die dort nicht auftauchen. B2B-Konditionen, die auf Ihren tatsächlichen Verbrauch, Ihre Abnahmemenge und Ihre Laufzeitpräferenzen zugeschnitten werden — kein Standardangebot aus dem Katalog.
+                Der entscheidende Unterschied zu Vergleichsportalen: wir haben Zugang zu Tarifen, die dort nicht auftauchen. B2B-Konditionen, die auf Ihren tatsächlichen Verbrauch, Ihre Abnahmemenge und Ihre Laufzeitpräferenzen zugeschnitten werden, kein Standardangebot aus dem Katalog.
               </p>
               <p className="text-base text-gray-400">
                 Jeder gesparte Euro bei den Energiekosten verbessert direkt Ihr Ergebnis. Ohne mehr Umsatz machen zu müssen.
@@ -141,7 +149,7 @@ export default function Gewerbekunden() {
                 <p className="text-xs font-semibold uppercase tracking-widest text-violet-brand mb-2">Rechenbeispiel</p>
                 <h3 className="text-lg font-bold text-marine mb-3">Was 3.600 € Einsparung bedeuten</h3>
                 <p className="text-sm text-gray-500 leading-relaxed mb-6">
-                  Bei einer typischen Gewinnmarge von 10% müsste Ihr Unternehmen 36.000 € Mehrumsatz erzielen, um denselben Ergebniseffekt zu erzielen — durch Energieoptimierung ist das in wenigen Wochen erledigt.
+                  Bei einer typischen Gewinnmarge von 10% müsste Ihr Unternehmen 36.000 € Mehrumsatz erzielen, um denselben Ergebniseffekt zu erzielen. Durch Energieoptimierung ist das in wenigen Wochen erledigt.
                 </p>
               </div>
 
@@ -170,7 +178,7 @@ export default function Gewerbekunden() {
         {/* CTA */}
         <div className="rounded-3xl p-10 text-center" style={{ background: "linear-gradient(135deg, #4B0082, #1A1B4B)" }}>
           <h2 className="text-2xl font-bold text-white mb-3">Bereit für planbare Energiekosten?</h2>
-          <p className="text-white/60 mb-6 text-sm">Schicken Sie uns Ihre letzte Rechnung — wir analysieren das Potenzial kostenlos.</p>
+          <p className="text-white/60 mb-6 text-sm">Schicken Sie uns Ihre letzte Rechnung, wir analysieren das Potenzial kostenlos.</p>
           <Link href="/angebot-erhalten" className="btn-primary inline-flex items-center gap-2 px-8 py-4">
             Jetzt B2B-Angebot anfordern <ArrowRight className="w-4 h-4" />
           </Link>

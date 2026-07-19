@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Leistungen: Strom & Gas für Privat & Gewerbe",
+  description:
+    "Unabhängige Vermittlung und Optimierung von Strom- und Gasverträgen für Privatkunden, Gewerbe und Hausverwaltungen, persönlich und kostenlos.",
+  alternates: { canonical: "/leistungen" },
+};
 import { Check, Leaf, Zap, Building2, ArrowRight } from "lucide-react";
 
 const services = [
@@ -9,7 +17,7 @@ const services = [
     bg: "rgba(22,163,74,0.08)",
     title: "Privatkunden",
     sub: "Kosten senken ohne Aufwand",
-    desc: "Strom und Gas günstiger — mit persönlicher Betreuung und vollständiger Abwicklung.",
+    desc: "Strom und Gas günstiger, mit persönlicher Betreuung und vollständiger Abwicklung.",
   },
   {
     href: "/leistungen/gewerbekunden",
@@ -18,7 +26,7 @@ const services = [
     bg: "rgba(123,97,255,0.08)",
     title: "Gewerbekunden",
     sub: "Planbare Energiekosten",
-    desc: "Wirtschaftliche Optimierung für Unternehmen aller Größen — effizient und zuverlässig.",
+    desc: "Wirtschaftliche Optimierung für Unternehmen aller Größen, effizient und zuverlässig.",
   },
   {
     href: "/leistungen/hausverwaltungen",
@@ -27,7 +35,7 @@ const services = [
     bg: "rgba(26,27,75,0.06)",
     title: "Hausverwaltungen",
     sub: "Skalierbar für mehrere Einheiten",
-    desc: "Gemeinschaftskosten senken, Liegenschaften optimieren — mit einem einzigen Ansprechpartner.",
+    desc: "Gemeinschaftskosten senken, Liegenschaften optimieren, mit einem einzigen Ansprechpartner.",
   },
 ];
 
@@ -39,7 +47,7 @@ export default function Leistungen() {
           <p className="text-xs font-semibold uppercase tracking-widest text-violet-brand mb-3">Leistungen</p>
           <h1 className="text-5xl font-bold text-marine mb-5">Für jeden die richtige Lösung.</h1>
           <p className="text-gray-500 text-lg max-w-xl mx-auto">
-            Ob Privathaushalt, Unternehmen oder Hausverwaltung — Plasma Energie Solution hat den passenden Ansatz.
+            Ob Privathaushalt, Unternehmen oder Hausverwaltung: Plasma Energie Solution hat den passenden Ansatz.
           </p>
         </div>
 

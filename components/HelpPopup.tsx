@@ -67,7 +67,7 @@ export default function HelpPopup() {
 
         <h3 className="text-lg font-bold text-marine mb-1.5">Haben Sie Fragen?</h3>
         <p className="text-sm text-gray-500 leading-relaxed mb-5">
-          Wir helfen Ihnen gern weiter — persönlich und unverbindlich. Schreiben Sie uns oder rufen Sie direkt an.
+          Wir helfen Ihnen gern weiter, persönlich und unverbindlich. Schreiben Sie uns oder rufen Sie direkt an.
         </p>
 
         <div className="space-y-2.5">

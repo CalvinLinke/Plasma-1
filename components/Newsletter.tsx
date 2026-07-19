@@ -35,7 +35,7 @@ export default function Newsletter() {
           Bleiben Sie informiert.
         </h2>
         <p className="text-white/60 mb-8 text-sm leading-relaxed">
-          Energiepreise ändern sich laufend. Wer die Entwicklungen kennt, kann rechtzeitig reagieren — und spart mehr.
+          Energiepreise ändern sich laufend. Wer die Entwicklungen kennt, kann rechtzeitig reagieren und spart mehr.
         </p>
 
         {submitted ? (

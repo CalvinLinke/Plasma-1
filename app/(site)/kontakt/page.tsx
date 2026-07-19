@@ -102,7 +102,7 @@ export default function Kontakt() {
           <p className="text-xs font-semibold uppercase tracking-widest text-violet-brand mb-3">Kontakt</p>
           <h1 className="text-5xl font-bold text-marine mb-5">Wir sind für Sie da.</h1>
           <p className="text-gray-500 text-lg max-w-xl mx-auto">
-            Frage, Feedback oder direkter Gesprächswunsch — schreiben Sie uns.
+            Frage, Feedback oder direkter Gesprächswunsch: schreiben Sie uns.
           </p>
         </div>
 
@@ -231,7 +231,7 @@ export default function Kontakt() {
           <div className="order-2 lg:order-1 space-y-4">
             {[
               { icon: Mail, title: "E-Mail", value: "box@plasma-energie.de", sub: "Wir antworten innerhalb von 48 Stunden" },
-              { icon: Phone, title: "Telefon", value: "+49 172 8182583", sub: "Mo–Fr, 9–17 Uhr" },
+              { icon: Phone, title: "Telefon", value: "+49 172 8182583", sub: "Mo bis Fr, 9 bis 17 Uhr" },
               { icon: MapPin, title: "Adresse", value: "Grüne Straße 13b", sub: "01067 Dresden" },
             ].map(({ icon: Icon, title, value, sub }) => (
               <div key={title} className="flex gap-4 p-5 rounded-2xl border border-gray-100 shadow-ambient bg-white card-hover">

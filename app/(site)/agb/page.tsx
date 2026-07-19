@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AGB",
+  description:
+    "Allgemeine Geschäftsbedingungen von Plasma Energie Solution für die Vermittlung von Strom- und Gasverträgen.",
+  alternates: { canonical: "/agb" },
+};
+
 export default function AGB() {
   return (
     <div className="min-h-screen pt-24 pb-20 bg-white">
@@ -128,7 +137,7 @@ export default function AGB() {
               Plasma übernimmt keine Haftung für:
             </p>
             <ul className="text-gray-600 text-sm leading-relaxed space-y-1 list-disc list-inside">
-              <li>Das Zustandekommen oder den Inhalt des Energieversorgungsvertrags zwischen dem Kunden und dem Energieanbieter — dieser Vertrag kommt ausschließlich zwischen diesen Parteien zustande</li>
+              <li>Das Zustandekommen oder den Inhalt des Energieversorgungsvertrags zwischen dem Kunden und dem Energieanbieter: dieser Vertrag kommt ausschließlich zwischen diesen Parteien zustande</li>
               <li>Verzögerungen beim Anbieterwechsel, die durch den alten oder neuen Energieanbieter oder durch Netzbetreiber verursacht werden</li>
               <li>Preisänderungen durch den Energieanbieter nach Vertragsabschluss</li>
               <li>Fehler, die auf unvollständigen oder unrichtigen Angaben des Kunden beruhen</li>
@@ -149,7 +158,7 @@ export default function AGB() {
           <section>
             <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">§ 10 Geheimhaltung und Vertraulichkeit</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Plasma behandelt alle vom Kunden übermittelten Unterlagen und Daten — insbesondere Energierechnungen, Verbrauchsdaten und persönliche Angaben — vertraulich. Eine Weitergabe an Dritte erfolgt ausschließlich zur Erfüllung des Vermittlungsauftrags und nur an den vom Kunden gewählten Energieanbieter, oder wenn eine gesetzliche Verpflichtung zur Offenlegung besteht. Detaillierte Informationen zur Datenverarbeitung finden Sie in unserer Datenschutzerklärung.
+              Plasma behandelt alle vom Kunden übermittelten Unterlagen und Daten, insbesondere Energierechnungen, Verbrauchsdaten und persönliche Angaben, vertraulich. Eine Weitergabe an Dritte erfolgt ausschließlich zur Erfüllung des Vermittlungsauftrags und nur an den vom Kunden gewählten Energieanbieter, oder wenn eine gesetzliche Verpflichtung zur Offenlegung besteht. Detaillierte Informationen zur Datenverarbeitung finden Sie in unserer Datenschutzerklärung.
             </p>
           </section>
 

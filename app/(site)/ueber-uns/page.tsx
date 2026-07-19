@@ -1,11 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Über uns",
+  description:
+    "Plasma Energie Solution aus Dresden: unabhängiger Energievermittler für Strom und Gas, persönlich statt anonym, deutschlandweit.",
+  alternates: { canonical: "/ueber-uns" },
+};
 import { Heart, Wallet, Leaf, Zap, ArrowRight } from "lucide-react";
 
 const values = [
-  { icon: Heart, title: "Persönlich", desc: "Jeder Kunde hat einen echten Ansprechpartner — keine Hotlines, keine Warteschlangen." },
+  { icon: Heart, title: "Persönlich", desc: "Jeder Kunde hat einen echten Ansprechpartner, keine Hotlines, keine Warteschlangen." },
   { icon: Wallet, title: "Kostenorientiert", desc: "Jeder gesparte Euro zählt. Wir denken immer zuerst: Was bringt Ihnen den größten finanziellen Vorteil?" },
-  { icon: Leaf, title: "Nachhaltig", desc: "Klimafreundliche Tarife sind keine Option zweiter Wahl. Wir machen sie zur ersten Empfehlung." },
-  { icon: Zap, title: "Effizient", desc: "Digital. Papierlos. Schnell. Wir schätzen Ihre Zeit — und setzen das täglich um." },
+  { icon: Leaf, title: "Ökologisch", desc: "Klimafreundliche Tarife sind keine Option zweiter Wahl. Wir machen sie zur ersten Empfehlung." },
+  { icon: Zap, title: "Effizient", desc: "Digital. Papierlos. Schnell. Wir schätzen Ihre Zeit und setzen das täglich um." },
 ];
 
 export default function UeberUns() {
@@ -29,7 +37,7 @@ export default function UeberUns() {
               Vergleichsportale zeigen Ihnen eine Auswahl. Was sie nicht zeigen: die Anbieter, mit denen wir exklusive Konditionen haben. Die, die nirgends auftauchen.
             </p>
             <p className="text-gray-500 leading-relaxed">
-              Unser Ansatz ist anders. Wir analysieren Ihre konkrete Situation, suchen gezielt — und erklären Ihnen, warum ein Angebot besser ist als das andere. Kein Kleingedrucktes. Keine versteckten Provisionen.
+              Unser Ansatz ist anders. Wir analysieren Ihre konkrete Situation, suchen gezielt und erklären Ihnen, warum ein Angebot besser ist als das andere. Kein Kleingedrucktes. Keine versteckten Provisionen.
             </p>
           </div>
           <div
@@ -38,7 +46,7 @@ export default function UeberUns() {
           >
             <h2 className="text-2xl font-bold mb-4">Unsere Arbeitsweise</h2>
             <ul className="space-y-3 text-white/70">
-              {["Vollständig digital — kein Papier, kein Fax", "Schnelle Reaktionszeiten, immer unter 48h", "Transparente Kommunikation auf Augenhöhe", "Unabhängig von einzelnen Anbietern"].map((item) => (
+              {["Vollständig digital, kein Papier, kein Fax", "Schnelle Reaktionszeiten, immer unter 48h", "Transparente Kommunikation auf Augenhöhe", "Unabhängig von einzelnen Anbietern"].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm">
                   <span className="text-cyan-brand mt-1">→</span>
                   {item}
@@ -65,13 +73,13 @@ export default function UeberUns() {
 
           <div className="max-w-2xl mx-auto space-y-5 text-gray-500 leading-relaxed mb-10">
             <p>
-              Seit einigen Jahren ist das spürbar: Energie, Lebensmittel, Miete — die Ausgaben, die einfach mitlaufen, werden mehr. Viele Haushalte und Betriebe zahlen heute deutlich mehr als noch vor drei Jahren, ohne dass sie aktiv etwas geändert haben. Stille Vertragsverlängerungen, veraltete Tarife, Grundversorgung auf Autopilot.
+              Seit einigen Jahren ist das spürbar: Energie, Lebensmittel, Miete: die Ausgaben, die einfach mitlaufen, werden mehr. Viele Haushalte und Betriebe zahlen heute deutlich mehr als noch vor drei Jahren, ohne dass sie aktiv etwas geändert haben. Stille Vertragsverlängerungen, veraltete Tarife, Grundversorgung auf Autopilot.
             </p>
             <p>
-              Wir haben das selbst gespürt — privat wie beruflich. Und das hat uns dazu gebracht, genauer hinzuschauen. Der erste Posten: Energie. Was wir gefunden haben, war erstaunlich. Tarife, die niemand mehr überprüft hatte. Konditionen aus einer anderen Zeit. Anbieter, von denen wir nie gehört hatten — und die trotzdem günstiger waren.
+              Wir haben das selbst gespürt, privat wie beruflich. Und das hat uns dazu gebracht, genauer hinzuschauen. Der erste Posten: Energie. Was wir gefunden haben, war erstaunlich. Tarife, die niemand mehr überprüft hatte. Konditionen aus einer anderen Zeit. Anbieter, von denen wir nie gehört hatten und die trotzdem günstiger waren.
             </p>
             <p className="text-gray-400">
-              Plasma ist aus dieser Erfahrung entstanden. Sparen heißt hier nicht Verzicht — es heißt, nicht mehr zu zahlen als nötig. Das ist für jeden möglich. Und selbst wer keine finanziellen Engpässe hat: Geld sinnlos ausgeben will niemand.
+              Plasma ist aus dieser Erfahrung entstanden. Sparen heißt hier nicht Verzicht: es heißt, nicht mehr zu zahlen als nötig. Das ist für jeden möglich. Und selbst wer keine finanziellen Engpässe hat: Geld sinnlos ausgeben will niemand.
             </p>
           </div>
 
@@ -98,7 +106,7 @@ export default function UeberUns() {
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "rgba(0,240,255,0.7)" }}>Kein Portal. Kein Bot.</p>
           <h2 className="text-2xl font-bold text-white mb-3">Ein Mensch, der sich kümmert.</h2>
           <p className="text-white/50 mb-6 text-sm max-w-md mx-auto">
-            Schicken Sie uns Ihre letzte Energierechnung — wir analysieren, vergleichen und erklären. Persönlich, kostenlos und ohne Druck.
+            Schicken Sie uns Ihre letzte Energierechnung, wir analysieren, vergleichen und erklären. Persönlich, kostenlos und ohne Druck.
           </p>
           <Link href="/angebot-erhalten" className="btn-primary inline-flex items-center gap-2 px-8 py-4">
             Jetzt unverbindlich starten <ArrowRight className="w-4 h-4" />

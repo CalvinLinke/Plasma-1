@@ -4,7 +4,7 @@ import Link from "next/link";
 import TonyMForm from "@/components/TonyMForm";
 
 export const metadata: Metadata = {
-  title: "Bessere Konditionen über Ihren Makler — Plasma Energie × tonyM",
+  title: "Bessere Konditionen über Ihren Makler, Plasma Energie × tonyM",
   description:
     "Exklusiver Zugang zum Strom- und Gastarif-Vergleich von Plasma Energie, vermittelt durch tonyM Versicherungsmakler. Rechnung hochladen, Angebot in 48 Stunden.",
   // Co-Branding-Landingpage gehört nicht in den Google-Index.
@@ -61,7 +61,7 @@ export default function VarianteC() {
       <section className="bg-surface">
         <div className={`${CONTENT} p-5 sm:p-10`}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-[1.15fr_1.15fr_1fr]">
-            {/* Kachel A — Headline */}
+            {/* Kachel A, Headline */}
             <div className="relative overflow-hidden rounded-[22px] border border-[#efeafd] p-6 sm:p-[34px] sm:col-span-2 lg:col-span-2 lg:col-start-1 lg:row-start-1"
               style={{ background: "linear-gradient(150deg,#ede9ff,#fff 70%)" }}
             >
@@ -80,11 +80,11 @@ export default function VarianteC() {
                   </span>
                 </div>
                 <h1 className="mb-[14px] text-[28px] font-extrabold leading-[1.08] tracking-[-0.03em] text-marine sm:text-[38px]">
-                  Bessere Konditionen —<br />
+                  Bessere Konditionen ,<br />
                   <span className="text-gradient">über Ihren Makler.</span>
                 </h1>
                 <p className="mb-[22px] max-w-[420px] text-[15.5px] leading-[1.55] text-[#4b5563]">
-                  Tony Meuer hat Ihnen Plasma empfohlen. Rechnung hoch, zwei Angaben — wir holen das
+                  Tony Meuer hat Ihnen Plasma empfohlen. Rechnung hoch, zwei Angaben, wir holen das
                   Beste aus Ihrem Stromtarif heraus und wickeln den Wechsel komplett ab.
                 </p>
                 <a
@@ -99,7 +99,7 @@ export default function VarianteC() {
               </div>
             </div>
 
-            {/* Kachel B — Tony (hoch) */}
+            {/* Kachel B, Tony (hoch) */}
             <div className="relative flex flex-col justify-between overflow-hidden rounded-[22px] bg-[#104070] p-[26px] sm:col-span-2 lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2">
               <div
                 className="pointer-events-none absolute -top-[30px] -right-[30px] h-[160px] w-[160px] rounded-full"
@@ -124,7 +124,7 @@ export default function VarianteC() {
               </div>
               <p className="relative m-0 text-[14.5px] font-medium leading-[1.5] text-white">
                 „Strom- und Gasvergleich: kurz und knackig, ohne Geschwafel. Die Abwicklung ist
-                schnell, einfach und ohne Aufwand. So mag ich das – und so empfehle ich es auch gern
+                schnell, einfach und ohne Aufwand. So mag ich das, und so empfehle ich es auch gern
                 weiter!"
               </p>
               <div className="relative">
@@ -135,7 +135,7 @@ export default function VarianteC() {
               </div>
             </div>
 
-            {/* Kachel C — Beispiel-Ersparnis */}
+            {/* Kachel C, Beispiel-Ersparnis */}
             <div className="rounded-[22px] border border-[#eef] bg-white p-6 lg:col-start-1 lg:row-start-2">
               <div className="mb-[14px] text-[11px] font-semibold tracking-[.05em] text-[#9ca3af]">
                 BEISPIEL-ANALYSE · STROMTARIF
@@ -172,7 +172,7 @@ export default function VarianteC() {
               </div>
             </div>
 
-            {/* Kachel D — Was tonyM Kunden bekommen */}
+            {/* Kachel D, Was tonyM Kunden bekommen */}
             <div className="rounded-[22px] border border-[#eef] bg-white p-6 lg:col-start-2 lg:row-start-2">
               <div className="mb-4 text-[15px] font-bold text-marine">Was tonyM Kunden bekommen</div>
               <div className="flex flex-col gap-[14px]">
@@ -219,7 +219,7 @@ export default function VarianteC() {
               AUFWAND IM VERGLEICH
             </div>
             <h2 className="m-0 text-[24px] font-extrabold tracking-[-0.02em] text-marine sm:text-[30px]">
-              Selbst kümmern — oder uns machen lassen.
+              Selbst kümmern, oder uns machen lassen.
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -256,10 +256,10 @@ export default function VarianteC() {
               </div>
               <div className="flex flex-col gap-3">
                 {[
-                  "Eine Datei hochladen — fertig",
+                  "Eine Datei hochladen, fertig",
                   "Kündigung & Wechsel komplett durch uns",
                   "Exklusive Anbieter abseits der Portale",
-                  "Jährlicher Tarif-Check — wir behalten Ihre Daten im Blick und erneuern bei Bedarf",
+                  "Jährlicher Tarif-Check, wir behalten Ihre Daten im Blick und erneuern bei Bedarf",
                 ].map((t) => (
                   <div key={t} className="flex items-start gap-[11px] text-[14px] font-medium leading-[1.4] text-[#374151]">
                     <span className="mt-px inline-flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-[6px] bg-[rgba(123,97,255,.13)]">

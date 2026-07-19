@@ -1,11 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Partner werden",
+  description:
+    "Als Partner von Plasma Energie Solution empfehlen und profitieren: faire Vergütung und persönliche Betreuung Ihrer Kontakte.",
+  alternates: { canonical: "/partner-werden" },
+};
 import { Handshake, TrendingUp, Users, Check, ArrowRight } from "lucide-react";
 
 const benefits = [
   "Mehrwert für Ihre eigenen Kunden durch einen echten Mehrwert",
   "Zufriedene Kontakte, die sich an Ihre Empfehlung erinnern",
   "Langfristige und verlässliche Zusammenarbeit",
-  "Kein Aufwand für Sie — wir erledigen alles",
+  "Kein Aufwand für Sie, wir erledigen alles",
   "Geeignet für Hausverwaltungen, Netzwerke und Empfehlungsgeber",
 ];
 
@@ -25,9 +33,9 @@ export default function PartnerWerden() {
 
         <div className="grid lg:grid-cols-3 gap-6 mb-16">
           {[
-            { icon: Handshake, title: "Empfehlungsgeber", desc: "Sie empfehlen uns weiter — wir kümmern uns um alles. Für Sie bedeutet das: null Aufwand, maximale Wirkung." },
+            { icon: Handshake, title: "Empfehlungsgeber", desc: "Sie empfehlen uns weiter, wir kümmern uns um alles. Für Sie bedeutet das: null Aufwand, maximale Wirkung." },
             { icon: Users, title: "Hausverwaltungen", desc: "Sie verwalten Liegenschaften, wir optimieren die Energiekosten. Ein Partner für alles." },
-            { icon: TrendingUp, title: "Netzwerke & Verbände", desc: "Sie haben Mitglieder mit Einsparpotenzial. Wir liefern die Lösung — unter Ihrem Namen, wenn Sie möchten." },
+            { icon: TrendingUp, title: "Netzwerke & Verbände", desc: "Sie haben Mitglieder mit Einsparpotenzial. Wir liefern die Lösung, unter Ihrem Namen, wenn Sie möchten." },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="rounded-3xl p-8 border border-gray-100 shadow-ambient card-hover bg-white">
               <div className="w-12 h-12 rounded-2xl bg-violet-brand/10 flex items-center justify-center mb-5">
@@ -59,7 +67,7 @@ export default function PartnerWerden() {
               <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "rgba(0,240,255,0.7)" }}>Ihr Vorteil</p>
               <h2 className="text-2xl font-bold mb-4 leading-snug">Empfehlen.<br />Entlasten.<br />Fertig.</h2>
               <p className="text-white/60 text-sm leading-relaxed mb-3">
-                Sie bringen uns in Kontakt — den Rest machen wir. Analyse, Angebot, Wechsel. Ihre Kontakte bekommen ein besseres Energieangebot, ohne sich um Papierkram oder Anbieterwechsel kümmern zu müssen.
+                Sie bringen uns in Kontakt, den Rest machen wir. Analyse, Angebot, Wechsel. Ihre Kontakte bekommen ein besseres Energieangebot, ohne sich um Papierkram oder Anbieterwechsel kümmern zu müssen.
               </p>
               <p className="text-white/40 text-xs leading-relaxed mb-6">
                 Kein Aufwand. Keine Haftung. Echter Mehrwert für Ihr Netzwerk.

@@ -4,13 +4,13 @@ import { useRef } from "react";
 
 const testimonials = [
   {
-    text: "Ich hab ehrlich gesagt nicht viel erwartet — aber nach zwei Tagen lag ein Angebot im Postfach, das günstiger war als alles was ich selbst gefunden hatte. Und den Wechsel haben die einfach komplett übernommen.",
+    text: "Ich hab ehrlich gesagt nicht viel erwartet, aber nach zwei Tagen lag ein Angebot im Postfach, das günstiger war als alles was ich selbst gefunden hatte. Und den Wechsel haben die einfach komplett übernommen.",
     name: "Michael K.",
     city: "München",
     savings: "78 €/Jahr gespart",
   },
   {
-    text: "Nach der letzten Abrechnung dachte ich, ich muss da selbst was tun. Hab die Rechnung hochgeladen, kurz telefoniert — und irgendwann kam die Bestätigung, dass alles erledigt ist. Ich hab buchstäblich nichts gemacht.",
+    text: "Nach der letzten Abrechnung dachte ich, ich muss da selbst was tun. Hab die Rechnung hochgeladen, kurz telefoniert, und irgendwann kam die Bestätigung, dass alles erledigt ist. Ich hab buchstäblich nichts gemacht.",
     name: "Sandra L.",
     city: "Hamburg",
     savings: "54 €/Jahr gespart",
@@ -22,13 +22,13 @@ const testimonials = [
     savings: "3 Liegenschaften",
   },
   {
-    text: "Ich hab vorher auf jedem Portal nachgeschaut — irgendwie war da nie wirklich jemand. Hier hat sich tatsächlich jemand die Zeit genommen und mir erklärt, was wie warum besser ist. Das war anders.",
+    text: "Ich hab vorher auf jedem Portal nachgeschaut, irgendwie war da nie wirklich jemand. Hier hat sich tatsächlich jemand die Zeit genommen und mir erklärt, was wie warum besser ist. Das war anders.",
     name: "Anna M.",
     city: "Frankfurt",
     savings: "62 €/Jahr gespart",
   },
   {
-    text: "Als Betrieb willst du einfach wissen, was dich Energie kostet — ohne dass sich das jeden Monat ändert. Jetzt haben wir einen festen Tarif, einen Ansprechpartner und keine bösen Überraschungen mehr.",
+    text: "Als Betrieb willst du einfach wissen, was dich Energie kostet, ohne dass sich das jeden Monat ändert. Jetzt haben wir einen festen Tarif, einen Ansprechpartner und keine bösen Überraschungen mehr.",
     name: "Robert S.",
     city: "Köln",
     savings: "Gewerbekunde",

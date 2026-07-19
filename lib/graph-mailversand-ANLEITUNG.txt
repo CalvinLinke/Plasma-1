@@ -1,0 +1,43 @@
+ÜBERGABE: Mailversand der Website auf Microsoft Graph umstellen
+================================================================
+
+Diese Datei gehört zu: graph-mailversand.bundle
+Repo: CalvinLinke/Plasma-1   |   Branch: graph-mailversand   |   Basis: main
+
+WAS IST DRIN (3 Commits, fertig & lokal getestet)
+-------------------------------------------------
+1. Mailversand über Microsoft Graph statt SMTP
+   - neuer Helper lib/graph-mail.ts (Graph sendMail, Client-Credentials/App-only)
+   - app/api/angebot/route.ts nutzt sendMailViaGraph statt nodemailer
+2. Kontaktformular ebenfalls auf Graph + nodemailer entfernt
+   - app/api/kontakt/route.ts auf Graph umgestellt
+   - nodemailer raus aus package.json + Lockfile
+   - .env.local.example dokumentiert die MS_*-Variablen
+3. Doku: docs/SMTP-Uebergabe-Robert.md ersetzt durch docs/Mailversand-Graph.md
+
+Hintergrund: box@plasma-energie.de ist ein freigegebenes Postfach (kein Login) und
+der Tenant erzwingt MFA -> SMTP unmöglich. Eine Entra-App sendet jetzt per Graph als
+box@. Vercel-Env-Variablen (MS_TENANT_ID/MS_CLIENT_ID/MS_CLIENT_SECRET/MS_SENDER_UPN)
+sind bereits gesetzt. Die App ist per Application Access Policy auf box@ eingegrenzt.
+Lokal getestet: /api/kontakt und /api/angebot -> HTTP 200, Mails kommen in box@ an.
+
+
+SO SPIELT JEMAND MIT SCHREIBRECHTEN DEN BRANCH EIN
+--------------------------------------------------
+Im lokalen Klon von CalvinLinke/Plasma-1 (auf aktuellem main):
+
+  # 1) Branch aus dem Bundle holen
+  git fetch /PFAD/ZU/graph-mailversand.bundle graph-mailversand:graph-mailversand
+
+  # 2) Branch zu GitHub pushen
+  git push origin graph-mailversand
+
+  # 3) Pull Request öffnen (CLI ...)
+  gh pr create --base main --head graph-mailversand \
+    --title "Mailversand über Microsoft Graph (App-only) statt SMTP" \
+    --body "Stellt beide Mail-Routen (Angebot + Kontakt) von SMTP/nodemailer auf Microsoft Graph um (Client-Credentials, App-only, sendet als box@). Hintergrund: box@ ist ein freigegebenes Postfach + Tenant mit MFA -> SMTP unmöglich. Vercel-Env-Variablen sind gesetzt, App ist per Application Access Policy auf box@ eingegrenzt, lokal getestet. Details: docs/Mailversand-Graph.md"
+
+  # ... oder den PR einfach über die GitHub-Weboberfläche erstellen.
+
+Nach dem Merge deployt Vercel automatisch. Danach Live-Test auf
+https://www.plasma-energie.de/tonym (Formular absenden -> Mail muss in box@ ankommen).
