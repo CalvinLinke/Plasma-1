@@ -112,7 +112,7 @@ export default function Navigation() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled || wissenOpen ? "glass shadow-ambient-md" : "bg-transparent"
+        wissenOpen ? "bg-white shadow-ambient-md" : scrolled ? "glass shadow-ambient-md" : "bg-transparent"
       }`}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -220,7 +220,7 @@ export default function Navigation() {
 
       {/* Wissen Mega-Menü (Desktop, volle Breite) */}
       <div
-        className={`hidden md:block absolute left-0 right-0 top-full glass border-t border-white/20 shadow-ambient-md transition-all duration-200 ${
+        className={`hidden md:block absolute left-0 right-0 top-full bg-white border-t border-gray-100 shadow-ambient-md transition-all duration-200 ${
           wissenOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
         }`}
         onMouseEnter={openWissen}
