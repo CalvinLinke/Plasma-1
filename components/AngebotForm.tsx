@@ -22,9 +22,23 @@ type AngebotFormProps = {
    * manipulierbar. Ohne Slug verhält sich das Formular wie das Standard-Formular.
    */
   partnerSlug?: string;
+  /** Kampagnen-Kennung (z. B. "cashback"). Landet im Lead-Mail-Betreff. */
+  aktion?: string;
+  /** Verteilgebiet aus dem Flyer-QR (?f=…), rein zur Zuordnung des Rücklaufs. */
+  gebiet?: string;
+  /** Überschreibt den Text des Absende-Buttons. */
+  submitLabel?: string;
+  /** Zusätzlicher Hinweis im Danke-Screen (z. B. zur 50-€-Auszahlung). */
+  successNote?: React.ReactNode;
 };
 
-export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
+export default function AngebotForm({
+  partnerSlug,
+  aktion,
+  gebiet,
+  submitLabel,
+  successNote,
+}: AngebotFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -103,6 +117,11 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
           Wir haben Ihre Anfrage erhalten und melden uns innerhalb von{" "}
           <strong className="text-marine">48 Stunden</strong> mit einem persönlichen Angebot.
         </p>
+        {successNote && (
+          <div className="mb-6 rounded-2xl border border-violet-brand/20 bg-violet-brand/[0.06] p-4 text-sm text-marine leading-relaxed">
+            {successNote}
+          </div>
+        )}
         <button onClick={() => setSubmitted(false)} className="btn-primary px-8 py-3">
           Weitere Anfrage stellen
         </button>
@@ -135,6 +154,9 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
       >
         {/* Partner-Kennung — server-seitig gesetzt, für die Provisionszuordnung */}
         {partnerSlug && <input type="hidden" name="partner" value={partnerSlug} />}
+        {/* Kampagnen-Kennung + Verteilgebiet — für Cashback-Zuordnung im Lead */}
+        {aktion && <input type="hidden" name="aktion" value={aktion} />}
+        {gebiet && <input type="hidden" name="gebiet" value={gebiet} />}
 
         {/* Upload Area */}
         <div>
@@ -270,7 +292,7 @@ export default function AngebotForm({ partnerSlug }: AngebotFormProps) {
             </>
           ) : (
             <>
-              Kostenlos Angebot anfordern
+              {submitLabel || "Kostenlos Angebot anfordern"}
               <CheckCircle className="w-5 h-5" />
             </>
           )}

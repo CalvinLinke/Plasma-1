@@ -25,6 +25,13 @@ export async function POST(request: NextRequest) {
     const telefon = (formData.get("telefon") as string) || "";
     const anmerkungen = (formData.get("anmerkungen") as string) || "";
 
+    // Kampagnen-Kennung (z. B. "cashback") und Verteilgebiet aus dem Flyer-QR.
+    // Beide fließen nur in die Lead-Mail ein, damit das Team die 50-€-Zusage
+    // und den Rücklauf je Gebiet zuordnen kann.
+    const aktion = (formData.get("aktion") as string) || "";
+    const gebiet = (formData.get("gebiet") as string) || "";
+    const istCashback = aktion.toLowerCase() === "cashback";
+
     // Die Datei liegt bereits im privaten Blob-Store (Direkt-Upload vom Browser).
     // Hier kommt nur noch der Pfad an — kein großer Request, kein 4,5-MB-Limit.
     const filePathname = (formData.get("filePathname") as string) || "";
@@ -49,12 +56,16 @@ export async function POST(request: NextRequest) {
 
     // Versand über Microsoft Graph (Client-Credentials) statt SMTP — die App
     // sendet als box@plasma-energie.de, ohne Benutzer-Login, daher MFA-unabhängig.
+    // Betreff-Kennungen sammeln: Partner und/oder Cashback-Aktion (+ Gebiet).
+    const betreffTags: string[] = [];
+    if (partner) betreffTags.push(`Partner ${partner.name}`);
+    if (istCashback) betreffTags.push(gebiet ? `Cashback · ${gebiet}` : "Cashback");
+    const betreffPrefix = betreffTags.length ? `[${betreffTags.join(" · ")}] ` : "";
+
     await sendMailViaGraph({
       to: "box@plasma-energie.de",
       replyTo: email,
-      subject: partner
-        ? `[Partner ${partner.name}] Angebot ${vorname} ${nachname}`
-        : `Angebot ${vorname} ${nachname}`,
+      subject: `${betreffPrefix}Angebot ${vorname} ${nachname}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; color: #1A1B4B;">
           <div style="background: linear-gradient(135deg, #4B0082, #1A1B4B); padding: 24px 32px; border-radius: 12px 12px 0 0;">
@@ -65,6 +76,11 @@ export async function POST(request: NextRequest) {
           <div style="background: #7B61FF; padding: 12px 32px; color: white; font-size: 14px;">
             <strong>Vermittelt durch: ${partner.name}</strong>
             <span style="color: rgba(255,255,255,0.7);"> — Provisionszuordnung</span>
+          </div>` : ""}
+          ${istCashback ? `
+          <div style="background: #00F0FF; padding: 12px 32px; color: #1A1B4B; font-size: 14px;">
+            <strong>50-€-Cashback-Aktion</strong>${gebiet ? ` · Gebiet: <strong>${gebiet}</strong>` : ""}
+            <span style="color: rgba(26,27,75,0.65);"> — Auszahlung erst nach erfolgtem Lieferbeginn</span>
           </div>` : ""}
           <div style="background: #F8FAFC; padding: 32px; border-radius: 0 0 12px 12px; border: 1px solid #E5E7EB; border-top: none;">
             <table style="width: 100%; border-collapse: collapse; font-size: 14px;">

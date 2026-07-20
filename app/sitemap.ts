@@ -12,6 +12,7 @@ const STATIC_ROUTES: Array<{ path: string; priority: number; changeFrequency: Ch
   { path: "/leistungen/gewerbekunden", priority: 0.8, changeFrequency: "monthly" },
   { path: "/leistungen/hausverwaltungen", priority: 0.8, changeFrequency: "monthly" },
   { path: "/angebot-erhalten", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/cashback", priority: 0.7, changeFrequency: "monthly" },
   { path: "/ueber-uns", priority: 0.6, changeFrequency: "monthly" },
   { path: "/partner-werden", priority: 0.6, changeFrequency: "monthly" },
   { path: "/kontakt", priority: 0.6, changeFrequency: "monthly" },
