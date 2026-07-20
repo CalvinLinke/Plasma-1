@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, FileSpreadsheet } from "lucide-react";
 import SchemaOrg from "@/components/SchemaOrg";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/vorlagen" },
 };
 
-type Item = { file: string; title: string; desc: string };
+type Item = { file: string; title: string; desc: string; xlsx?: string };
 type Group = { titel: string; items: Item[] };
 
 const groups: Group[] = [
@@ -37,15 +37,15 @@ const groups: Group[] = [
   {
     titel: "Gewerbe",
     items: [
-      { file: "gewerbe-energiekosten-check.html", title: "Gewerbe-Energiekosten-Check", desc: "Tabelle, die Ihr Einsparpotenzial sichtbar macht." },
+      { file: "gewerbe-energiekosten-check.html", title: "Gewerbe-Energiekosten-Check", desc: "Tabelle, die Ihr Einsparpotenzial sichtbar macht.", xlsx: "gewerbe-energiekosten-check.xlsx" },
     ],
   },
   {
     titel: "Wissen & Wohnen",
     items: [
       { file: "oekostrom-siegel-spickzettel.html", title: "Ökostrom-Siegel-Spickzettel", desc: "Echten Ökostrom an den richtigen Labels erkennen." },
-      { file: "wg-stromkosten-aufteilung.html", title: "WG-Stromkosten fair aufteilen", desc: "Vorlage für die faire Aufteilung in der WG." },
-      { file: "verbrauchs-tagebuch.html", title: "Verbrauchs-Tagebuch", desc: "Zählerstände monatlich festhalten und Nachzahlung früh erkennen." },
+      { file: "wg-stromkosten-aufteilung.html", title: "WG-Stromkosten fair aufteilen", desc: "Vorlage für die faire Aufteilung in der WG.", xlsx: "wg-stromkosten-aufteilung.xlsx" },
+      { file: "verbrauchs-tagebuch.html", title: "Verbrauchs-Tagebuch", desc: "Zählerstände monatlich festhalten und Nachzahlung früh erkennen.", xlsx: "verbrauchs-tagebuch.xlsx" },
     ],
   },
 ];
@@ -84,23 +84,33 @@ export default function Vorlagen() {
             <h2 className="text-2xl font-bold tracking-tight text-marine mb-6">{g.titel}</h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {g.items.map((it) => (
-                <a
-                  key={it.file}
-                  href={`/downloads/${it.file}`}
-                  download
-                  className="group flex flex-col rounded-3xl border border-gray-100 bg-white p-6 shadow-ambient card-hover"
-                >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-brand/10">
-                    <FileText className="h-5 w-5 text-violet-brand" />
-                  </span>
-                  <h3 className="mt-4 font-bold text-marine leading-snug group-hover:text-violet-brand transition-colors">
-                    {it.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-600 leading-relaxed flex-1">{it.desc}</p>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-brand">
-                    <Download className="h-4 w-4" /> Herunterladen
-                  </span>
-                </a>
+                <div key={it.file} className="flex flex-col">
+                  <a
+                    href={`/downloads/${it.file}`}
+                    download
+                    className="group flex flex-1 flex-col rounded-3xl border border-gray-100 bg-white p-6 shadow-ambient card-hover"
+                  >
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-brand/10">
+                      <FileText className="h-5 w-5 text-violet-brand" />
+                    </span>
+                    <h3 className="mt-4 font-bold text-marine leading-snug group-hover:text-violet-brand transition-colors">
+                      {it.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-600 leading-relaxed flex-1">{it.desc}</p>
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-brand">
+                      <Download className="h-4 w-4" /> Herunterladen
+                    </span>
+                  </a>
+                  {it.xlsx && (
+                    <a
+                      href={`/downloads/${it.xlsx}`}
+                      download
+                      className="mt-2 inline-flex items-center gap-1.5 self-start rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:border-violet-brand/40 hover:text-violet-brand"
+                    >
+                      <FileSpreadsheet className="h-3.5 w-3.5" /> Auch als Excel (.xlsx)
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
           </section>

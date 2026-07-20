@@ -142,7 +142,7 @@ export default function ContentPage({
               </span>
               <span>
                 <span className="block font-semibold text-marine">{meta.lead_magnet || "Gratis-Download"}</span>
-                <span className="block text-sm text-gray-500">Kostenlos herunterladen (PDF)</span>
+                <span className="block text-sm text-gray-500">Kostenlos herunterladen (Vorlage)</span>
               </span>
             </a>
           )}

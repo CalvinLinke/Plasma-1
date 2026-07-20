@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead-Magneten Übersicht, Plasma Energie Solution</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --marine:#1A1B4B; --violet:#7B61FF; --indigo:#4B0082; --cyan:#00F0FF; --muted:#8A90A8; --line:#ECEBF5; }
+  *{ box-sizing:border-box; }
+  body{ font-family:Inter,-apple-system,Segoe UI,sans-serif; margin:0; background:#F2F1F9; color:#3A3F55; }
+  header{ padding:40px 40px 30px; background:linear-gradient(180deg,#F5F2FF,#F2F1F9); }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .logo{ width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--violet),var(--cyan));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px; }
+  .brand span{ font-weight:700; color:var(--marine); font-size:16px; }
+  h1{ color:var(--marine); font-size:26px; margin:20px 0 6px; letter-spacing:-.02em; }
+  header p{ color:var(--muted); margin:0; font-size:14px; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:22px; padding:26px 40px 60px; max-width:1320px; margin:0 auto; }
+  .card{ background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(26,27,75,.06); display:flex; flex-direction:column; }
+  .frame{ position:relative; height:250px; overflow:hidden; border-bottom:1px solid var(--line); background:#fff; }
+  .frame iframe{ position:absolute; top:0; left:0; width:200%; height:500%; border:0; transform:scale(.5); transform-origin:top left; pointer-events:none; }
+  .meta{ padding:14px 16px 16px; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .meta h2{ font-size:14.5px; color:var(--marine); margin:0 0 4px; letter-spacing:-.01em; }
+  .meta .tag{ font-size:11px; color:var(--violet); font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+  .meta a{ flex:0 0 auto; text-decoration:none; background:linear-gradient(135deg,var(--indigo),var(--violet)); color:#fff; font-weight:700; font-size:12px; padding:8px 13px; border-radius:9px; }
+  .n{ color:var(--muted); font-weight:700; font-size:12px; margin-right:6px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><img src="logo-plasma.png" alt="Plasma Energie Solution" style="height:36px;width:auto;display:block"></div>
+  <h1>Lead-Magneten, helle CI</h1>
+  <p>14 druckoptimierte Vorlagen zur Durchsicht. Klicken Sie „Öffnen" für die volle Ansicht.</p>
+</header>
+<div class="grid" id="grid"></div>
+<script>
+  const items = [
+    ['01','Checkliste','Umzugs-Checkliste: Strom & Gas','umzugs-checkliste-energie.html'],
+    ['02','Formular','Übergabeprotokoll Zählerstände','uebergabeprotokoll-zaehlerstaende.html'],
+    ['03','Musterbrief','Kündigung Strom & Gas','kuendigung-strom-gas-vorlage.html'],
+    ['04','Musterbrief','Widerspruch Preiserhöhung','widerspruch-preiserhoehung.html'],
+    ['05','Musterbrief','Sonderkündigung Strom & Gas','sonderkuendigung-strom-gas.html'],
+    ['06','Vollmacht','Vollmacht Anbieterummeldung','vollmacht-anbieterwechsel.html'],
+    ['07','Checkliste','Stromrechnung in 5 Minuten prüfen','stromrechnung-pruefen-checkliste.html'],
+    ['08','Prüfhilfe','Widerspruch Jahresabrechnung','widerspruch-jahresabrechnung.html'],
+    ['09','Musterbrief','Abschlag anpassen','abschlag-anpassen-vorlage.html'],
+    ['10','Tabelle','Gewerbe-Energiekosten-Check','gewerbe-energiekosten-check.html'],
+    ['11','Tabelle','WG-Stromkosten aufteilen','wg-stromkosten-aufteilung.html'],
+    ['12','Spickzettel','Echten Ökostrom erkennen','oekostrom-siegel-spickzettel.html'],
+    ['13','Guide','Erste eigene Wohnung','erste-wohnung-energie-starterpaket.html'],
+    ['14','Tabelle','Verbrauchs-Tagebuch','verbrauchs-tagebuch.html'],
+  ];
+  document.getElementById('grid').innerHTML = items.map(([n,tag,title,file])=>`
+    <div class="card">
+      <div class="frame"><iframe src="${file}" loading="lazy" scrolling="no"></iframe></div>
+      <div class="meta">
+        <div><div class="tag">${tag}</div><h2><span class="n">${n}</span>${title}</h2></div>
+        <a href="${file}">Öffnen</a>
+      </div>
+    </div>`).join('');
+</script>
+</body>
+</html>
