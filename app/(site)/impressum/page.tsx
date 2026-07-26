@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Impressum",
   description:
-    "Impressum und Anbieterkennzeichnung von Plasma Energie Solution, Dresden.",
+    "Impressum und Anbieterkennzeichnung der Plasma Energie Solutions UG (haftungsbeschränkt), Dresden.",
   alternates: { canonical: "/impressum" },
 };
 
@@ -23,8 +23,8 @@ export default function Impressum() {
           <section className="mb-10">
             <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">Anbieter</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Plasma Energie Solution<br />
-              Grüne Straße 13b<br />
+              Plasma Energie Solutions UG (haftungsbeschränkt)<br />
+              Grüne Straße 13 b<br />
               01067 Dresden<br />
               Deutschland
             </p>
@@ -46,6 +46,15 @@ export default function Impressum() {
           </section>
 
           <section className="mb-10">
+            <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">Registereintrag</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Eintragung im Handelsregister<br />
+              Registergericht: Amtsgericht Dresden<br />
+              Registernummer: HRB 45616
+            </p>
+          </section>
+
+          <section className="mb-10">
             <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">Steuerliche Angaben</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
               Steuernummer: 203/116/00304<br />
@@ -56,7 +65,7 @@ export default function Impressum() {
           <section className="mb-10">
             <h2 className="text-lg font-bold text-marine mb-4 pb-2 border-b border-gray-100">Berufsbezeichnung und Tätigkeit</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Plasma Energie Solution ist ein unabhängiger Energievermittler für Strom- und Gasverträge. Die Vermittlungstätigkeit erfolgt auf Grundlage der gewerberechtlichen Zulassung nach § 34c GewO bzw. den einschlägigen gewerberechtlichen Vorschriften.<br /><br />
+              Die Plasma Energie Solutions UG (haftungsbeschränkt) ist ein unabhängiger Energievermittler für Strom- und Gasverträge. Die Vermittlungstätigkeit erfolgt auf Grundlage der gewerberechtlichen Zulassung nach § 34c GewO bzw. den einschlägigen gewerberechtlichen Vorschriften.<br /><br />
               Zuständige Aufsichtsbehörde: Gewerbeamt der Landeshauptstadt Dresden
             </p>
           </section>
