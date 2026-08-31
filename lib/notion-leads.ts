@@ -103,7 +103,7 @@ async function uploadFileToNotion(
   filename: string,
   contentType: string,
   bytes: Buffer,
-): Promise<{ type: "file_upload"; file_upload: { id: string } } | null> {
+): Promise<{ type: "file_upload"; name: string; file_upload: { id: string } } | null> {
   const createRes = await notionFetch("/file_uploads", {
     method: "POST",
     body: JSON.stringify({
@@ -141,6 +141,7 @@ async function uploadFileToNotion(
 
   return {
     type: "file_upload",
+    name: filename,
     file_upload: { id: upload.id },
   };
 }
@@ -166,7 +167,7 @@ export type LeadInput = {
 export async function createLead(databaseId: string, lead: LeadInput): Promise<string> {
   const files: Array<
     | { type: "external"; name: string; external: { url: string } }
-    | { type: "file_upload"; file_upload: { id: string } }
+    | { type: "file_upload"; name: string; file_upload: { id: string } }
   > = [];
 
   if (lead.invoice) {
@@ -176,7 +177,7 @@ export async function createLead(databaseId: string, lead: LeadInput): Promise<s
       lead.invoice.bytes,
     );
     if (uploaded) {
-      files.push({ ...uploaded, name: lead.invoice.filename });
+      files.push(uploaded);
     }
   }
 
