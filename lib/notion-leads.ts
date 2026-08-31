@@ -1,4 +1,5 @@
 import type { InvoiceAnalysis } from "@/lib/invoice-parse";
+import type { TariffCheckResult } from "@/lib/neue-energie";
 
 const NOTION_VERSION = "2022-06-28";
 
@@ -54,6 +55,19 @@ const SCHEMA_PATCH_PROPERTIES: Record<string, unknown> = {
   IBAN: { rich_text: {} },
   Kontoinhaber: { rich_text: {} },
   Lieferbeginn: { date: {} },
+  "Tarif-ID": { rich_text: {} },
+  "Tarif-Status": {
+    select: {
+      options: [
+        { name: "OK", color: "green" },
+        { name: "Fehlgeschlagen", color: "red" },
+        { name: "Übersprungen", color: "gray" },
+      ],
+    },
+  },
+  "Angebots-Grundpreis €/Jahr": { number: { format: "number_with_commas" } },
+  "Angebots-Arbeitspreis ct/kWh": { number: { format: "number" } },
+  "Tarif-Notizen": { rich_text: {} },
 };
 
 function notionKey(): string {
@@ -107,6 +121,7 @@ function basePropertyDefs(): Record<string, unknown> {
         options: [
           { name: "Neu", color: "green" },
           { name: "Analysiert", color: "blue" },
+          { name: "Tarif geprüft", color: "purple" },
           { name: "Verarbeitet", color: "gray" },
         ],
       },
@@ -121,7 +136,12 @@ function basePropertyDefs(): Record<string, unknown> {
 async function ensureDatabaseSchema(databaseId: string): Promise<void> {
   const res = await notionFetch(`/databases/${databaseId}`, {
     method: "PATCH",
-    body: JSON.stringify({ properties: SCHEMA_PATCH_PROPERTIES }),
+    body: JSON.stringify({
+      properties: {
+        Status: basePropertyDefs().Status,
+        ...SCHEMA_PATCH_PROPERTIES,
+      },
+    }),
   });
 
   if (!res.ok) {
@@ -248,6 +268,7 @@ export type LeadInput = {
   downloadUrl: string | null;
   receivedDateTime: string;
   analysis?: InvoiceAnalysis;
+  tariffCheck?: TariffCheckResult;
   invoice?: {
     filename: string;
     contentType: string;
@@ -305,6 +326,28 @@ async function buildLeadFiles(lead: LeadInput): Promise<
   return files;
 }
 
+function tariffStatusLabel(status: TariffCheckResult["status"]): string {
+  switch (status) {
+    case "ok":
+      return "OK";
+    case "skipped":
+      return "Übersprungen";
+    default:
+      return "Fehlgeschlagen";
+  }
+}
+
+function resolveLeadStatus(
+  analysis: InvoiceAnalysis | undefined,
+  tariffCheck: TariffCheckResult | undefined,
+): string {
+  if (tariffCheck?.status === "ok") return "Tarif geprüft";
+  if (analysis && analysis.status !== "failed" && analysis.status !== "image_no_ocr") {
+    return "Analysiert";
+  }
+  return "Neu";
+}
+
 function buildLeadProperties(
   lead: LeadInput,
   files: Array<
@@ -313,10 +356,8 @@ function buildLeadProperties(
   >,
 ): Record<string, unknown> {
   const analysis = lead.analysis;
-  const leadStatus =
-    analysis && analysis.status !== "failed" && analysis.status !== "image_no_ocr"
-      ? "Analysiert"
-      : "Neu";
+  const tariffCheck = lead.tariffCheck;
+  const leadStatus = resolveLeadStatus(analysis, tariffCheck);
 
   const properties: Record<string, unknown> = {
     Name: {
@@ -384,6 +425,19 @@ function buildLeadProperties(
       .filter(Boolean)
       .join("\n");
     if (notizen) properties["Analyse-Notizen"] = { rich_text: richText(notizen) };
+  }
+
+  if (tariffCheck) {
+    properties["Tarif-Status"] = { select: { name: tariffStatusLabel(tariffCheck.status) } };
+    properties["Tarif-ID"] = { rich_text: richText(tariffCheck.tariffId) };
+    if (tariffCheck.basePriceEurYear != null) {
+      properties["Angebots-Grundpreis €/Jahr"] = { number: tariffCheck.basePriceEurYear };
+    }
+    if (tariffCheck.workingPriceCtKwh != null) {
+      properties["Angebots-Arbeitspreis ct/kWh"] = { number: tariffCheck.workingPriceCtKwh };
+    }
+    const tariffNotizen = [tariffCheck.errorMessage, tariffCheck.skipReason].filter(Boolean).join("\n");
+    if (tariffNotizen) properties["Tarif-Notizen"] = { rich_text: richText(tariffNotizen) };
   }
 
   return properties;

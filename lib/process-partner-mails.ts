@@ -1,5 +1,6 @@
 import { analyzeInvoice } from "@/lib/analyze-invoice";
 import { listRecentMessages } from "@/lib/graph-inbox";
+import { checkTariffForLead } from "@/lib/neue-energie";
 import {
   createLead,
   ensureLeadsDatabase,
@@ -114,17 +115,6 @@ export async function processPartnerMails(
 
       const analysis = invoice ? await analyzeInvoice(invoice) : undefined;
 
-      if (dryRun) {
-        result.items.push({
-          subject: message.subject,
-          status: "dry-run",
-          message: `${parsed.name} · ${parsed.email}${invoice ? ` · Analyse: ${analysis?.status ?? "—"}` : ""}${existingLead ? " · Update" : ""}`,
-        });
-        continue;
-      }
-
-      if (!databaseId) throw new Error("Notion-Datenbank-ID fehlt");
-
       const leadInput: LeadInput = {
         graphMessageId: message.id,
         subject: message.subject,
@@ -144,6 +134,27 @@ export async function processPartnerMails(
         analysis,
       };
 
+      const tariffCheck = await checkTariffForLead(leadInput);
+      leadInput.tariffCheck = tariffCheck;
+
+      const tariffSummary =
+        tariffCheck.status === "ok"
+          ? `Tarif ${tariffCheck.tariffId}: ${tariffCheck.workingPriceCtKwh} ct/kWh`
+          : tariffCheck.status === "skipped"
+            ? `Tarif: ${tariffCheck.skipReason ?? "übersprungen"}`
+            : `Tarif: ${tariffCheck.errorMessage ?? "fehlgeschlagen"}`;
+
+      if (dryRun) {
+        result.items.push({
+          subject: message.subject,
+          status: "dry-run",
+          message: `${parsed.name} · ${parsed.email}${analysis ? ` · Analyse: ${analysis.status}` : ""} · ${tariffSummary}${existingLead ? " · Update" : ""}`,
+        });
+        continue;
+      }
+
+      if (!databaseId) throw new Error("Notion-Datenbank-ID fehlt");
+
       if (existingLead) {
         const notionUrl = await updateLead(existingLead.pageId, leadInput);
         result.updated += 1;
@@ -151,7 +162,9 @@ export async function processPartnerMails(
           subject: message.subject,
           status: "updated",
           notionUrl,
-          message: analysis ? `Analyse: ${analysis.status}` : undefined,
+          message: [analysis ? `Analyse: ${analysis.status}` : undefined, tariffSummary]
+            .filter(Boolean)
+            .join(" · "),
         });
         continue;
       }
@@ -163,7 +176,9 @@ export async function processPartnerMails(
         subject: message.subject,
         status: "created",
         notionUrl,
-        message: analysis ? `Analyse: ${analysis.status}` : undefined,
+        message: [analysis ? `Analyse: ${analysis.status}` : undefined, tariffSummary]
+          .filter(Boolean)
+          .join(" · "),
       });
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Unbekannter Fehler";

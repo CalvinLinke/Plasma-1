@@ -32,7 +32,8 @@ Partner-Leads landen in der Notion-Datenbank **Partner-Anfragen** (siehe `lib/no
 Quelle der Feldliste: [esveo/gfu-website](https://github.com/esveo/gfu-website) · `src/app/SignupForm.tsx`.
 Dort nachlesen, welche Notion-Spalten fehlen oder aus Rechnung vs. Formular kommen sollen.
 
-Weitere technische Docs: [`docs/Mailversand-Graph.md`](docs/Mailversand-Graph.md) (E-Mail-Versand/Empfang).
+Weitere technische Docs: [`docs/Mailversand-Graph.md`](docs/Mailversand-Graph.md) (E-Mail-Versand/Empfang),
+[`docs/Partner-Tarifpruefung.md`](docs/Partner-Tarifpruefung.md) (automatische NE-Tarifprüfung).
 
 ---
 
