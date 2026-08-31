@@ -11,6 +11,8 @@
 //                       Die App braucht Mail.Send auf genau dieses Postfach
 //                       (am besten per Application Access Policy eingegrenzt).
 
+import { getMailboxUpn, graphFetch } from "@/lib/graph-auth";
+
 export type GraphMail = {
   to: string;
   replyTo?: string;
@@ -18,40 +20,7 @@ export type GraphMail = {
   html: string;
 };
 
-const TENANT = () => process.env.MS_TENANT_ID || "";
-const CLIENT_ID = () => process.env.MS_CLIENT_ID || "";
-const CLIENT_SECRET = () => process.env.MS_CLIENT_SECRET || "";
-const SENDER = () => process.env.MS_SENDER_UPN || "box@plasma-energie.de";
-
-async function getAccessToken(): Promise<string> {
-  const body = new URLSearchParams({
-    client_id: CLIENT_ID(),
-    client_secret: CLIENT_SECRET(),
-    scope: "https://graph.microsoft.com/.default",
-    grant_type: "client_credentials",
-  });
-
-  const res = await fetch(
-    `https://login.microsoftonline.com/${TENANT()}/oauth2/v2.0/token`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body,
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error(`Graph-Token fehlgeschlagen (${res.status}): ${await res.text()}`);
-  }
-
-  const data = (await res.json()) as { access_token?: string };
-  if (!data.access_token) throw new Error("Graph-Token: kein access_token erhalten");
-  return data.access_token;
-}
-
 export async function sendMailViaGraph(mail: GraphMail): Promise<void> {
-  const token = await getAccessToken();
-
   const message: Record<string, unknown> = {
     subject: mail.subject,
     body: { contentType: "HTML", content: mail.html },
@@ -61,18 +30,12 @@ export async function sendMailViaGraph(mail: GraphMail): Promise<void> {
     message.replyTo = [{ emailAddress: { address: mail.replyTo } }];
   }
 
-  const res = await fetch(
-    `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(SENDER())}/sendMail`,
+  const res = await graphFetch(
+    `/users/${encodeURIComponent(getMailboxUpn())}/sendMail`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      // saveToSentItems: false — Absender und Empfänger sind dasselbe Postfach,
-      // die Mail liegt also ohnehin im Posteingang; kein doppelter Eintrag nötig.
       body: JSON.stringify({ message, saveToSentItems: false }),
-    }
+    },
   );
 
   if (!res.ok) {

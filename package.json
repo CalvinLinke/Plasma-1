@@ -6,7 +6,14 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "process-mails": "curl -s 'http://localhost:3000/api/process-partner-mails?dryRun=1' | python3 -m json.tool",
+    "process-mails:run": "curl -s 'http://localhost:3000/api/process-partner-mails' | python3 -m json.tool",
+    "rechnungen:extract": "bash scripts/rechnungen-extract.sh",
+    "vercel:plasma:setup": "bash scripts/vercel-plasma-setup.sh",
+    "vercel:plasma:sync": "bash scripts/sync-vercel-env.sh",
+    "vercel:plasma:sync-notion": "bash scripts/sync-vercel-notion.sh",
+    "vercel:plasma:deploy": "bash scripts/vercel-plasma-cli.sh --prod"
   },
   "dependencies": {
     "@vercel/blob": "^2.5.0",
