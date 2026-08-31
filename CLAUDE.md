@@ -9,6 +9,15 @@
 
 ---
 
+## Rechnungs-Analyse
+
+Kundenrechnungen (PDF/Bilder) werden lokal analysiert und in eine Datenbank überführt.
+Skill: `.claude/skills/rechnungs-analyse/` — Eingang `rechnungen/_input/`, Analysen als
+Markdown in `rechnungen/dokumente/`, SQLite-DB in `rechnungen/datenbank/rechnungen.db`.
+Der Ordner `rechnungen/` enthält Kundendaten und ist von Git ausgeschlossen — niemals committen.
+
+---
+
 ## Kernidee
 
 Plasma Energie Solution vermittelt Strom- und Gasverträge für Privat- und Geschäftskunden. Kein Vergleichsportal, keine KI-Massenlösung, keine Konzernstruktur.
