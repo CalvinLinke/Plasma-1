@@ -12,6 +12,7 @@ export type ProcessPartnerMailsOptions = {
   partnerName?: string;
   dryRun?: boolean;
   debug?: boolean;
+  lookbackMinutes?: number;
 };
 
 export type ProcessPartnerMailsResult = {
@@ -63,7 +64,10 @@ export async function processPartnerMails(
     items: [],
   };
 
-  const messages = await listRecentMessages();
+  const messages = await listRecentMessages(
+    options.lookbackMinutes ??
+      Number(process.env.PARTNER_MAIL_LOOKBACK_MINUTES || 15),
+  );
   result.scanned = messages.length;
   if (options.debug) {
     result.debugSubjects = messages.map((message) => message.subject);

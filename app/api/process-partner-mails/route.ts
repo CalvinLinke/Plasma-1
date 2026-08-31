@@ -22,9 +22,16 @@ export async function GET(request: NextRequest) {
   const dryRun = request.nextUrl.searchParams.get("dryRun") === "1";
   const debug = request.nextUrl.searchParams.get("debug") === "1";
   const partner = request.nextUrl.searchParams.get("partner") || "tonyM";
+  const lookbackRaw = request.nextUrl.searchParams.get("lookbackMinutes");
+  const lookbackMinutes = lookbackRaw ? Number(lookbackRaw) : undefined;
 
   try {
-    const result = await processPartnerMails({ partnerName: partner, dryRun, debug });
+    const result = await processPartnerMails({
+      partnerName: partner,
+      dryRun,
+      debug,
+      lookbackMinutes: Number.isFinite(lookbackMinutes) ? lookbackMinutes : undefined,
+    });
     return NextResponse.json(result);
   } catch (error) {
     console.error("process-partner-mails:", error);
