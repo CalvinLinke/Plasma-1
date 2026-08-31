@@ -4,36 +4,56 @@ const NOTION_VERSION = "2022-06-28";
 
 type NotionRichText = { type: "text"; text: { content: string } };
 
-const ANALYSIS_PROPERTY_DEFS: Record<string, unknown> = {
-  Anbieter: { rich_text: {} },
-  Energieart: {
+const SCHEMA_PATCH_PROPERTIES: Record<string, unknown> = {
+  ...{
+    Anbieter: { rich_text: {} },
+    Energieart: {
+      select: {
+        options: [
+          { name: "Strom", color: "yellow" },
+          { name: "Gas", color: "orange" },
+        ],
+      },
+    },
+    Tarif: { rich_text: {} },
+    Kundennummer: { rich_text: {} },
+    "Zählernummer": { rich_text: {} },
+    Rechnungsdatum: { date: {} },
+    Zeitraum: { rich_text: {} },
+    "Verbrauch kWh": { number: { format: "number" } },
+    "Arbeitspreis ct/kWh": { number: { format: "number" } },
+    "Grundpreis €/Jahr": { number: { format: "number_with_commas" } },
+    "Rechnungsbetrag €": { number: { format: "euro" } },
+    "Analyse-Status": {
+      select: {
+        options: [
+          { name: "OK", color: "green" },
+          { name: "Teilweise", color: "yellow" },
+          { name: "Fehlgeschlagen", color: "red" },
+          { name: "Bild ohne OCR", color: "gray" },
+        ],
+      },
+    },
+    "Analyse-Notizen": { rich_text: {} },
+  },
+  Vorname: { rich_text: {} },
+  Nachname: { rich_text: {} },
+  PLZ: { rich_text: {} },
+  Ort: { rich_text: {} },
+  Straße: { rich_text: {} },
+  Hausnummer: { rich_text: {} },
+  Anrede: {
     select: {
       options: [
-        { name: "Strom", color: "yellow" },
-        { name: "Gas", color: "orange" },
+        { name: "Herr", color: "blue" },
+        { name: "Frau", color: "pink" },
       ],
     },
   },
-  Tarif: { rich_text: {} },
-  Kundennummer: { rich_text: {} },
-  "Zählernummer": { rich_text: {} },
-  Rechnungsdatum: { date: {} },
-  Zeitraum: { rich_text: {} },
-  "Verbrauch kWh": { number: { format: "number" } },
-  "Arbeitspreis ct/kWh": { number: { format: "number" } },
-  "Grundpreis €/Jahr": { number: { format: "number_with_commas" } },
-  "Rechnungsbetrag €": { number: { format: "euro" } },
-  "Analyse-Status": {
-    select: {
-      options: [
-        { name: "OK", color: "green" },
-        { name: "Teilweise", color: "yellow" },
-        { name: "Fehlgeschlagen", color: "red" },
-        { name: "Bild ohne OCR", color: "gray" },
-      ],
-    },
-  },
-  "Analyse-Notizen": { rich_text: {} },
+  Geburtsdatum: { date: {} },
+  IBAN: { rich_text: {} },
+  Kontoinhaber: { rich_text: {} },
+  Lieferbeginn: { date: {} },
 };
 
 function notionKey(): string {
@@ -94,14 +114,14 @@ function basePropertyDefs(): Record<string, unknown> {
     Betreff: { rich_text: {} },
     "Graph-Message-ID": { rich_text: {} },
     "Rechnung-URL": { url: {} },
-    ...ANALYSIS_PROPERTY_DEFS,
+    ...SCHEMA_PATCH_PROPERTIES,
   };
 }
 
 async function ensureDatabaseSchema(databaseId: string): Promise<void> {
   const res = await notionFetch(`/databases/${databaseId}`, {
     method: "PATCH",
-    body: JSON.stringify({ properties: ANALYSIS_PROPERTY_DEFS }),
+    body: JSON.stringify({ properties: SCHEMA_PATCH_PROPERTIES }),
   });
 
   if (!res.ok) {
@@ -206,9 +226,13 @@ export type LeadInput = {
   subject: string;
   partner: string;
   name: string;
+  vorname: string;
+  nachname: string;
   email: string;
   telefon: string;
   anmerkungen: string;
+  plz: string;
+  ort: string;
   dateiName: string;
   downloadUrl: string | null;
   receivedDateTime: string;
@@ -284,6 +308,10 @@ export async function createLead(databaseId: string, lead: LeadInput): Promise<s
 
   if (lead.email) properties["E-Mail"] = { email: lead.email };
   if (lead.partner) properties.Partner = { select: { name: lead.partner } };
+  if (lead.vorname) properties.Vorname = { rich_text: richText(lead.vorname) };
+  if (lead.nachname) properties.Nachname = { rich_text: richText(lead.nachname) };
+  if (lead.plz) properties.PLZ = { rich_text: richText(lead.plz) };
+  if (lead.ort) properties.Ort = { rich_text: richText(lead.ort) };
   if (files.length) properties.Rechnung = { files };
   if (lead.downloadUrl) properties["Rechnung-URL"] = { url: lead.downloadUrl };
 

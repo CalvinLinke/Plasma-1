@@ -1,9 +1,15 @@
+import { parseContactFields } from "@/lib/parse-contact-fields";
+
 export type ParsedAngebotMail = {
   partner: string;
   name: string;
+  vorname: string;
+  nachname: string;
   email: string;
   telefon: string;
   anmerkungen: string;
+  plz: string;
+  ort: string;
   dateiName: string;
   downloadUrl: string | null;
   einwilligungAm: string;
@@ -65,13 +71,18 @@ export function parseAngebotMail(subject: string, html: string): ParsedAngebotMa
   const anmerkungen = readTableCell(html, "Anmerkungen");
   const dateiRaw = readTableCell(html, "Datei");
   const dateiName = dateiRaw.split("(")[0].trim() || "rechnung.pdf";
+  const contact = parseContactFields(name, anmerkungen);
 
   return {
     partner,
     name,
+    vorname: contact.vorname,
+    nachname: contact.nachname,
     email,
     telefon: telefon === "–" ? "" : telefon,
     anmerkungen,
+    plz: contact.plz,
+    ort: contact.ort,
     dateiName,
     downloadUrl: readDownloadUrl(html),
     einwilligungAm: readEinwilligung(html),
