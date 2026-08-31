@@ -155,6 +155,13 @@ export async function ensureLeadsDatabase(): Promise<string> {
 }
 
 export async function leadExists(databaseId: string, graphMessageId: string): Promise<boolean> {
+  return (await findLeadByGraphMessageId(databaseId, graphMessageId)) !== null;
+}
+
+export async function findLeadByGraphMessageId(
+  databaseId: string,
+  graphMessageId: string,
+): Promise<{ pageId: string; url?: string } | null> {
   const res = await notionFetch(`/databases/${databaseId}/query`, {
     method: "POST",
     body: JSON.stringify({
@@ -170,8 +177,12 @@ export async function leadExists(databaseId: string, graphMessageId: string): Pr
     throw new Error(`Notion-Query fehlgeschlagen (${res.status}): ${await res.text()}`);
   }
 
-  const data = (await res.json()) as { results?: unknown[] };
-  return (data.results?.length ?? 0) > 0;
+  const data = (await res.json()) as {
+    results?: Array<{ id: string; url?: string }>;
+  };
+  const page = data.results?.[0];
+  if (!page) return null;
+  return { pageId: page.id, url: page.url };
 }
 
 async function uploadFileToNotion(
@@ -263,7 +274,12 @@ function energieartLabel(art?: InvoiceAnalysis["energieart"]): string | undefine
   return undefined;
 }
 
-export async function createLead(databaseId: string, lead: LeadInput): Promise<string> {
+async function buildLeadFiles(lead: LeadInput): Promise<
+  Array<
+    | { type: "external"; name: string; external: { url: string } }
+    | { type: "file_upload"; name: string; file_upload: { id: string } }
+  >
+> {
   const files: Array<
     | { type: "external"; name: string; external: { url: string } }
     | { type: "file_upload"; name: string; file_upload: { id: string } }
@@ -275,9 +291,7 @@ export async function createLead(databaseId: string, lead: LeadInput): Promise<s
       lead.invoice.contentType,
       lead.invoice.bytes,
     );
-    if (uploaded) {
-      files.push(uploaded);
-    }
+    if (uploaded) files.push(uploaded);
   }
 
   if (files.length === 0 && lead.downloadUrl) {
@@ -288,6 +302,16 @@ export async function createLead(databaseId: string, lead: LeadInput): Promise<s
     });
   }
 
+  return files;
+}
+
+function buildLeadProperties(
+  lead: LeadInput,
+  files: Array<
+    | { type: "external"; name: string; external: { url: string } }
+    | { type: "file_upload"; name: string; file_upload: { id: string } }
+  >,
+): Record<string, unknown> {
   const analysis = lead.analysis;
   const leadStatus =
     analysis && analysis.status !== "failed" && analysis.status !== "image_no_ocr"
@@ -361,6 +385,30 @@ export async function createLead(databaseId: string, lead: LeadInput): Promise<s
       .join("\n");
     if (notizen) properties["Analyse-Notizen"] = { rich_text: richText(notizen) };
   }
+
+  return properties;
+}
+
+export async function updateLead(pageId: string, lead: LeadInput): Promise<string> {
+  const files = await buildLeadFiles(lead);
+  const properties = buildLeadProperties(lead, files);
+
+  const res = await notionFetch(`/pages/${pageId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ properties }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Notion-Seite aktualisieren fehlgeschlagen (${res.status}): ${await res.text()}`);
+  }
+
+  const data = (await res.json()) as { id: string; url?: string };
+  return data.url ?? data.id;
+}
+
+export async function createLead(databaseId: string, lead: LeadInput): Promise<string> {
+  const files = await buildLeadFiles(lead);
+  const properties = buildLeadProperties(lead, files);
 
   const res = await notionFetch("/pages", {
     method: "POST",

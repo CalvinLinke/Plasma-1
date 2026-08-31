@@ -3,7 +3,8 @@ import { listRecentMessages } from "@/lib/graph-inbox";
 import {
   createLead,
   ensureLeadsDatabase,
-  leadExists,
+  findLeadByGraphMessageId,
+  updateLead,
   type LeadInput,
 } from "@/lib/notion-leads";
 import { matchesPartnerSubject, parseAngebotMail } from "@/lib/parse-angebot-mail";
@@ -13,19 +14,21 @@ export type ProcessPartnerMailsOptions = {
   dryRun?: boolean;
   debug?: boolean;
   lookbackMinutes?: number;
+  updateExisting?: boolean;
 };
 
 export type ProcessPartnerMailsResult = {
   scanned: number;
   matched: number;
   created: number;
+  updated: number;
   skipped: number;
   errors: string[];
   databaseId?: string;
   debugSubjects?: string[];
   items: Array<{
     subject: string;
-    status: "created" | "skipped" | "error" | "dry-run";
+    status: "created" | "updated" | "skipped" | "error" | "dry-run";
     notionUrl?: string;
     message?: string;
   }>;
@@ -59,6 +62,7 @@ export async function processPartnerMails(
     scanned: 0,
     matched: 0,
     created: 0,
+    updated: 0,
     skipped: 0,
     errors: [],
     items: [],
@@ -82,14 +86,18 @@ export async function processPartnerMails(
 
     try {
       const parsed = parseAngebotMail(message.subject, message.bodyHtml);
+      const existingLead =
+        !dryRun && databaseId
+          ? await findLeadByGraphMessageId(databaseId, message.id)
+          : null;
 
-      // Bereits verarbeitet? Graph-Message-ID in Notion = unsere Erinnerung.
-      if (!dryRun && databaseId && (await leadExists(databaseId, message.id))) {
+      if (existingLead && !options.updateExisting) {
         result.skipped += 1;
         result.items.push({
           subject: message.subject,
           status: "skipped",
           message: "Bereits bekannt",
+          notionUrl: existingLead.url,
         });
         continue;
       }
@@ -110,14 +118,14 @@ export async function processPartnerMails(
         result.items.push({
           subject: message.subject,
           status: "dry-run",
-          message: `${parsed.name} · ${parsed.email}${invoice ? ` · Analyse: ${analysis?.status ?? "—"}` : ""}`,
+          message: `${parsed.name} · ${parsed.email}${invoice ? ` · Analyse: ${analysis?.status ?? "—"}` : ""}${existingLead ? " · Update" : ""}`,
         });
         continue;
       }
 
       if (!databaseId) throw new Error("Notion-Datenbank-ID fehlt");
 
-      const notionUrl = await createLead(databaseId, {
+      const leadInput: LeadInput = {
         graphMessageId: message.id,
         subject: message.subject,
         partner: parsed.partner,
@@ -134,7 +142,21 @@ export async function processPartnerMails(
         receivedDateTime: message.receivedDateTime,
         invoice,
         analysis,
-      });
+      };
+
+      if (existingLead) {
+        const notionUrl = await updateLead(existingLead.pageId, leadInput);
+        result.updated += 1;
+        result.items.push({
+          subject: message.subject,
+          status: "updated",
+          notionUrl,
+          message: analysis ? `Analyse: ${analysis.status}` : undefined,
+        });
+        continue;
+      }
+
+      const notionUrl = await createLead(databaseId, leadInput);
 
       result.created += 1;
       result.items.push({

@@ -16,6 +16,24 @@ Skill: `.claude/skills/rechnungs-analyse/` — Eingang `rechnungen/_input/`, Ana
 Markdown in `rechnungen/dokumente/`, SQLite-DB in `rechnungen/datenbank/rechnungen.db`.
 Der Ordner `rechnungen/` enthält Kundendaten und ist von Git ausgeschlossen — niemals committen.
 
+**Online (Vercel):** Partner-E-Mails werden per Cron verarbeitet — Rechnung aus E-Mail laden,
+PDF-Text auslesen, Notion befüllen. Code: `lib/process-partner-mails.ts`, `lib/invoice-parse.ts`,
+`lib/notion-leads.ts`, Route `/api/process-partner-mails`.
+
+---
+
+## Partner-Anfragen & Antragsformular
+
+Partner-Leads landen in der Notion-Datenbank **Partner-Anfragen** (siehe `lib/notion-leads.ts`).
+
+**Pflichtfelder für einen vollständigen Stromvertragsantrag** (Referenz GFU-Formular):
+→ [`docs/Antragsformular-Pflichtfelder.md`](docs/Antragsformular-Pflichtfelder.md)
+
+Quelle der Feldliste: [esveo/gfu-website](https://github.com/esveo/gfu-website) · `src/app/SignupForm.tsx`.
+Dort nachlesen, welche Notion-Spalten fehlen oder aus Rechnung vs. Formular kommen sollen.
+
+Weitere technische Docs: [`docs/Mailversand-Graph.md`](docs/Mailversand-Graph.md) (E-Mail-Versand/Empfang).
+
 ---
 
 ## Kernidee

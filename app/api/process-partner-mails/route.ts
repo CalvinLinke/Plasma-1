@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
   const partner = request.nextUrl.searchParams.get("partner") || "tonyM";
   const lookbackRaw = request.nextUrl.searchParams.get("lookbackMinutes");
   const lookbackMinutes = lookbackRaw ? Number(lookbackRaw) : undefined;
+  const updateExisting = request.nextUrl.searchParams.get("updateExisting") === "1";
 
   try {
     const result = await processPartnerMails({
@@ -31,6 +32,7 @@ export async function GET(request: NextRequest) {
       dryRun,
       debug,
       lookbackMinutes: Number.isFinite(lookbackMinutes) ? lookbackMinutes : undefined,
+      updateExisting,
     });
     return NextResponse.json(result);
   } catch (error) {
