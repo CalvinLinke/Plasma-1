@@ -1,3 +1,4 @@
+import { analyzeInvoice } from "@/lib/analyze-invoice";
 import { listUnreadMessages, markMessageAsRead } from "@/lib/graph-inbox";
 import {
   createLead,
@@ -6,8 +7,6 @@ import {
   type LeadInput,
 } from "@/lib/notion-leads";
 import { matchesPartnerSubject, parseAngebotMail } from "@/lib/parse-angebot-mail";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 
 export type ProcessPartnerMailsOptions = {
   partnerName?: string;
@@ -27,7 +26,6 @@ export type ProcessPartnerMailsResult = {
     subject: string;
     status: "created" | "skipped" | "error" | "dry-run";
     notionUrl?: string;
-    inputPath?: string;
     message?: string;
   }>;
 };
@@ -48,31 +46,6 @@ async function downloadInvoice(url: string): Promise<{
   const filename = fromHeader?.[1] || "rechnung.pdf";
 
   return { filename, contentType, bytes };
-}
-
-function sanitizeFilename(value: string): string {
-  return value.replace(/[^\wäöüÄÖÜß.-]+/g, "_").replace(/_+/g, "_").slice(0, 80);
-}
-
-/** Lokal: Rechnung für den rechnungs-analyse-Skill in rechnungen/_input ablegen. */
-async function saveInvoiceToInput(
-  invoice: NonNullable<LeadInput["invoice"]>,
-  meta: { partner: string; name: string; receivedDateTime: string },
-): Promise<string | null> {
-  if (process.env.VERCEL) return null;
-
-  const inputDir = path.join(process.cwd(), "rechnungen", "_input");
-  await mkdir(inputDir, { recursive: true });
-
-  const date = meta.receivedDateTime.slice(0, 10);
-  const base = sanitizeFilename(
-    `${date} ${meta.partner} ${meta.name || "Unbekannt"}`.trim(),
-  );
-  const ext = path.extname(invoice.filename) || ".pdf";
-  const target = path.join(inputDir, `${base}${ext}`);
-  await writeFile(target, invoice.bytes);
-
-  return target;
 }
 
 export async function processPartnerMails(
@@ -127,11 +100,13 @@ export async function processPartnerMails(
         }
       }
 
+      const analysis = invoice ? await analyzeInvoice(invoice) : undefined;
+
       if (dryRun) {
         result.items.push({
           subject: message.subject,
           status: "dry-run",
-          message: `${parsed.name} · ${parsed.email}${parsed.downloadUrl ? " · Rechnung-Link gefunden" : ""}`,
+          message: `${parsed.name} · ${parsed.email}${invoice ? ` · Analyse: ${analysis?.status ?? "—"}` : ""}`,
         });
         continue;
       }
@@ -150,16 +125,8 @@ export async function processPartnerMails(
         downloadUrl: parsed.downloadUrl,
         receivedDateTime: message.receivedDateTime,
         invoice,
+        analysis,
       });
-
-      let inputPath: string | null = null;
-      if (invoice) {
-        inputPath = await saveInvoiceToInput(invoice, {
-          partner: parsed.partner,
-          name: parsed.name,
-          receivedDateTime: message.receivedDateTime,
-        });
-      }
 
       await markMessageAsRead(message.id);
       result.created += 1;
@@ -167,7 +134,7 @@ export async function processPartnerMails(
         subject: message.subject,
         status: "created",
         notionUrl,
-        inputPath: inputPath ?? undefined,
+        message: analysis ? `Analyse: ${analysis.status}` : undefined,
       });
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Unbekannter Fehler";

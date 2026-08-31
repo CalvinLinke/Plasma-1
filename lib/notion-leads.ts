@@ -1,6 +1,40 @@
+import type { InvoiceAnalysis } from "@/lib/invoice-parse";
+
 const NOTION_VERSION = "2022-06-28";
 
 type NotionRichText = { type: "text"; text: { content: string } };
+
+const ANALYSIS_PROPERTY_DEFS: Record<string, unknown> = {
+  Anbieter: { rich_text: {} },
+  Energieart: {
+    select: {
+      options: [
+        { name: "Strom", color: "yellow" },
+        { name: "Gas", color: "orange" },
+      ],
+    },
+  },
+  Tarif: { rich_text: {} },
+  Kundennummer: { rich_text: {} },
+  "Zählernummer": { rich_text: {} },
+  Rechnungsdatum: { date: {} },
+  Zeitraum: { rich_text: {} },
+  "Verbrauch kWh": { number: { format: "number" } },
+  "Arbeitspreis ct/kWh": { number: { format: "number" } },
+  "Grundpreis €/Jahr": { number: { format: "number_with_commas" } },
+  "Rechnungsbetrag €": { number: { format: "euro" } },
+  "Analyse-Status": {
+    select: {
+      options: [
+        { name: "OK", color: "green" },
+        { name: "Teilweise", color: "yellow" },
+        { name: "Fehlgeschlagen", color: "red" },
+        { name: "Bild ohne OCR", color: "gray" },
+      ],
+    },
+  },
+  "Analyse-Notizen": { rich_text: {} },
+};
 
 function notionKey(): string {
   const key = process.env.NOTION_API_KEY;
@@ -35,39 +69,60 @@ function richText(value: string): NotionRichText[] {
   return [{ type: "text", text: { content: value.slice(0, 2000) } }];
 }
 
+function basePropertyDefs(): Record<string, unknown> {
+  return {
+    Name: { title: {} },
+    "E-Mail": { email: {} },
+    Telefon: { rich_text: {} },
+    Partner: {
+      select: {
+        options: [{ name: "tonyM", color: "purple" }],
+      },
+    },
+    Anmerkungen: { rich_text: {} },
+    Rechnung: { files: {} },
+    Eingang: { date: {} },
+    Status: {
+      select: {
+        options: [
+          { name: "Neu", color: "green" },
+          { name: "Analysiert", color: "blue" },
+          { name: "Verarbeitet", color: "gray" },
+        ],
+      },
+    },
+    Betreff: { rich_text: {} },
+    "Graph-Message-ID": { rich_text: {} },
+    "Rechnung-URL": { url: {} },
+    ...ANALYSIS_PROPERTY_DEFS,
+  };
+}
+
+async function ensureDatabaseSchema(databaseId: string): Promise<void> {
+  const res = await notionFetch(`/databases/${databaseId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ properties: ANALYSIS_PROPERTY_DEFS }),
+  });
+
+  if (!res.ok) {
+    console.warn("Notion-Schema-Update:", await res.text());
+  }
+}
+
 export async function ensureLeadsDatabase(): Promise<string> {
   const existing = process.env.NOTION_LEADS_DATABASE_ID;
-  if (existing) return existing.replace(/-/g, "");
+  if (existing) {
+    const id = existing.replace(/-/g, "");
+    await ensureDatabaseSchema(id);
+    return id;
+  }
 
   const res = await notionFetch("/databases", {
     method: "POST",
     body: JSON.stringify({
       parent: { type: "page_id", page_id: parentPageId() },
       title: [{ type: "text", text: { content: "Partner-Anfragen" } }],
-      properties: {
-        Name: { title: {} },
-        "E-Mail": { email: {} },
-        Telefon: { rich_text: {} },
-        Partner: {
-          select: {
-            options: [{ name: "tonyM", color: "purple" }],
-          },
-        },
-        Anmerkungen: { rich_text: {} },
-        Rechnung: { files: {} },
-        Eingang: { date: {} },
-        Status: {
-          select: {
-            options: [
-              { name: "Neu", color: "green" },
-              { name: "Verarbeitet", color: "gray" },
-            ],
-          },
-        },
-        Betreff: { rich_text: {} },
-        "Graph-Message-ID": { rich_text: {} },
-        "Rechnung-URL": { url: {} },
-      },
+      properties: basePropertyDefs(),
     }),
   });
 
@@ -157,12 +212,32 @@ export type LeadInput = {
   dateiName: string;
   downloadUrl: string | null;
   receivedDateTime: string;
+  analysis?: InvoiceAnalysis;
   invoice?: {
     filename: string;
     contentType: string;
     bytes: Buffer;
   };
 };
+
+function analysisStatusLabel(status: InvoiceAnalysis["status"]): string {
+  switch (status) {
+    case "ok":
+      return "OK";
+    case "partial":
+      return "Teilweise";
+    case "image_no_ocr":
+      return "Bild ohne OCR";
+    default:
+      return "Fehlgeschlagen";
+  }
+}
+
+function energieartLabel(art?: InvoiceAnalysis["energieart"]): string | undefined {
+  if (art === "strom") return "Strom";
+  if (art === "gas") return "Gas";
+  return undefined;
+}
 
 export async function createLead(databaseId: string, lead: LeadInput): Promise<string> {
   const files: Array<
@@ -189,6 +264,12 @@ export async function createLead(databaseId: string, lead: LeadInput): Promise<s
     });
   }
 
+  const analysis = lead.analysis;
+  const leadStatus =
+    analysis && analysis.status !== "failed" && analysis.status !== "image_no_ocr"
+      ? "Analysiert"
+      : "Neu";
+
   const properties: Record<string, unknown> = {
     Name: {
       title: richText(lead.name || "Unbekannt"),
@@ -196,7 +277,7 @@ export async function createLead(databaseId: string, lead: LeadInput): Promise<s
     Telefon: { rich_text: richText(lead.telefon) },
     Anmerkungen: { rich_text: richText(lead.anmerkungen) },
     Eingang: { date: { start: lead.receivedDateTime.slice(0, 10) } },
-    Status: { select: { name: "Neu" } },
+    Status: { select: { name: leadStatus } },
     Betreff: { rich_text: richText(lead.subject) },
     "Graph-Message-ID": { rich_text: richText(lead.graphMessageId) },
   };
@@ -205,6 +286,43 @@ export async function createLead(databaseId: string, lead: LeadInput): Promise<s
   if (lead.partner) properties.Partner = { select: { name: lead.partner } };
   if (files.length) properties.Rechnung = { files };
   if (lead.downloadUrl) properties["Rechnung-URL"] = { url: lead.downloadUrl };
+
+  if (analysis) {
+    properties["Analyse-Status"] = { select: { name: analysisStatusLabel(analysis.status) } };
+    if (analysis.anbieter) properties.Anbieter = { rich_text: richText(analysis.anbieter) };
+    const energie = energieartLabel(analysis.energieart);
+    if (energie) properties.Energieart = { select: { name: energie } };
+    if (analysis.tarif) properties.Tarif = { rich_text: richText(analysis.tarif) };
+    if (analysis.kundennummer) {
+      properties.Kundennummer = { rich_text: richText(analysis.kundennummer) };
+    }
+    if (analysis.zaehlernummer) {
+      properties["Zählernummer"] = { rich_text: richText(analysis.zaehlernummer) };
+    }
+    if (analysis.rechnungsdatum) {
+      properties.Rechnungsdatum = { date: { start: analysis.rechnungsdatum } };
+    }
+    if (analysis.zeitraum) properties.Zeitraum = { rich_text: richText(analysis.zeitraum) };
+    if (analysis.verbrauchKwh != null) {
+      properties["Verbrauch kWh"] = { number: analysis.verbrauchKwh };
+    }
+    if (analysis.arbeitspreisCtKwh != null) {
+      properties["Arbeitspreis ct/kWh"] = { number: analysis.arbeitspreisCtKwh };
+    }
+    if (analysis.grundpreisEurJahr != null) {
+      properties["Grundpreis €/Jahr"] = { number: analysis.grundpreisEurJahr };
+    }
+    if (analysis.gesamtbetragEur != null) {
+      properties["Rechnungsbetrag €"] = { number: analysis.gesamtbetragEur };
+    }
+    const notizen = [
+      ...analysis.notizen,
+      analysis.rawTextPreview ? `Textauszug: ${analysis.rawTextPreview.slice(0, 500)}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    if (notizen) properties["Analyse-Notizen"] = { rich_text: richText(notizen) };
+  }
 
   const res = await notionFetch("/pages", {
     method: "POST",
