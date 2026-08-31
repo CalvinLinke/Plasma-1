@@ -9,6 +9,7 @@ import {
   type LeadInput,
 } from "@/lib/notion-leads";
 import { matchesPartnerSubject, parseAngebotMail } from "@/lib/parse-angebot-mail";
+import { notifyPartnerLeadTelegram } from "@/lib/telegram-notify";
 
 export type ProcessPartnerMailsOptions = {
   partnerName?: string;
@@ -51,6 +52,36 @@ async function downloadInvoice(url: string): Promise<{
   const filename = fromHeader?.[1] || "rechnung.pdf";
 
   return { filename, contentType, bytes };
+}
+
+async function sendTelegramForLead(
+  kind: "created" | "updated",
+  leadInput: LeadInput,
+  notionUrl: string,
+  analysisStatus: string | undefined,
+  tariffSummary: string,
+  result: ProcessPartnerMailsResult,
+): Promise<void> {
+  try {
+    const telegram = await notifyPartnerLeadTelegram({
+      kind,
+      name: leadInput.name,
+      partner: leadInput.partner,
+      email: leadInput.email,
+      telefon: leadInput.telefon,
+      plz: leadInput.plz || leadInput.analysis?.plz,
+      ort: leadInput.ort || leadInput.analysis?.ort,
+      notionUrl,
+      analysisStatus,
+      tariffSummary,
+    });
+    if (telegram.error) {
+      result.errors.push(`Telegram (${leadInput.name}): ${telegram.error}`);
+    }
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "Telegram fehlgeschlagen";
+    result.errors.push(`Telegram (${leadInput.name}): ${msg}`);
+  }
 }
 
 export async function processPartnerMails(
@@ -157,6 +188,14 @@ export async function processPartnerMails(
 
       if (existingLead) {
         const notionUrl = await updateLead(existingLead.pageId, leadInput);
+        await sendTelegramForLead(
+          "updated",
+          leadInput,
+          notionUrl,
+          analysis?.status,
+          tariffSummary,
+          result,
+        );
         result.updated += 1;
         result.items.push({
           subject: message.subject,
@@ -170,6 +209,14 @@ export async function processPartnerMails(
       }
 
       const notionUrl = await createLead(databaseId, leadInput);
+      await sendTelegramForLead(
+        "created",
+        leadInput,
+        notionUrl,
+        analysis?.status,
+        tariffSummary,
+        result,
+      );
 
       result.created += 1;
       result.items.push({

@@ -33,7 +33,8 @@ Quelle der Feldliste: [esveo/gfu-website](https://github.com/esveo/gfu-website) 
 Dort nachlesen, welche Notion-Spalten fehlen oder aus Rechnung vs. Formular kommen sollen.
 
 Weitere technische Docs: [`docs/Mailversand-Graph.md`](docs/Mailversand-Graph.md) (E-Mail-Versand/Empfang),
-[`docs/Partner-Tarifpruefung.md`](docs/Partner-Tarifpruefung.md) (automatische NE-Tarifprüfung).
+[`docs/Partner-Tarifpruefung.md`](docs/Partner-Tarifpruefung.md) (automatische NE-Tarifprüfung),
+[`docs/Partner-Telegram-Benachrichtigung.md`](docs/Partner-Telegram-Benachrichtigung.md) (Telegram-Gruppe).
 
 ---
 
