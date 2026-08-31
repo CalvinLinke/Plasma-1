@@ -18,13 +18,17 @@ type GraphMessageList = {
   }>;
 };
 
-/** Letzte Mails im Postfach — unabhängig vom Gelesen-Status. */
-export async function listRecentMessages(limit = 50): Promise<GraphMessage[]> {
+/** Mails der letzten N Minuten — unabhängig vom Gelesen-Status. */
+export async function listRecentMessages(
+  lookbackMinutes = Number(process.env.PARTNER_MAIL_LOOKBACK_MINUTES || 15),
+): Promise<GraphMessage[]> {
   const mailbox = encodeURIComponent(getMailboxUpn());
+  const since = new Date(Date.now() - lookbackMinutes * 60 * 1000).toISOString();
   const query = new URLSearchParams({
+    $filter: `receivedDateTime ge ${since}`,
     $select: "id,subject,body,receivedDateTime,isRead",
     $orderby: "receivedDateTime desc",
-    $top: String(limit),
+    $top: "100",
   });
 
   const res = await graphFetch(`/users/${mailbox}/messages?${query.toString()}`);
