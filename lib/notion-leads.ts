@@ -125,7 +125,7 @@ async function uploadFileToNotion(
   const form = new FormData();
   form.append(
     "file",
-    new Blob([bytes], { type: contentType }),
+    new Blob([new Uint8Array(bytes)], { type: contentType }),
     filename,
   );
 
