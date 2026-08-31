@@ -1,3 +1,10 @@
+export type ParsedInvoiceAddress = {
+  strasse: string;
+  hausnummer: string;
+  plz: string;
+  ort: string;
+};
+
 export type InvoiceAnalysis = {
   status: "ok" | "partial" | "failed" | "image_no_ocr";
   energieart?: "strom" | "gas";
@@ -11,6 +18,12 @@ export type InvoiceAnalysis = {
   arbeitspreisCtKwh?: number;
   grundpreisEurJahr?: number;
   gesamtbetragEur?: number;
+  strasse?: string;
+  hausnummer?: string;
+  plz?: string;
+  ort?: string;
+  iban?: string;
+  kontoinhaber?: string;
   notizen: string[];
   rawTextPreview?: string;
 };
@@ -41,6 +54,102 @@ function parseDate(value: string): string | undefined {
   }
   const iso = value.match(/(\d{4})-(\d{2})-(\d{2})/);
   return iso ? iso[0] : undefined;
+}
+
+const PROVIDER_ADDRESS_HINT =
+  /\b(Postfach|Postf\.| GmbH| AG| SE\b|Versorgung|Kundenservice|Zentrale|Firmensitz|Amtsgericht|Handelsregister|USt|Steuer-Nr|HRB|Geschäftsführ)/i;
+
+const ADDRESS_LABEL =
+  /(?:Lieferadresse|Verbrauchsstelle|Lieferstelle|Anschlussadresse|Liefer- und Rechnungsadresse|Rechnungsadresse|Verbrauchsstelle\/Lieferadresse)[:\s]+([\s\S]{5,120}?)(?=\n(?:Kunden|Vertrags|Zähler|MaLo|Rechnungs|IBAN|Telefon|E-Mail|Datum|Tarif|Anbieter)\b|\n\n|$)/i;
+
+function splitStreetAndNumber(streetLine: string): { strasse: string; hausnummer: string } {
+  const trimmed = streetLine.replace(/[,;]+$/, "").trim();
+  const match = trimmed.match(/^(.+?)\s+(\d+\s*[a-zA-Z]?)$/);
+  if (!match) return { strasse: trimmed, hausnummer: "" };
+  return { strasse: match[1].trim(), hausnummer: match[2].trim() };
+}
+
+function parsePlzOrtLine(line: string): { plz: string; ort: string } | null {
+  const match = line.match(/\b(\d{5})\s+([A-ZÄÖÜ][A-Za-zäöüßÄÖÜ\s.-]{1,40})/);
+  if (!match) return null;
+  return { plz: match[1], ort: match[2].trim() };
+}
+
+function parseAddressFromBlock(block: string): ParsedInvoiceAddress | null {
+  const compact = block.replace(/\s+/g, " ").trim();
+  if (!compact || PROVIDER_ADDRESS_HINT.test(compact)) return null;
+
+  const inline = compact.match(
+    /([A-Za-zÄÖÜäöüß0-9][^,\n]{2,70}?)\s+(\d+[a-zA-Z]?)\s*,?\s*(\d{5})\s+([A-Za-zÄÖÜäöüß][A-Za-zäöüßÄÖÜ\s.-]{1,40})/,
+  );
+  if (inline) {
+    return {
+      strasse: inline[1].trim(),
+      hausnummer: inline[2].trim(),
+      plz: inline[3],
+      ort: inline[4].trim(),
+    };
+  }
+
+  const lines = block
+    .split(/\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const plzOrt = parsePlzOrtLine(lines[i]);
+    if (!plzOrt) continue;
+
+    const streetLine = lines[i - 1] ?? lines[i].replace(/\b\d{5}\s.+$/, "").trim();
+    if (!streetLine || PROVIDER_ADDRESS_HINT.test(streetLine)) continue;
+
+    const { strasse, hausnummer } = splitStreetAndNumber(streetLine);
+    if (strasse.length < 3) continue;
+
+    return { strasse, hausnummer, ...plzOrt };
+  }
+
+  return null;
+}
+
+export function parseInvoiceAddress(text: string): ParsedInvoiceAddress | null {
+  const labeled = text.match(ADDRESS_LABEL);
+  if (labeled) {
+    const fromLabel = parseAddressFromBlock(labeled[1]);
+    if (fromLabel) return fromLabel;
+  }
+
+  const lines = text.split(/\n/);
+  for (const line of lines) {
+    const fromLine = parseAddressFromBlock(line);
+    if (fromLine && !PROVIDER_ADDRESS_HINT.test(line)) return fromLine;
+  }
+
+  return null;
+}
+
+function normalizeIban(value: string): string | undefined {
+  const compact = value.replace(/\s/g, "").toUpperCase();
+  if (!/^DE\d{20}$/.test(compact)) return undefined;
+  return compact;
+}
+
+export function parseInvoiceIban(text: string): string | undefined {
+  const labeled = firstMatch(text, [
+    /IBAN[:\s#]*([A-Z]{2}\d{2}(?:\s?\d{4}){4}\s?\d{2})/i,
+    /Kontonummer\s*\(IBAN\)[:\s]+([A-Z]{2}\d{2}(?:\s?\d{4}){4}\s?\d{2})/i,
+  ]);
+  if (labeled) return normalizeIban(labeled);
+
+  const inline = text.match(/\b(DE\d{2}(?:\s?\d{4}){4}\s?\d{2})\b/);
+  return inline ? normalizeIban(inline[1]) : undefined;
+}
+
+export function parseInvoiceKontoinhaber(text: string): string | undefined {
+  return firstMatch(text, [
+    /Kontoinhaber(?:in)?[:\s]+([^\n]{3,80})/i,
+    /Konto[- ]?inhaber[:\s]+([^\n]{3,80})/i,
+  ]);
 }
 
 export function parseInvoiceText(text: string): InvoiceAnalysis {
@@ -105,6 +214,10 @@ export function parseInvoiceText(text: string): InvoiceAnalysis {
   ]);
   const gesamtbetragEur = gesamtRaw ? parseGermanNumber(gesamtRaw) : undefined;
 
+  const address = parseInvoiceAddress(normalized);
+  const iban = parseInvoiceIban(normalized);
+  const kontoinhaber = parseInvoiceKontoinhaber(normalized);
+
   const foundFields = [
     energieart,
     anbieter,
@@ -117,11 +230,16 @@ export function parseInvoiceText(text: string): InvoiceAnalysis {
     arbeitspreisCtKwh,
     grundpreisEurJahr,
     gesamtbetragEur,
+    address?.strasse,
+    address?.plz,
+    iban,
   ].filter(Boolean).length;
 
   if (foundFields === 0) notizen.push("Keine strukturierten Felder erkannt — Text evtl. gescanntes Bild.");
   if (!anbieter) notizen.push("Anbieter nicht eindeutig erkannt.");
   if (!verbrauchKwh) notizen.push("Verbrauch (kWh) nicht gefunden.");
+  if (!address?.plz) notizen.push("Lieferadresse nicht eindeutig erkannt.");
+  if (!iban) notizen.push("IBAN nicht gefunden.");
 
   const status: InvoiceAnalysis["status"] =
     foundFields >= 4 ? "ok" : foundFields >= 1 ? "partial" : "failed";
@@ -139,6 +257,12 @@ export function parseInvoiceText(text: string): InvoiceAnalysis {
     arbeitspreisCtKwh,
     grundpreisEurJahr,
     gesamtbetragEur,
+    strasse: address?.strasse,
+    hausnummer: address?.hausnummer,
+    plz: address?.plz,
+    ort: address?.ort,
+    iban,
+    kontoinhaber,
     notizen,
     rawTextPreview: normalized.slice(0, 1500),
   };

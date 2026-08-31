@@ -310,8 +310,18 @@ export async function createLead(databaseId: string, lead: LeadInput): Promise<s
   if (lead.partner) properties.Partner = { select: { name: lead.partner } };
   if (lead.vorname) properties.Vorname = { rich_text: richText(lead.vorname) };
   if (lead.nachname) properties.Nachname = { rich_text: richText(lead.nachname) };
-  if (lead.plz) properties.PLZ = { rich_text: richText(lead.plz) };
-  if (lead.ort) properties.Ort = { rich_text: richText(lead.ort) };
+
+  const plz = lead.plz || analysis?.plz || "";
+  const ort = lead.ort || analysis?.ort || "";
+  if (plz) properties.PLZ = { rich_text: richText(plz) };
+  if (ort) properties.Ort = { rich_text: richText(ort) };
+  if (analysis?.strasse) properties.Straße = { rich_text: richText(analysis.strasse) };
+  if (analysis?.hausnummer) properties.Hausnummer = { rich_text: richText(analysis.hausnummer) };
+  if (analysis?.iban) properties.IBAN = { rich_text: richText(analysis.iban) };
+  if (analysis?.kontoinhaber) {
+    properties.Kontoinhaber = { rich_text: richText(analysis.kontoinhaber) };
+  }
+
   if (files.length) properties.Rechnung = { files };
   if (lead.downloadUrl) properties["Rechnung-URL"] = { url: lead.downloadUrl };
 
