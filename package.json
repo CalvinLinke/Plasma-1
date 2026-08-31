@@ -10,6 +10,7 @@
     "process-mails": "curl -s 'http://localhost:3000/api/process-partner-mails?dryRun=1' | python3 -m json.tool",
     "process-mails:run": "curl -s 'http://localhost:3000/api/process-partner-mails' | python3 -m json.tool",
     "rechnungen:extract": "bash scripts/rechnungen-extract.sh",
+    "ne-tarife": "tsx scripts/ne-tarife-laden.mts",
     "vercel:plasma:setup": "bash scripts/vercel-plasma-setup.sh",
     "vercel:plasma:sync": "bash scripts/sync-vercel-env.sh",
     "vercel:plasma:sync-notion": "bash scripts/sync-vercel-notion.sh",

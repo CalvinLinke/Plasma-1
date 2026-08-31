@@ -1,57 +1,80 @@
-# Partner-Anfragen — automatische Tarifprüfung (Neue Energie)
+# Partner-Anfragen — Tarifprüfung Neue Energie
 
-Nach jedem neuen oder aktualisierten Notion-Eintrag aus der Partner-Mail-Pipeline
-prüft das System automatisch den **Angebotstarif** bei Neue Energie.
+Stand: 31.08.2026. Erkenntnisse aus der API-Doku (Excel) und lokalen Tests.
 
-## Ablauf
+## Was die API kann
 
-1. Partner-E-Mail verarbeiten (Rechnung analysieren → Notion)
-2. Adresse + Verbrauch aus Notion-Daten / Rechnungsanalyse
-3. `POST {NEUE_ENERGIE_BASE_URI}/contracts` (Validierungs-Request wie im GFU-Formular)
-4. Preise in Notion schreiben, Status → **Tarif geprüft** (bei Erfolg)
+Basis: `https://service.neue-energie.de/external_api`  
+Auth: `Authorization: Bearer {NEUE_ENERGIE_API_KEY}`
 
-## Notion-Felder
-
-| Spalte | Inhalt |
-|---|---|
-| Angebots-Grundpreis €/Jahr | NE-Angebot |
-| Angebots-Arbeitspreis ct/kWh | NE-Angebot |
-| Tarif-ID | z. B. `531` |
-| Tarif-Status | OK / Fehlgeschlagen / Übersprungen |
-| Tarif-Notizen | Fehler- oder Skip-Grund |
-| Status | `Tarif geprüft` bei erfolgreicher Prüfung |
-
-Rechnungswerte (alter Vertrag) bleiben in **Grundpreis €/Jahr** / **Arbeitspreis ct/kWh** unverändert.
-
-## Environment (Vercel + `.env.local`)
-
-| Variable | Pflicht | Beschreibung |
+| Endpoint | Zweck | Im Code |
 |---|---|---|
-| `NEUE_ENERGIE_BASE_URI` | ja | API-Basis-URL (wie GFU `NEUE_ENERGIE_BASE_URI`) |
-| `NEUE_ENERGIE_API_KEY` | ja | Bearer-Token |
-| `NEUE_ENERGIE_TEST_MODE` | nein | Default `1` (Testmodus wie GFU) |
-| `NEUE_ENERGIE_TARIFF_ID` | nein | Default `531` (enviaM MEIN Strom best 24) |
-| `NEUE_ENERGIE_EXTERNAL_ID` | nein | Default `13120` |
-| `NEUE_ENERGIE_APPOINTMENT_DAYS` | nein | Lieferbeginn = heute + N Tage (Default 14) |
-| `NEUE_ENERGIE_DEFAULT_CONSUMPTION_KWH` | nein | Fallback-Verbrauch ohne Rechnung (Default 2500) |
+| `POST /tariffs` | Katalog: id, name, companyId, Strom/Gas, Privat/Gewerbe, Untertyp | `fetchTariffs()` |
+| `POST /companies` | Versorgerliste | `fetchCompanies()` |
+| `POST /contracts` | Preisprüfung (testMode) oder Auftrag | `checkTariffPrices()` |
+| `POST /providers` | Vorversorger-Suche | noch nicht |
+| `POST /scans` | PDF zum Auftrag | noch nicht |
+| `POST /statuses` | Auftragsstatus | noch nicht |
 
-Ohne NE-Credentials: Tarifprüfung **Übersprungen**, Lead wird trotzdem angelegt.
+**Kein Batch-Endpoint.** Preise = ein `POST /contracts` pro Tarif-ID, parallel in Gruppen (Default 5). `testMode=1` legt keinen Auftrag an.
 
-## Manuell testen
+**Keine Provision.** `/tariffs` liefert nur Stammdaten. Kein Provisions-Endpoint in der Excel-Doku. Vergütung sitzt im Partner-Login.
 
-Dev-Server + Laura-Nachlauf:
+## Preis holen (`/contracts`)
 
-```bash
-curl -s 'http://localhost:3000/api/process-partner-mails?lookbackMinutes=5000&updateExisting=1'
-```
+Dummy-Preise mitschicken. Die API antwortet mit den korrekten Werten:
 
-Dry-Run (ohne Notion-Schreiben):
+1. Paar: `Correct values (basePrice / workingPrice): [92.64, 34.42]`
+2. Oder nacheinander: `Invalid basePrice, correct value: …` dann `Invalid workingPrice, correct value: …`
 
-```bash
-curl -s 'http://localhost:3000/api/process-partner-mails?lookbackMinutes=5000&dryRun=1'
-```
+Privat = **Brutto**, Gewerbe = **Netto**. Grundpreis ist **€/Jahr**.
 
-## Referenz
+Bei manchen Versorgern (z. B. Süwag) steckt das **Messentgelt im Grundpreis** der API. Das Online-Tool druckt Grundpreis und Messgerät getrennt — Summe ist gleich.
 
-Logik portiert aus [esveo/gfu-website](https://github.com/esveo/gfu-website):
-`src/app/validateAdress.tsx`, `src/app/submitHelpers.ts`
+Stufentarife (Süwag): Arbeitspreis hängt am **Jahresverbrauch**. 929 kWh → Stufe 0–999 (35,97 ct). 1000 kWh → Stufe 1.000–1.499 (34,42 ct). Abgerechnet wird später der **gemessene** Verbrauch, nicht die Antragsangabe.
+
+Erstlaufzeit-Nachlässe (z. B. 1,00 ct bei Süwag) kommen **nicht** aus `/contracts`.
+
+## Lieferantenwechsel vs. Neueinzug
+
+Plasma-Fall ist **Wechsel**, nicht Neueinzug.
+
+| Feld | Wert |
+|---|---|
+| `type` | `type_changing_provider` |
+| `appointment` | `appointment_next_possible` |
+| `clientNumber` | Vertragskonto aus der Rechnung |
+| `currentProviderName` | **voller** Name, z. B. `Vattenfall Europe Sales GmbH` |
+
+Nur „Vattenfall“ kann `Der gewünschte Tarif ist unter dieser PLZ nicht verfügbar` auslösen — auch wenn der Tarif in der PLZ lieferbar ist. Immer den Namen aus `/providers` bzw. der Rechnung verwenden.
+
+Feste Tarif-ID `531` existiert nicht mehr. Katalog dynamisch laden.
+
+## Typische API-Antworten
+
+| Meldung | Bedeutung |
+|---|---|
+| Invalid basePrice / workingPrice | Normal — daraus Preise lesen |
+| Tarif unter dieser PLZ nicht verfügbar | Regional nicht lieferbar **oder** Vorversorgername zu kurz |
+| No marketLocation | Tarif braucht MaLo-ID |
+| Neueinzug wird nicht akzeptiert | `type_move` statt Wechsel |
+| No tariff | Unbekannte Tarif-ID |
+
+## Pipeline heute
+
+1. Mail → PDF-Text (`lib/invoice-parse.ts`, Vattenfall-Layout: Lieferstelle, Vertragskonto, Easy24 …)
+2. Notion **Partner-Anfragen**
+3. Optional ein Tarif via `checkTariffForLead` (noch eine ID, nicht der volle Katalog)
+
+Nächster Workflow: Adresse + Verbrauch + Vorversorger (vollständig) + Wechsel → alle Strom-Privat-IDs durchreichen → nur lieferbare Preise merken → mit Ist-Kosten der Rechnung vergleichen.
+
+## Environment
+
+| Variable | Pflicht |
+|---|---|
+| `NEUE_ENERGIE_BASE_URI` | ja |
+| `NEUE_ENERGIE_API_KEY` | ja |
+| `NEUE_ENERGIE_TEST_MODE` | nein, Default `1` |
+| `NEUE_ENERGIE_EXTERNAL_ID` | nein, Default `13120` |
+
+Code: `lib/neue-energie.ts`. Katalog lokal: `npm run ne-tarife`.

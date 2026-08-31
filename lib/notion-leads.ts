@@ -137,10 +137,7 @@ async function ensureDatabaseSchema(databaseId: string): Promise<void> {
   const res = await notionFetch(`/databases/${databaseId}`, {
     method: "PATCH",
     body: JSON.stringify({
-      properties: {
-        Status: basePropertyDefs().Status,
-        ...SCHEMA_PATCH_PROPERTIES,
-      },
+      properties: SCHEMA_PATCH_PROPERTIES,
     }),
   });
 

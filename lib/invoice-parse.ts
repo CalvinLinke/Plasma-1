@@ -60,7 +60,13 @@ const PROVIDER_ADDRESS_HINT =
   /\b(Postfach|Postf\.| GmbH| AG| SE\b|Versorgung|Kundenservice|Zentrale|Firmensitz|Amtsgericht|Handelsregister|USt|Steuer-Nr|HRB|Geschäftsführ)/i;
 
 const ADDRESS_LABEL =
-  /(?:Lieferadresse|Verbrauchsstelle|Lieferstelle|Anschlussadresse|Liefer- und Rechnungsadresse|Rechnungsadresse|Verbrauchsstelle\/Lieferadresse)[:\s]+([\s\S]{5,120}?)(?=\n(?:Kunden|Vertrags|Zähler|MaLo|Rechnungs|IBAN|Telefon|E-Mail|Datum|Tarif|Anbieter)\b|\n\n|$)/i;
+  /(?:Lieferadresse|Verbrauchsstelle|Lieferstelle|Anschlussadresse|Liefer- und Rechnungsadresse|Rechnungsadresse|Verbrauchsstelle\/Lieferadresse)[:\s]+([\s\S]{5,160}?)(?=\n(?:Kunden|Vertrags|Zähler|MaLo|Rechnungsnummer|Rechnungs|IBAN|Telefon|E-Mail|Datum|Tarif|Anbieter|Sehr|Online)\b|\n\n|$)/i;
+
+const LIEFERSTELLE_INLINE =
+  /Lieferstelle:\s*([^\n]{3,80})\n\s*(\d{5})\s+([^\n]{1,40})/i;
+
+const POSTANSCHRIFT_BLOCK =
+  /Postanschrift\s*\n(?:Frau|Herr)\s*\n[^\n]+\n([^\n]{3,80})\n(\d{5})\s+([^\n]{1,40})/i;
 
 function splitStreetAndNumber(streetLine: string): { strasse: string; hausnummer: string } {
   const trimmed = streetLine.replace(/[,;]+$/, "").trim();
@@ -113,6 +119,32 @@ function parseAddressFromBlock(block: string): ParsedInvoiceAddress | null {
 }
 
 export function parseInvoiceAddress(text: string): ParsedInvoiceAddress | null {
+  const lieferstelle = text.match(LIEFERSTELLE_INLINE);
+  if (lieferstelle) {
+    const { strasse, hausnummer } = splitStreetAndNumber(lieferstelle[1].trim());
+    if (strasse.length >= 3) {
+      return {
+        strasse,
+        hausnummer,
+        plz: lieferstelle[2],
+        ort: lieferstelle[3].trim(),
+      };
+    }
+  }
+
+  const postanschrift = text.match(POSTANSCHRIFT_BLOCK);
+  if (postanschrift) {
+    const { strasse, hausnummer } = splitStreetAndNumber(postanschrift[1].trim());
+    if (strasse.length >= 3) {
+      return {
+        strasse,
+        hausnummer,
+        plz: postanschrift[2],
+        ort: postanschrift[3].trim(),
+      };
+    }
+  }
+
   const labeled = text.match(ADDRESS_LABEL);
   if (labeled) {
     const fromLabel = parseAddressFromBlock(labeled[1]);
@@ -135,14 +167,25 @@ function normalizeIban(value: string): string | undefined {
 }
 
 export function parseInvoiceIban(text: string): string | undefined {
-  const labeled = firstMatch(text, [
-    /IBAN[:\s#]*([A-Z]{2}\d{2}(?:\s?\d{4}){4}\s?\d{2})/i,
+  const withoutProviderBank = text.replace(
+    /Bankverbindung[\s\S]{0,500}?BIC[^\n]*/i,
+    "",
+  );
+
+  const labeled = firstMatch(withoutProviderBank, [
+    /(?:Ihre|Kunden-)?IBAN[:\s#]*([A-Z]{2}\d{2}(?:\s?\d{4}){4}\s?\d{2})/i,
     /Kontonummer\s*\(IBAN\)[:\s]+([A-Z]{2}\d{2}(?:\s?\d{4}){4}\s?\d{2})/i,
+    /SEPA[- ]?Lastschrift[\s\S]{0,200}?IBAN[:\s#]*([A-Z]{2}\d{2}(?:\s?\d{4}){4}\s?\d{2})/i,
   ]);
   if (labeled) return normalizeIban(labeled);
 
-  const inline = text.match(/\b(DE\d{2}(?:\s?\d{4}){4}\s?\d{2})\b/);
-  return inline ? normalizeIban(inline[1]) : undefined;
+  const matches = [...withoutProviderBank.matchAll(/\b(DE\d{2}(?:\s?\d{4}){4}\s?\d{2})\b/g)];
+  for (const match of matches) {
+    const iban = normalizeIban(match[1]);
+    if (iban) return iban;
+  }
+
+  return undefined;
 }
 
 export function parseInvoiceKontoinhaber(text: string): string | undefined {
@@ -157,35 +200,48 @@ export function parseInvoiceText(text: string): InvoiceAnalysis {
   const lower = normalized.toLowerCase();
   const notizen: string[] = [];
 
-  const energieart = lower.includes("erdgas") || /\bgas\b/.test(lower)
-    ? "gas"
-    : lower.includes("strom") || lower.includes("kwh")
-      ? "strom"
-      : undefined;
+  const energieart = /stromtarif|stromkosten|ökostrom/i.test(normalized)
+    ? "strom"
+    : /gastarif|gaskosten|erdgas/i.test(normalized)
+      ? "gas"
+      : lower.includes("strom")
+        ? "strom"
+        : /\bergas\b|\bgas\b/.test(lower)
+          ? "gas"
+          : undefined;
 
   const anbieter = firstMatch(normalized, [
+    /(Vattenfall(?:\s+Europe(?:\s+Sales)?)?(?:\s+GmbH)?)/i,
     /(?:Anbieter|Lieferant|Ihr Energieversorger)[:\s]+([^\n]{3,80})/i,
-    /(Vattenfall|E\.ON|EON|EnBW|RWE|eprimo|LichtBlick|Yello|Maingau|Entega|SW[KL]\s?\w+|Stadtwerke[^\n]{0,40})/i,
+    /(E\.ON|EON|EnBW|RWE|eprimo|LichtBlick|Yello|Maingau|Entega|SW[KL]\s?\w+|Stadtwerke[^\n]{0,40})/i,
   ]);
 
   const tarif = firstMatch(normalized, [
-    /(?:Tarif|Produkt|Vertrag)[:\s]+([^\n]{3,80})/i,
+    /(?:Ihr (?:aktueller )?)?(?:Strom|Gas)tarif\s+([^\n]+)/i,
+    /(?:Tarif|Produkt)[:\s]+([^\n]{3,80})/i,
   ]);
 
-  const kundennummer = firstMatch(normalized, [
-    /(?:Kunden(?:nummer|-nr\.?)|Vertragskonto)[:\s#]*([A-Z0-9][A-Z0-9\-\/]{4,})/i,
+  const kundennummerRaw = firstMatch(normalized, [
+    /Vertragskonto:\s*([\d\s]{10,20})/i,
+    /(?:Kunden(?:nummer|-nr\.?)|Vertragskonto)[:\s#]*([A-Z0-9][A-Z0-9\-\/\s]{4,})/i,
   ]);
+  const kundennummer = kundennummerRaw?.replace(/\s+/g, " ").trim();
 
-  const zaehlernummer = firstMatch(normalized, [
+  const zaehlernummerRaw = firstMatch(normalized, [
+    /Z[äa]hlernummer:\s*([^\n]+)/i,
     /(?:Z[äa]hlernummer|Z[äa]hler[- ]?Nr\.?|Messlokation|MaLo)[:\s#]*([A-Z0-9][A-Z0-9\-]{4,})/i,
   ]);
+  const zaehlernummer = zaehlernummerRaw?.replace(/\s+/g, " ").trim();
 
   const rechnungsdatumRaw = firstMatch(normalized, [
+    /Rechnungsnummer:[^\n]*vom\s+(\d{1,2}\.\d{1,2}\.\d{4})/i,
     /(?:Rechnungsdatum|Datum der Rechnung|Rechnung vom)[:\s]+([^\n]{6,20})/i,
+    /(?:^|\n)Datum\s*\n\s*(\d{1,2}\.\d{1,2}\.\d{4})/i,
   ]);
   const rechnungsdatum = rechnungsdatumRaw ? parseDate(rechnungsdatumRaw) : undefined;
 
   const zeitraum = firstMatch(normalized, [
+    /Rechnung für den\s+(\d{1,2}\.\d{1,2}\.\d{4}\s*[-–]\s*\d{1,2}\.\d{1,2}\.\d{4})/i,
     /(?:Abrechnungszeitraum|Leistungszeitraum|Zeitraum)[:\s]+([^\n]{8,40})/i,
     /(\d{1,2}\.\d{1,2}\.\d{4}\s*[-–]\s*\d{1,2}\.\d{1,2}\.\d{4})/,
   ]);

@@ -28,6 +28,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# API-Snapshots und Lead-Preisabfragen (können Kundendaten enthalten)
+/data/
+
 # vercel
 .vercel
 
