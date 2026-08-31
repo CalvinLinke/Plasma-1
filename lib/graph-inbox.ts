@@ -18,10 +18,10 @@ type GraphMessageList = {
   }>;
 };
 
-export async function listUnreadMessages(limit = 25): Promise<GraphMessage[]> {
+/** Letzte Mails im Postfach — unabhängig vom Gelesen-Status. */
+export async function listRecentMessages(limit = 50): Promise<GraphMessage[]> {
   const mailbox = encodeURIComponent(getMailboxUpn());
   const query = new URLSearchParams({
-    $filter: "isRead eq false",
     $select: "id,subject,body,receivedDateTime,isRead",
     $orderby: "receivedDateTime desc",
     $top: String(limit),
@@ -40,16 +40,4 @@ export async function listUnreadMessages(limit = 25): Promise<GraphMessage[]> {
     receivedDateTime: message.receivedDateTime ?? new Date().toISOString(),
     isRead: message.isRead ?? false,
   }));
-}
-
-export async function markMessageAsRead(messageId: string): Promise<void> {
-  const mailbox = encodeURIComponent(getMailboxUpn());
-  const res = await graphFetch(`/users/${mailbox}/messages/${messageId}`, {
-    method: "PATCH",
-    body: JSON.stringify({ isRead: true }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Graph-markRead fehlgeschlagen (${res.status}): ${await res.text()}`);
-  }
 }

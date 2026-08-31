@@ -1,5 +1,5 @@
 import { analyzeInvoice } from "@/lib/analyze-invoice";
-import { listUnreadMessages, markMessageAsRead } from "@/lib/graph-inbox";
+import { listRecentMessages } from "@/lib/graph-inbox";
 import {
   createLead,
   ensureLeadsDatabase,
@@ -63,7 +63,7 @@ export async function processPartnerMails(
     items: [],
   };
 
-  const messages = await listUnreadMessages();
+  const messages = await listRecentMessages();
   result.scanned = messages.length;
   if (options.debug) {
     result.debugSubjects = messages.map((message) => message.subject);
@@ -79,14 +79,14 @@ export async function processPartnerMails(
     try {
       const parsed = parseAngebotMail(message.subject, message.bodyHtml);
 
+      // Bereits verarbeitet? Graph-Message-ID in Notion = unsere Erinnerung.
       if (!dryRun && databaseId && (await leadExists(databaseId, message.id))) {
         result.skipped += 1;
         result.items.push({
           subject: message.subject,
           status: "skipped",
-          message: "Bereits in Notion vorhanden",
+          message: "Bereits bekannt",
         });
-        await markMessageAsRead(message.id);
         continue;
       }
 
@@ -128,7 +128,6 @@ export async function processPartnerMails(
         analysis,
       });
 
-      await markMessageAsRead(message.id);
       result.created += 1;
       result.items.push({
         subject: message.subject,
