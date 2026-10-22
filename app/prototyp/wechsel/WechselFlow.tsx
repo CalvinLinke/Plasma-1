@@ -1,26 +1,39 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
+import Sprachwahl from "../Sprachwahl";
 import {
   HAUSHALTE,
   PROTOTYP_MIN_PROVISION_EUR,
   auftragEntwurf,
   waehleTarif,
   type AuftragPerson,
+  type TarifGrund,
   type Tarifwahl,
 } from "@/lib/prototyp-wechsel";
+import { TEXTE, formate, satz, type FehlerKey, type Sprache, type Texte } from "@/lib/prototyp-texte";
 
 type Step = "angaben" | "angebot" | "person" | "konto" | "fertig";
 
 const STEPS: Step[] = ["angaben", "angebot", "person", "konto"];
 
-const euro = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
-const ct = new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const kwhFmt = new Intl.NumberFormat("de-DE");
+type Fluss = { t: Texte; zahlen: ReturnType<typeof formate> };
+const FlussCtx = createContext<Fluss>({ t: TEXTE.de, zahlen: formate("de") });
+
+function useFluss() {
+  return useContext(FlussCtx);
+}
+
+function grundSatz(t: Texte, grund: TarifGrund, betrag: number, schwelle: number): string {
+  if (grund === "unter") return satz(t.grundUnter, { betrag, schwelle });
+  if (grund === "guenstigster") return t.grundGewinner;
+  return t.grundTeurer;
+}
 
 const inputClass =
   "w-full rounded-xl border border-[#e6e8ef] bg-white px-4 py-3 text-base text-marine outline-none focus:border-violet-brand";
+const ltrInput = `${inputClass} [direction:ltr]`;
 
 type Person = AuftragPerson & { datenschutz: boolean };
 
@@ -68,16 +81,17 @@ function volljaehrig(iso: string): boolean {
   return geboren <= grenze;
 }
 
-export default function WechselFlow({ campaignCode }: { campaignCode: string }) {
+export default function WechselFlow({ campaignCode, sprache }: { campaignCode: string; sprache: Sprache }) {
   const [step, setStep] = useState<Step>("angaben");
   const [sucht, setSucht] = useState(false);
   const [plz, setPlz] = useState("");
   const [haushalt, setHaushalt] = useState<string>("");
   const [kwhEingabe, setKwhEingabe] = useState("");
-  const [fehler, setFehler] = useState<Record<string, string>>({});
+  const [fehler, setFehler] = useState<Partial<Record<string, FehlerKey>>>({});
   const [schwelle, setSchwelle] = useState(PROTOTYP_MIN_PROVISION_EUR);
   const [person, setPerson] = useState<Person>(LEERE_PERSON);
-  const [rechnungHinweis, setRechnungHinweis] = useState("");
+  const [beispiel, setBeispiel] = useState(false);
+  const texte = TEXTE[sprache];
   const [auftrag, setAuftrag] = useState<Record<string, string> | null>(null);
   const [festgehalten, setFestgehalten] = useState<Tarifwahl | null>(null);
   const sucheTimer = useRef<number | null>(null);
@@ -94,7 +108,7 @@ export default function WechselFlow({ campaignCode }: { campaignCode: string }) 
     return HAUSHALTE.find((eintrag) => eintrag.id === haushalt)?.kwh ?? 0;
   }, [haushalt, kwhEingabe]);
 
-  const wahl = useMemo(() => waehleTarif(verbrauchKwh || 2500, schwelle), [verbrauchKwh, schwelle]);
+  const wahl = useMemo(() => waehleTarif(verbrauchKwh || HAUSHALTE[1].kwh, schwelle), [verbrauchKwh, schwelle]);
   const angebot = step === "angebot" || sucht ? wahl : festgehalten ?? wahl;
 
   function set<K extends keyof Person>(key: K, value: Person[K]) {
@@ -108,11 +122,9 @@ export default function WechselFlow({ campaignCode }: { campaignCode: string }) 
   }
 
   function angabenPruefen(): boolean {
-    const naechstes: Record<string, string> = {};
-    if (!/^\d{5}$/.test(plz)) naechstes.plz = "Bitte eine PLZ mit 5 Ziffern.";
-    if (verbrauchKwh < 500 || verbrauchKwh > 50000) {
-      naechstes.verbrauch = "Bitte Haushalt wählen oder den Verbrauch zwischen 500 und 50.000 kWh angeben.";
-    }
+    const naechstes: Partial<Record<string, FehlerKey>> = {};
+    if (!/^\d{5}$/.test(plz)) naechstes.plz = "plz";
+    if (verbrauchKwh < 500 || verbrauchKwh > 50000) naechstes.verbrauch = "verbrauch";
     setFehler(naechstes);
     return Object.keys(naechstes).length === 0;
   }
@@ -128,29 +140,29 @@ export default function WechselFlow({ campaignCode }: { campaignCode: string }) 
   }
 
   function personPruefen(): boolean {
-    const naechstes: Record<string, string> = {};
-    if (!person.anrede) naechstes.anrede = "Bitte eine Anrede wählen.";
-    if (person.vorname.trim().length < 2) naechstes.vorname = "Vorname fehlt.";
-    if (person.nachname.trim().length < 2) naechstes.nachname = "Nachname fehlt.";
-    if (!person.geburtstag) naechstes.geburtstag = "Geburtstag fehlt.";
-    else if (!volljaehrig(person.geburtstag)) naechstes.geburtstag = "Der Vertrag braucht ein Alter ab 18 Jahren.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(person.email)) naechstes.email = "E-Mail fehlt oder ist unvollständig.";
-    if (person.telefon.replace(/\D/g, "").length < 6) naechstes.telefon = "Telefonnummer fehlt.";
-    if (person.strasse.trim().length < 2) naechstes.strasse = "Straße fehlt.";
-    if (!person.hausnummer.trim()) naechstes.hausnummer = "Hausnummer fehlt.";
-    if (person.ort.trim().length < 2) naechstes.ort = "Ort fehlt.";
+    const naechstes: Partial<Record<string, FehlerKey>> = {};
+    if (!person.anrede) naechstes.anrede = "anrede";
+    if (person.vorname.trim().length < 2) naechstes.vorname = "vorname";
+    if (person.nachname.trim().length < 2) naechstes.nachname = "nachname";
+    if (!person.geburtstag) naechstes.geburtstag = "geburtstag";
+    else if (!volljaehrig(person.geburtstag)) naechstes.geburtstag = "volljaehrig";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(person.email)) naechstes.email = "email";
+    if (person.telefon.replace(/\D/g, "").length < 6) naechstes.telefon = "telefon";
+    if (person.strasse.trim().length < 2) naechstes.strasse = "strasse";
+    if (!person.hausnummer.trim()) naechstes.hausnummer = "hausnummer";
+    if (person.ort.trim().length < 2) naechstes.ort = "ort";
     setFehler(naechstes);
     return Object.keys(naechstes).length === 0;
   }
 
   function kontoPruefen(): boolean {
-    const naechstes: Record<string, string> = {};
-    if (person.zaehlernummer.trim().length < 4) naechstes.zaehlernummer = "Zählernummer fehlt.";
-    if (person.vorversorger.trim().length < 3) naechstes.vorversorger = "Vorversorger fehlt. Der volle Name, wie auf der Rechnung.";
+    const naechstes: Partial<Record<string, FehlerKey>> = {};
+    if (person.zaehlernummer.trim().length < 4) naechstes.zaehlernummer = "zaehlernummer";
+    if (person.vorversorger.trim().length < 3) naechstes.vorversorger = "vorversorger";
     const iban = person.iban.replace(/\s/g, "").toUpperCase();
-    if (!/^DE\d{20}$/.test(iban)) naechstes.iban = "Bitte eine deutsche IBAN mit 22 Zeichen.";
-    if (person.kontoinhaber.trim().length < 3) naechstes.kontoinhaber = "Kontoinhaber fehlt.";
-    if (!person.datenschutz) naechstes.datenschutz = "Bitte die Einwilligung bestätigen.";
+    if (!/^DE\d{20}$/.test(iban)) naechstes.iban = "iban";
+    if (person.kontoinhaber.trim().length < 3) naechstes.kontoinhaber = "kontoinhaber";
+    if (!person.datenschutz) naechstes.datenschutz = "datenschutz";
     setFehler(naechstes);
     return Object.keys(naechstes).length === 0;
   }
@@ -176,7 +188,7 @@ export default function WechselFlow({ campaignCode }: { campaignCode: string }) 
     setFehler({});
     setSchwelle(PROTOTYP_MIN_PROVISION_EUR);
     setPerson(LEERE_PERSON);
-    setRechnungHinweis("");
+    setBeispiel(false);
     setAuftrag(null);
     setFestgehalten(null);
   }
@@ -184,9 +196,10 @@ export default function WechselFlow({ campaignCode }: { campaignCode: string }) 
   const schrittIndex = STEPS.indexOf(step);
 
   return (
+    <FlussCtx.Provider value={{ t: texte, zahlen: formate(sprache) }}>
     <div className="min-h-dvh bg-surface text-marine">
       <p className="bg-marine px-4 py-2 text-center text-xs text-white">
-        Prototyp · Kampagne {campaignCode} · Beispielpreise · kein Auftrag an Neue Energie
+        {satz(texte.banner, { code: campaignCode })}
       </p>
       <div className="mx-auto w-full max-w-md px-5 pb-16 pt-6">
         <Image
@@ -197,9 +210,10 @@ export default function WechselFlow({ campaignCode }: { campaignCode: string }) 
           className="h-10 w-auto object-contain"
           priority
         />
+        <Sprachwahl sprache={sprache} />
 
         {step !== "fertig" && !sucht ? (
-          <ol className="mt-6 flex gap-2" aria-label="Fortschritt">
+          <ol className="mt-6 flex gap-2" aria-label={texte.fortschritt}>
             {STEPS.map((eintrag, index) => (
               <li
                 key={eintrag}
@@ -265,7 +279,7 @@ export default function WechselFlow({ campaignCode }: { campaignCode: string }) 
             person={person}
             angebot={angebot}
             fehler={fehler}
-            rechnungHinweis={rechnungHinweis}
+            beispiel={beispiel}
             onChange={set}
             onRechnung={() => {
               setPerson((aktuell) => ({
@@ -278,7 +292,7 @@ export default function WechselFlow({ campaignCode }: { campaignCode: string }) 
                 hausnummer: aktuell.hausnummer || "12",
                 ort: aktuell.ort || "Dresden",
               }));
-              setRechnungHinweis("Beispielwerte eingesetzt. Im Prototyp wird kein Foto gelesen.");
+              setBeispiel(true);
             }}
             onZurueck={() => setStep("person")}
             onSubmit={absenden}
@@ -287,15 +301,17 @@ export default function WechselFlow({ campaignCode }: { campaignCode: string }) 
         {step === "fertig" && auftrag ? <Fertig auftrag={auftrag} onNeu={neu} /> : null}
       </div>
     </div>
+    </FlussCtx.Provider>
   );
 }
 
 function Suche({ verbrauchKwh, schwelle }: { verbrauchKwh: number; schwelle: number }) {
+  const { t, zahlen } = useFluss();
   return (
     <div className="mt-16" aria-live="polite">
-      <p className="text-2xl font-medium leading-tight">Wir stellen Ihren Tarif zusammen.</p>
+      <p className="text-2xl font-medium leading-tight">{t.sucheTitel}</p>
       <p className="mt-3 text-sm text-[#5c6178]">
-        {kwhFmt.format(verbrauchKwh)} kWh, Schwelle {schwelle} € Provision, Beispielkatalog.
+        {satz(t.sucheDetail, { kwh: zahlen.kwh.format(verbrauchKwh), schwelle })}
       </p>
     </div>
   );
@@ -314,12 +330,14 @@ function Angaben({
   plz: string;
   haushalt: string;
   kwhEingabe: string;
-  fehler: Record<string, string>;
+  fehler: Partial<Record<string, FehlerKey>>;
   onPlz: (wert: string) => void;
   onHaushalt: (id: string) => void;
   onKwh: (wert: string) => void;
   onSubmit: () => void;
 }) {
+  const { t, zahlen } = useFluss();
+  const schritt = HAUSHALTE[1].kwh - HAUSHALTE[0].kwh;
   return (
     <form
       className="mt-8"
@@ -328,15 +346,14 @@ function Angaben({
         onSubmit();
       }}
     >
-      <h1 className="text-3xl font-medium leading-tight">Ihr Stromtarif.</h1>
-      <p className="mt-3 text-base leading-relaxed text-[#5c6178]">
-        PLZ und Haushaltsgröße. Danach sehen Sie einen Tarif.
-      </p>
+      <h1 className="text-3xl font-medium leading-tight">{t.stromtitel}</h1>
+      <p className="mt-3 text-base leading-relaxed text-[#5c6178]">{t.stromlead}</p>
 
       <div className="mt-8">
-        <Field label="Postleitzahl" error={fehler.plz}>
+        <Field label={t.plz} error={fehler.plz ? t.fehler[fehler.plz] : undefined}>
           <input
-            className={inputClass}
+            className={ltrInput}
+            dir="ltr"
             inputMode="numeric"
             autoComplete="postal-code"
             maxLength={5}
@@ -347,7 +364,7 @@ function Angaben({
       </div>
 
       <fieldset className="mt-6">
-        <legend className="mb-2 text-sm font-medium text-marine">Personen im Haushalt</legend>
+        <legend className="mb-2 text-sm font-medium text-marine">{t.personen}</legend>
         <div className="grid grid-cols-4 gap-2">
           {HAUSHALTE.map((eintrag) => {
             const aktiv = haushalt === eintrag.id && !kwhEingabe;
@@ -362,18 +379,21 @@ function Angaben({
                 }`}
               >
                 <span className="block text-xl font-medium">{eintrag.label}</span>
-                <span className="mt-1 block text-xs text-[#5c6178]">{kwhFmt.format(eintrag.kwh)}</span>
+                <span className="mt-1 block text-xs text-[#5c6178]">{zahlen.kwh.format(eintrag.kwh)}</span>
               </button>
             );
           })}
         </div>
-        <p className="mt-2 text-xs text-[#5c6178]">1 Person rechnet mit 1.500 kWh, jede weitere mit etwa 1.000 kWh mehr.</p>
+        <p className="mt-2 text-xs text-[#5c6178]">
+          {satz(t.haushaltHinweis, { basis: zahlen.kwh.format(HAUSHALTE[0].kwh), schritt: zahlen.kwh.format(schritt) })}
+        </p>
       </fieldset>
 
       <div className="mt-6">
-        <Field label="Jahresverbrauch in kWh, falls bekannt" error={fehler.verbrauch}>
+        <Field label={t.verbrauchLabel} error={fehler.verbrauch ? t.fehler[fehler.verbrauch] : undefined}>
           <input
-            className={inputClass}
+            className={ltrInput}
+            dir="ltr"
             inputMode="numeric"
             value={kwhEingabe}
             onChange={(event) => onKwh(event.target.value)}
@@ -385,7 +405,7 @@ function Angaben({
         type="submit"
         className="mt-8 w-full rounded-xl bg-violet-brand px-4 py-4 text-base font-medium text-white"
       >
-        Tarif anzeigen
+        {t.tarifAnzeigen}
       </button>
     </form>
   );
@@ -406,55 +426,52 @@ function Angebot({
   onZurueck: () => void;
   onWeiter: () => void;
 }) {
+  const { t, zahlen } = useFluss();
   const tarif = wahl.gewinner;
   const monat = tarif ? tarif.jahreskostenEur / 12 : 0;
 
   return (
     <div className="mt-8">
       <button type="button" onClick={onZurueck} className="text-sm text-[#5c6178]">
-        Angaben ändern
+        {t.angabenAendern}
       </button>
-      <h1 className="mt-3 text-3xl font-medium leading-tight">Ihr Vorschlag.</h1>
+      <h1 className="mt-3 text-3xl font-medium leading-tight">{t.vorschlag}</h1>
       <p className="mt-2 text-sm text-[#5c6178]">
-        PLZ {plz}, gerechnet mit {kwhFmt.format(wahl.verbrauchKwh)} kWh.
+        {satz(t.vorschlagMeta, { plz, kwh: zahlen.kwh.format(wahl.verbrauchKwh) })}
       </p>
 
       {tarif ? (
         <article className="mt-6 rounded-3xl bg-white p-6 shadow-ambient" aria-live="polite">
           <p className="text-sm text-[#5c6178]">{tarif.anbieter}</p>
           <h2 className="text-2xl font-medium">{tarif.name}</h2>
-          <p className="mt-6 text-4xl font-medium tracking-tight">{euro.format(tarif.jahreskostenEur)}</p>
-          <p className="text-sm text-[#5c6178]">im Jahr</p>
-          <p className="mt-4 text-base">{euro.format(monat)} geschätzter monatlicher Abschlag</p>
+          <p className="mt-6 text-4xl font-medium tracking-tight" dir="ltr">{zahlen.euro.format(tarif.jahreskostenEur)}</p>
+          <p className="text-sm text-[#5c6178]">{t.imJahr}</p>
+          <p className="mt-4 text-base">{satz(t.abschlag, { betrag: zahlen.euro.format(monat) })}</p>
           <dl className="mt-6 space-y-2 text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="text-[#5c6178]">Arbeitspreis</dt>
-              <dd>{ct.format(tarif.arbeitspreisCt)} ct/kWh</dd>
+              <dt className="text-[#5c6178]">{t.arbeitspreis}</dt>
+              <dd dir="ltr">{zahlen.ct.format(tarif.arbeitspreisCt)} ct/kWh</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-[#5c6178]">Grundpreis</dt>
-              <dd>{euro.format(tarif.grundpreisEurJahr)} / Jahr</dd>
+              <dt className="text-[#5c6178]">{t.grundpreis}</dt>
+              <dd dir="ltr">{zahlen.euro.format(tarif.grundpreisEurJahr)} {t.proJahr}</dd>
             </div>
             {tarif.bonusEur > 0 ? (
               <div className="flex justify-between gap-4">
-                <dt className="text-[#5c6178]">Bonus</dt>
-                <dd>{euro.format(tarif.bonusEur)}</dd>
+                <dt className="text-[#5c6178]">{t.bonus}</dt>
+                <dd dir="ltr">{zahlen.euro.format(tarif.bonusEur)}</dd>
               </div>
             ) : null}
             <div className="flex justify-between gap-4">
-              <dt className="text-[#5c6178]">Laufzeit</dt>
-              <dd>{tarif.laufzeitMonate} Monate</dd>
+              <dt className="text-[#5c6178]">{t.laufzeit}</dt>
+              <dd>{satz(t.monate, { anzahl: tarif.laufzeitMonate })}</dd>
             </div>
           </dl>
-          <p className="mt-6 text-sm leading-relaxed">
-            Unter den Tarifen, die wir anbieten, ist das der günstigste. Der Preis gilt für die
-            genannten kWh.
-          </p>
+          <p className="mt-6 text-sm leading-relaxed">{t.pitch}</p>
         </article>
       ) : (
         <p className="mt-6 rounded-3xl bg-white p-6 text-base leading-relaxed shadow-ambient">
-          Über der Schwelle von {schwelle} € liegt kein Tarif. Die Schwelle im Kasten unten senken,
-          dann erscheint ein Vorschlag.
+          {satz(t.keinTarif, { schwelle })}
         </p>
       )}
 
@@ -464,7 +481,7 @@ function Angebot({
         onClick={onWeiter}
         className="mt-6 w-full rounded-xl bg-violet-brand px-4 py-4 text-base font-medium text-white disabled:opacity-40"
       >
-        Diesen Tarif beauftragen
+        {t.beauftragen}
       </button>
 
       <SystemKasten wahl={wahl} schwelle={schwelle} onSchwelle={onSchwelle} />
@@ -481,16 +498,15 @@ function SystemKasten({
   schwelle: number;
   onSchwelle: (wert: number) => void;
 }) {
+  const { t, zahlen } = useFluss();
   return (
     <details open className="mt-8 rounded-3xl border border-dashed border-[#c9c6dc] bg-white p-5">
-      <summary className="cursor-pointer text-sm font-medium">Was das System entschieden hat</summary>
+      <summary className="cursor-pointer text-sm font-medium">{t.systemTitel}</summary>
       <p className="mt-3 text-sm leading-relaxed text-[#5c6178]">
-        Nur im Prototyp sichtbar. Der Kunde sieht die Provision nicht. Ideal übernimmt Preis und
-        Provision aus dem Laura-Lauf und rechnet sie auf {kwhFmt.format(wahl.verbrauchKwh)} kWh. Die
-        anderen Tarife sind erfunden.
+        {satz(t.systemText, { kwh: zahlen.kwh.format(wahl.verbrauchKwh) })}
       </p>
       <label className="mt-4 block text-sm font-medium">
-        Mindestprovision nach Bonus
+        {t.mindestprovision}
         <input
           className={`${inputClass} mt-1.5`}
           type="number"
@@ -507,11 +523,11 @@ function SystemKasten({
               <span className="font-medium">
                 {tarif.anbieter} {tarif.name}
               </span>
-              <span>{euro.format(tarif.jahreskostenEur)}</span>
+              <span dir="ltr">{zahlen.euro.format(tarif.jahreskostenEur)}</span>
             </div>
             <p className="mt-1 text-[#5c6178]">
-              Provision {tarif.provisionNachBonusEur} €
-              {tarif.bonusEur > 0 ? ` · Bonus ${euro.format(tarif.bonusEur)}` : ""} · {tarif.grund}
+              {satz(t.provisionZeile, { betrag: tarif.provisionNachBonusEur })}
+              {tarif.bonusEur > 0 ? ` · ${t.bonus} ${zahlen.euro.format(tarif.bonusEur)}` : ""} · {grundSatz(t, tarif.grund, tarif.provisionNachBonusEur, schwelle)}
             </p>
           </li>
         ))}
@@ -530,11 +546,16 @@ function PersonSchritt({
 }: {
   person: Person;
   plz: string;
-  fehler: Record<string, string>;
+  fehler: Partial<Record<string, FehlerKey>>;
   onChange: <K extends keyof Person>(key: K, value: Person[K]) => void;
   onZurueck: () => void;
   onWeiter: () => void;
 }) {
+  const { t } = useFluss();
+  const anreden = [
+    { wert: "Frau", label: t.frau },
+    { wert: "Herr", label: t.herr },
+  ] as const;
   return (
     <form
       className="mt-8"
@@ -544,61 +565,61 @@ function PersonSchritt({
       }}
     >
       <button type="button" onClick={onZurueck} className="text-sm text-[#5c6178]">
-        Zurück zum Tarif
+        {t.zurueckTarif}
       </button>
-      <h1 className="mt-3 text-3xl font-medium leading-tight">Wer den Vertrag schließt.</h1>
+      <h1 className="mt-3 text-3xl font-medium leading-tight">{t.werSchliesst}</h1>
       <div className="mt-8 space-y-4">
         <fieldset>
-          <legend className="mb-2 text-sm font-medium">Anrede</legend>
+          <legend className="mb-2 text-sm font-medium">{t.anrede}</legend>
           <div className="grid grid-cols-2 gap-2">
-            {["Frau", "Herr"].map((anrede) => (
+            {anreden.map((anrede) => (
               <button
-                key={anrede}
+                key={anrede.wert}
                 type="button"
-                aria-pressed={person.anrede === anrede}
-                onClick={() => onChange("anrede", anrede)}
+                aria-pressed={person.anrede === anrede.wert}
+                onClick={() => onChange("anrede", anrede.wert)}
                 className={`rounded-xl border py-3 ${
-                  person.anrede === anrede ? "border-violet-brand bg-white" : "border-[#e6e8ef] bg-white"
+                  person.anrede === anrede.wert ? "border-violet-brand bg-white" : "border-[#e6e8ef] bg-white"
                 }`}
               >
-                {anrede}
+                {anrede.label}
               </button>
             ))}
           </div>
-          {fehler.anrede ? <span className="mt-1 block text-sm text-red-700">{fehler.anrede}</span> : null}
+          {fehler.anrede ? <span className="mt-1 block text-sm text-red-700">{t.fehler[fehler.anrede]}</span> : null}
         </fieldset>
-        <Field label="Vorname" error={fehler.vorname}>
+        <Field label={t.vorname} error={fehler.vorname ? t.fehler[fehler.vorname] : undefined}>
           <input className={inputClass} autoComplete="given-name" value={person.vorname} onChange={(event) => onChange("vorname", event.target.value)} />
         </Field>
-        <Field label="Nachname" error={fehler.nachname}>
+        <Field label={t.nachname} error={fehler.nachname ? t.fehler[fehler.nachname] : undefined}>
           <input className={inputClass} autoComplete="family-name" value={person.nachname} onChange={(event) => onChange("nachname", event.target.value)} />
         </Field>
-        <Field label="Geburtstag" error={fehler.geburtstag}>
-          <input className={inputClass} type="date" autoComplete="bday" value={person.geburtstag} onChange={(event) => onChange("geburtstag", event.target.value)} />
+        <Field label={t.geburtstag} error={fehler.geburtstag ? t.fehler[fehler.geburtstag] : undefined}>
+          <input className={ltrInput} dir="ltr" type="date" autoComplete="bday" value={person.geburtstag} onChange={(event) => onChange("geburtstag", event.target.value)} />
         </Field>
-        <Field label="E-Mail" error={fehler.email}>
-          <input className={inputClass} type="email" autoComplete="email" inputMode="email" value={person.email} onChange={(event) => onChange("email", event.target.value)} />
+        <Field label={t.email} error={fehler.email ? t.fehler[fehler.email] : undefined}>
+          <input className={ltrInput} dir="ltr" type="email" autoComplete="email" inputMode="email" value={person.email} onChange={(event) => onChange("email", event.target.value)} />
         </Field>
-        <Field label="Telefon" error={fehler.telefon}>
-          <input className={inputClass} type="tel" autoComplete="tel" inputMode="tel" value={person.telefon} onChange={(event) => onChange("telefon", event.target.value)} />
+        <Field label={t.telefon} error={fehler.telefon ? t.fehler[fehler.telefon] : undefined}>
+          <input className={ltrInput} dir="ltr" type="tel" autoComplete="tel" inputMode="tel" value={person.telefon} onChange={(event) => onChange("telefon", event.target.value)} />
         </Field>
-        <Field label="Straße" error={fehler.strasse}>
+        <Field label={t.strasse} error={fehler.strasse ? t.fehler[fehler.strasse] : undefined}>
           <input className={inputClass} autoComplete="address-line1" value={person.strasse} onChange={(event) => onChange("strasse", event.target.value)} />
         </Field>
         <div className="grid grid-cols-[1fr_7rem] gap-3">
-          <Field label="Hausnummer" error={fehler.hausnummer}>
-            <input className={inputClass} value={person.hausnummer} onChange={(event) => onChange("hausnummer", event.target.value)} />
+          <Field label={t.hausnummer} error={fehler.hausnummer ? t.fehler[fehler.hausnummer] : undefined}>
+            <input className={ltrInput} dir="ltr" value={person.hausnummer} onChange={(event) => onChange("hausnummer", event.target.value)} />
           </Field>
-          <Field label="PLZ">
-            <input className={inputClass} value={plz} readOnly />
+          <Field label={t.plz}>
+            <input className={ltrInput} dir="ltr" value={plz} readOnly />
           </Field>
         </div>
-        <Field label="Ort" error={fehler.ort}>
+        <Field label={t.ort} error={fehler.ort ? t.fehler[fehler.ort] : undefined}>
           <input className={inputClass} autoComplete="address-level2" value={person.ort} onChange={(event) => onChange("ort", event.target.value)} />
         </Field>
       </div>
       <button type="submit" className="mt-8 w-full rounded-xl bg-violet-brand px-4 py-4 text-base font-medium text-white">
-        Weiter zu Zähler und Konto
+        {t.weiterKonto}
       </button>
     </form>
   );
@@ -608,7 +629,7 @@ function KontoSchritt({
   person,
   angebot,
   fehler,
-  rechnungHinweis,
+  beispiel,
   onChange,
   onRechnung,
   onZurueck,
@@ -616,13 +637,14 @@ function KontoSchritt({
 }: {
   person: Person;
   angebot: Tarifwahl;
-  fehler: Record<string, string>;
-  rechnungHinweis: string;
+  fehler: Partial<Record<string, FehlerKey>>;
+  beispiel: boolean;
   onChange: <K extends keyof Person>(key: K, value: Person[K]) => void;
   onRechnung: () => void;
   onZurueck: () => void;
   onSubmit: () => void;
 }) {
+  const { t, zahlen } = useFluss();
   const tarif = angebot.gewinner;
   return (
     <form
@@ -633,33 +655,33 @@ function KontoSchritt({
       }}
     >
       <button type="button" onClick={onZurueck} className="text-sm text-[#5c6178]">
-        Zurück
+        {t.zurueck}
       </button>
       {tarif ? (
         <p className="mt-3 text-sm text-[#5c6178]">
-          {tarif.anbieter} {tarif.name} · {euro.format(tarif.jahreskostenEur)} im Jahr
+          {satz(t.tarifZeile, { name: `${tarif.anbieter} ${tarif.name}`, betrag: zahlen.euro.format(tarif.jahreskostenEur) })}
         </p>
       ) : null}
-      <h1 className="mt-2 text-3xl font-medium leading-tight">Zähler und Konto.</h1>
+      <h1 className="mt-2 text-3xl font-medium leading-tight">{t.zaehlerTitel}</h1>
       <button
         type="button"
         onClick={onRechnung}
         className="mt-6 w-full rounded-xl border border-[#e6e8ef] bg-white px-4 py-4 text-base font-medium"
       >
-        Beispieldaten aus einer Rechnung
+        {t.beispieldaten}
       </button>
-      {rechnungHinweis ? <p className="mt-2 text-sm text-[#5c6178]">{rechnungHinweis}</p> : null}
+      {beispiel ? <p className="mt-2 text-sm text-[#5c6178]">{t.beispielHinweis}</p> : null}
       <div className="mt-6 space-y-4">
-        <Field label="Zählernummer" error={fehler.zaehlernummer}>
-          <input className={inputClass} value={person.zaehlernummer} onChange={(event) => onChange("zaehlernummer", event.target.value)} />
+        <Field label={t.zaehlernummer} error={fehler.zaehlernummer ? t.fehler[fehler.zaehlernummer] : undefined}>
+          <input className={ltrInput} dir="ltr" value={person.zaehlernummer} onChange={(event) => onChange("zaehlernummer", event.target.value)} />
         </Field>
-        <Field label="Bisheriger Versorger" error={fehler.vorversorger}>
+        <Field label={t.vorversorger} error={fehler.vorversorger ? t.fehler[fehler.vorversorger] : undefined}>
           <input className={inputClass} value={person.vorversorger} onChange={(event) => onChange("vorversorger", event.target.value)} />
         </Field>
-        <Field label="IBAN" error={fehler.iban}>
-          <input className={inputClass} autoComplete="off" spellCheck={false} value={person.iban} onChange={(event) => onChange("iban", event.target.value)} />
+        <Field label={t.iban} error={fehler.iban ? t.fehler[fehler.iban] : undefined}>
+          <input className={ltrInput} dir="ltr" autoComplete="off" spellCheck={false} value={person.iban} onChange={(event) => onChange("iban", event.target.value)} />
         </Field>
-        <Field label="Kontoinhaber" error={fehler.kontoinhaber}>
+        <Field label={t.kontoinhaber} error={fehler.kontoinhaber ? t.fehler[fehler.kontoinhaber] : undefined}>
           <input className={inputClass} value={person.kontoinhaber} onChange={(event) => onChange("kontoinhaber", event.target.value)} />
         </Field>
         <label className="flex items-start gap-3 text-sm leading-relaxed">
@@ -669,46 +691,52 @@ function KontoSchritt({
             checked={person.datenschutz}
             onChange={(event) => onChange("datenschutz", event.target.checked)}
           />
-          <span>Ich willige in die Verarbeitung der Angaben zum Zweck dieser Anfrage ein.</span>
+          <span>{t.einwilligung}</span>
         </label>
-        {fehler.datenschutz ? <span className="block text-sm text-red-700">{fehler.datenschutz}</span> : null}
+        {fehler.datenschutz ? <span className="block text-sm text-red-700">{t.fehler[fehler.datenschutz]}</span> : null}
       </div>
       <button type="submit" className="mt-8 w-full rounded-xl bg-violet-brand px-4 py-4 text-base font-medium text-white">
-        Zahlungspflichtig bestellen
+        {t.bestellen}
       </button>
-      <p className="mt-3 text-center text-xs text-[#5c6178]">Im Prototyp bleibt der Auftrag auf diesem Gerät.</p>
+      <p className="mt-3 text-center text-xs text-[#5c6178]">{t.vertragDeutsch}</p>
+      <p className="mt-1 text-center text-xs text-[#5c6178]">{t.bleibtGeraet}</p>
     </form>
   );
 }
 
 function Fertig({ auftrag, onNeu }: { auftrag: Record<string, string>; onNeu: () => void }) {
+  const { t, zahlen } = useFluss();
   return (
     <div className="mt-8">
-      <h1 className="text-3xl font-medium leading-tight">Erfasst.</h1>
+      <h1 className="text-3xl font-medium leading-tight">{t.erfasst}</h1>
       <p className="mt-3 text-base leading-relaxed text-[#5c6178]">
-        Entwurf für {auftrag.firstname} {auftrag.lastname}, Tarif {auftrag.tariffName}. Der Body
-        bleibt auf diesem Gerät, testMode ist {auftrag.testMode}.
+        {satz(t.erfasstText, {
+          name: `${auftrag.firstname} ${auftrag.lastname}`,
+          tarif: auftrag.tariffName,
+          testMode: auftrag.testMode,
+        })}
       </p>
+      <p className="mt-2 text-sm text-[#5c6178]">{t.vertragDeutsch}</p>
       <dl className="mt-6 space-y-2 rounded-3xl bg-white p-6 text-sm shadow-ambient">
         <div className="flex justify-between gap-4">
-          <dt className="text-[#5c6178]">Tarif</dt>
-          <dd className="text-right">{auftrag.tariffName}</dd>
+          <dt className="text-[#5c6178]">{t.tarif}</dt>
+          <dd className="text-end">{auftrag.tariffName}</dd>
         </div>
         <div className="flex justify-between gap-4">
-          <dt className="text-[#5c6178]">Verbrauch</dt>
-          <dd>{kwhFmt.format(Number(auftrag.consumption))} kWh</dd>
+          <dt className="text-[#5c6178]">{t.verbrauch}</dt>
+          <dd dir="ltr">{zahlen.kwh.format(Number(auftrag.consumption))} kWh</dd>
         </div>
         <div className="flex justify-between gap-4">
-          <dt className="text-[#5c6178]">Externe ID</dt>
-          <dd className="text-right">{auftrag.externalId}</dd>
+          <dt className="text-[#5c6178]">{t.externeId}</dt>
+          <dd className="text-end" dir="ltr">{auftrag.externalId}</dd>
         </div>
       </dl>
       <details className="mt-4 rounded-3xl border border-dashed border-[#c9c6dc] bg-white p-5">
-        <summary className="cursor-pointer text-sm font-medium">Body für POST /contracts</summary>
-        <pre className="mt-3 overflow-x-auto text-xs leading-relaxed">{JSON.stringify(auftrag, null, 2)}</pre>
+        <summary className="cursor-pointer text-sm font-medium">{t.bodyTitel}</summary>
+        <pre className="mt-3 overflow-x-auto text-xs leading-relaxed" dir="ltr">{JSON.stringify(auftrag, null, 2)}</pre>
       </details>
       <button type="button" onClick={onNeu} className="mt-8 w-full rounded-xl bg-violet-brand px-4 py-4 text-base font-medium text-white">
-        Neu beginnen
+        {t.neu}
       </button>
     </div>
   );

@@ -4,10 +4,10 @@
 export const PROTOTYP_MIN_PROVISION_EUR = 80;
 
 export const HAUSHALTE = [
-  { id: "1", label: "1", personen: "1 Person", kwh: 1500 },
-  { id: "2", label: "2", personen: "2 Personen", kwh: 2500 },
-  { id: "3", label: "3", personen: "3 Personen", kwh: 3500 },
-  { id: "4", label: "4", personen: "4 Personen", kwh: 4500 },
+  { id: "1", label: "1", kwh: 1000 },
+  { id: "2", label: "2", kwh: 2000 },
+  { id: "3", label: "3", kwh: 3000 },
+  { id: "4", label: "4", kwh: 4000 },
 ] as const;
 
 export type BeispielTarif = {
@@ -77,10 +77,12 @@ export const BEISPIEL_TARIFE: BeispielTarif[] = [
   },
 ];
 
+export type TarifGrund = "unter" | "guenstigster" | "teurer";
+
 export type GepruefterTarif = BeispielTarif & {
   jahreskostenEur: number;
   behalten: boolean;
-  grund: string;
+  grund: TarifGrund;
 };
 
 export type Tarifwahl = {
@@ -113,14 +115,10 @@ export function waehleTarif(verbrauchKwh: number, mindestprovisionEur: number): 
   const geprueft = bewertet
     .map(({ tarif, kosten, behalten }) => {
       const istGewinner = gewinnerId === tarif.id;
-      let grund: string;
-      if (!behalten) {
-        grund = `Provision ${tarif.provisionNachBonusEur} € unter ${mindestprovisionEur} €`;
-      } else if (istGewinner) {
-        grund = "Günstigster über der Schwelle";
-      } else {
-        grund = "Über der Schwelle, teurer";
-      }
+      let grund: TarifGrund;
+      if (!behalten) grund = "unter";
+      else if (istGewinner) grund = "guenstigster";
+      else grund = "teurer";
       return { ...tarif, jahreskostenEur: kosten, behalten, grund };
     })
     .sort((a, b) => a.jahreskostenEur - b.jahreskostenEur);
