@@ -376,12 +376,13 @@ export async function checkTariffPrices(
       skipReason: "NEUE_ENERGIE_BASE_URI oder NEUE_ENERGIE_API_KEY fehlt",
     };
   }
+  const api = cfg;
 
   async function postContract(prices: { basePrice: string; workingPrice: string }): Promise<unknown> {
-    const response = await fetch(`${cfg.baseUri}/contracts`, {
+    const response = await fetch(`${api.baseUri}/contracts`, {
       method: "POST",
-      headers: { authorization: `Bearer ${cfg.apiKey}` },
-      body: buildValidationFormData(input, resolvedTariffId, cfg.testMode, prices),
+      headers: { authorization: `Bearer ${api.apiKey}` },
+      body: buildValidationFormData(input, resolvedTariffId, api.testMode, prices),
     });
     return response.json();
   }
