@@ -2,6 +2,13 @@ export const SPRACHEN = ["de", "uk", "ar", "en"] as const;
 
 export type Sprache = (typeof SPRACHEN)[number];
 
+export const FLAGGEN: Record<Sprache, string> = {
+  de: "🇩🇪",
+  uk: "🇺🇦",
+  ar: "🇸🇦",
+  en: "🇬🇧",
+};
+
 export type FehlerKey =
   | "plz"
   | "verbrauch"
@@ -111,7 +118,7 @@ export const TEXTE: Record<Sprache, Texte> = {
     stromlead: "PLZ und Haushaltsgröße. Danach sehen Sie einen Tarif.",
     plz: "Postleitzahl",
     personen: "Personen im Haushalt",
-    haushaltHinweis: "1 Person rechnet mit {basis} kWh, jede weitere mit etwa {schritt} kWh mehr.",
+    haushaltHinweis: "Die Zahl darunter ist der angenommene Jahresverbrauch.",
     verbrauchLabel: "Jahresverbrauch in kWh, falls bekannt",
     tarifAnzeigen: "Tarif anzeigen",
     angabenAendern: "Angaben ändern",
@@ -207,7 +214,7 @@ export const TEXTE: Record<Sprache, Texte> = {
     stromlead: "Індекс і розмір домогосподарства. Далі ви побачите один тариф.",
     plz: "Поштовий індекс",
     personen: "Осіб у домогосподарстві",
-    haushaltHinweis: "Для 1 особи рахуємо {basis} кВт·год, кожна додаткова — ще близько {schritt} кВт·год.",
+    haushaltHinweis: "Число під особами — орієнтовне річне споживання.",
     verbrauchLabel: "Річне споживання в кВт·год, якщо знаєте",
     tarifAnzeigen: "Показати тариф",
     angabenAendern: "Змінити дані",
@@ -303,7 +310,7 @@ export const TEXTE: Record<Sprache, Texte> = {
     stromlead: "الرمز البريدي وعدد أفراد السكن. بعدها ترون تعرفة واحدة.",
     plz: "الرمز البريدي",
     personen: "الأشخاص في السكن",
-    haushaltHinweis: "نحسب للشخص الواحد {basis} كيلوواط ساعة، وكل شخص إضافي نحو {schritt} كيلوواط ساعة.",
+    haushaltHinweis: "الرقم تحت عدد الأشخاص هو الاستهلاك السنوي المفترض.",
     verbrauchLabel: "الاستهلاك السنوي بالكيلوواط ساعة، إن كان معروفاً",
     tarifAnzeigen: "عرض التعرفة",
     angabenAendern: "تغيير البيانات",
@@ -399,7 +406,7 @@ export const TEXTE: Record<Sprache, Texte> = {
     stromlead: "Postcode and household size. Then you see one tariff.",
     plz: "Postcode",
     personen: "People in the household",
-    haushaltHinweis: "1 person is calculated at {basis} kWh, each additional person at about {schritt} kWh more.",
+    haushaltHinweis: "The figure below is the assumed annual consumption.",
     verbrauchLabel: "Annual consumption in kWh, if you know it",
     tarifAnzeigen: "Show tariff",
     angabenAendern: "Change details",

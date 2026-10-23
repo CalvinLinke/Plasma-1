@@ -4,10 +4,11 @@
 export const PROTOTYP_MIN_PROVISION_EUR = 80;
 
 export const HAUSHALTE = [
-  { id: "1", label: "1", kwh: 1000 },
+  { id: "1", label: "1", kwh: 1300 },
   { id: "2", label: "2", kwh: 2000 },
-  { id: "3", label: "3", kwh: 3000 },
-  { id: "4", label: "4", kwh: 4000 },
+  { id: "3", label: "3", kwh: 2600 },
+  { id: "4", label: "4", kwh: 3000 },
+  { id: "5", label: "5", kwh: 3500 },
 ] as const;
 
 export type BeispielTarif = {

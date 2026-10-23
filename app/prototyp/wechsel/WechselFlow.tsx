@@ -337,7 +337,6 @@ function Angaben({
   onSubmit: () => void;
 }) {
   const { t, zahlen } = useFluss();
-  const schritt = HAUSHALTE[1].kwh - HAUSHALTE[0].kwh;
   return (
     <form
       className="mt-8"
@@ -365,7 +364,7 @@ function Angaben({
 
       <fieldset className="mt-6">
         <legend className="mb-2 text-sm font-medium text-marine">{t.personen}</legend>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-5 gap-2">
           {HAUSHALTE.map((eintrag) => {
             const aktiv = haushalt === eintrag.id && !kwhEingabe;
             return (
@@ -374,7 +373,7 @@ function Angaben({
                 type="button"
                 aria-pressed={aktiv}
                 onClick={() => onHaushalt(eintrag.id)}
-                className={`rounded-2xl border px-2 py-4 text-center ${
+                className={`rounded-2xl border px-1 py-3 text-center ${
                   aktiv ? "border-violet-brand bg-white" : "border-[#e6e8ef] bg-white"
                 }`}
               >
@@ -385,7 +384,7 @@ function Angaben({
           })}
         </div>
         <p className="mt-2 text-xs text-[#5c6178]">
-          {satz(t.haushaltHinweis, { basis: zahlen.kwh.format(HAUSHALTE[0].kwh), schritt: zahlen.kwh.format(schritt) })}
+          {t.haushaltHinweis}
         </p>
       </fieldset>
 

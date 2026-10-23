@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { SPRACHEN, TEXTE, mitSprache, type Sprache } from "@/lib/prototyp-texte";
+import { FLAGGEN, SPRACHEN, TEXTE, mitSprache, type Sprache } from "@/lib/prototyp-texte";
 
 export default function Sprachwahl({ sprache }: { sprache: Sprache }) {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function Sprachwahl({ sprache }: { sprache: Sprache }) {
   }
 
   return (
-    <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label={TEXTE[sprache].spracheAuswahl}>
+    <div className="mt-5 grid grid-cols-4 gap-2" role="group" aria-label={TEXTE[sprache].spracheAuswahl}>
       {SPRACHEN.map((id) => {
         const aktiv = id === sprache;
         return (
@@ -27,10 +27,11 @@ export default function Sprachwahl({ sprache }: { sprache: Sprache }) {
             type="button"
             aria-pressed={aktiv}
             onClick={() => waehle(id)}
-            className={`rounded-full border px-3 py-1.5 text-sm ${
-              aktiv ? "border-violet-brand bg-white" : "border-[#e6e8ef] bg-white text-[#5c6178]"
+            className={`flex flex-col items-center gap-1 rounded-2xl border px-1 py-2 text-[11px] leading-tight ${
+              aktiv ? "border-violet-brand bg-white text-marine" : "border-[#e6e8ef] bg-white text-[#5c6178]"
             }`}
           >
+            <span className="text-xl leading-none" aria-hidden="true">{FLAGGEN[id]}</span>
             {TEXTE[id].spracheName}
           </button>
         );
