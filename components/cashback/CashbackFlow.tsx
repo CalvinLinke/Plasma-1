@@ -8,6 +8,7 @@ import { cashbackTexte, type CashbackTexte } from "@/lib/cashback/texte";
 import {
   LEERE_PERSON,
   ibanNormal,
+  kwhAusText,
   personPruefen,
   vertragPruefen,
   type CashbackPerson,
@@ -107,6 +108,7 @@ export default function CashbackFlow({
   const [fehler, setFehler] = useState<Fehlerliste & { plzAngabe?: string; verbrauch?: string }>({});
   const [sendet, setSendet] = useState(false);
   const [sendeFehler, setSendeFehler] = useState<string | null>(null);
+  const [hinweis, setHinweis] = useState<string | null>(null);
   const [vorgang, setVorgang] = useState("");
   const [honig, setHonig] = useState("");
 
@@ -176,9 +178,41 @@ export default function CashbackFlow({
     const f = personPruefen({ ...person, plz });
     setFehler(f);
     if (Object.keys(f).length === 0) {
-      setPerson((p) => ({ ...p, kontoinhaber: p.kontoinhaber || `${p.vorname} ${p.nachname}`.trim() }));
+      setPerson((p) => ({
+        ...p,
+        kontoinhaber: p.kontoinhaber || `${p.vorname} ${p.nachname}`.trim(),
+        verbrauchRechnung: p.verbrauchRechnung || String(kwh),
+      }));
       setSchritt("vertrag");
       nachOben();
+    }
+  }
+
+  /** Verbrauch laut Rechnung weicht ab: Preis neu holen, Kunde bestätigt erneut. */
+  async function neuBerechnen(neuKwh: number) {
+    setSendet(true);
+    setSendeFehler(null);
+    try {
+      const res = await fetch("/api/cashback/angebot", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ plz, ort: ort.trim(), kwh: neuKwh }),
+      });
+      const data = (await res.json()) as { status: string; tarif?: KundenTarif; token?: string };
+      if (data.status === "ok" && data.tarif && data.token) {
+        setTarif(data.tarif);
+        setToken(data.token);
+        setKwhEingabe(String(neuKwh));
+        setHaushalt("");
+        setZustimmung((z0) => ({ ...z0, bestellung: false }));
+        setHinweis(t.preisNeu);
+      } else {
+        setSendeFehler(`${t.fehlerTitel} ${t.fehlerText}`);
+      }
+    } catch {
+      setSendeFehler(t.sendeFehler);
+    } finally {
+      setSendet(false);
     }
   }
 
@@ -186,8 +220,14 @@ export default function CashbackFlow({
     const f = vertragPruefen(person, zustimmung);
     setFehler(f);
     if (Object.keys(f).length) return;
+    const rechnungKwh = kwhAusText(person.verbrauchRechnung);
+    if (rechnungKwh !== kwh) {
+      await neuBerechnen(rechnungKwh);
+      return;
+    }
     setSendet(true);
     setSendeFehler(null);
+    setHinweis(null);
     try {
       const res = await fetch("/api/cashback/auftrag", {
         method: "POST",
@@ -208,6 +248,8 @@ export default function CashbackFlow({
         setVorgang(data.vorgang);
         setSchritt("fertig");
         nachOben();
+      } else if (data.status === "verbrauchGeaendert") {
+        await neuBerechnen(kwhAusText(person.verbrauchRechnung));
       } else if (data.status === "abgelaufen") {
         setSendeFehler(t.abgelaufen);
       } else if (data.status === "ungueltig" && data.fehler) {
@@ -477,6 +519,7 @@ export default function CashbackFlow({
             <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> {t.zurueckTarif}
           </button>
           <h2 className="mt-3 text-2xl font-bold leading-tight text-marine">{t.personTitel}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-gray-500">{t.nameHinweis}</p>
           <div className="mt-6 space-y-4">
             <fieldset>
               <legend className="mb-2 text-sm font-medium text-marine">{t.anrede}</legend>
@@ -555,20 +598,87 @@ export default function CashbackFlow({
           <p className="mt-2 rounded-xl bg-cyan-brand/10 px-3 py-2 text-sm text-marine">{t.rechnungTipp}</p>
 
           <div className="mt-6 space-y-4">
-            <Feld label={t.zaehlernummer} fehler={fm(fehler.zaehlernummer)} hilfe={t.zaehlerHilfe}>
-              <input className={ltr} dir="ltr" autoComplete="off" value={person.zaehlernummer} onChange={(e) => setP("zaehlernummer", e.target.value)} />
-            </Feld>
             <Feld label={t.vorversorger} fehler={fm(fehler.vorversorger)} hilfe={t.vorversorgerHilfe}>
               <input className={input} value={person.vorversorger} onChange={(e) => setP("vorversorger", e.target.value)} />
             </Feld>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <Feld label={t.kundennummerLabel} fehler={fm(fehler.kundennummer)}>
+              <input className={ltr} dir="ltr" autoComplete="off" value={person.kundennummer} onChange={(e) => setP("kundennummer", e.target.value)} />
+            </Feld>
+            <Feld label={t.zaehlernummer} fehler={fm(fehler.zaehlernummer)} hilfe={t.zaehlerHilfe}>
+              <input className={ltr} dir="ltr" autoComplete="off" value={person.zaehlernummer} onChange={(e) => setP("zaehlernummer", e.target.value)} />
+            </Feld>
+            <div>
               <Feld label={t.maloLabel} fehler={fm(fehler.marktlokation)} hilfe={t.maloHilfe}>
-                <input className={ltr} dir="ltr" inputMode="numeric" value={person.marktlokation} onChange={(e) => setP("marktlokation", e.target.value)} />
+                <input
+                  className={`${ltr} disabled:bg-gray-50`}
+                  dir="ltr"
+                  inputMode="numeric"
+                  maxLength={14}
+                  disabled={person.maloUnbekannt}
+                  value={person.marktlokation}
+                  onChange={(e) => setP("marktlokation", e.target.value.replace(/[^\d ]/g, ""))}
+                />
               </Feld>
-              <Feld label={t.kundennummerLabel}>
-                <input className={ltr} dir="ltr" value={person.kundennummer} onChange={(e) => setP("kundennummer", e.target.value)} />
-              </Feld>
+              <label className="mt-2 flex items-start gap-2 text-sm text-gray-600">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-violet-brand"
+                  checked={person.maloUnbekannt}
+                  onChange={(e) => {
+                    setP("maloUnbekannt", e.target.checked);
+                    if (e.target.checked) setP("marktlokation", "");
+                    setFehler((f0) => ({ ...f0, marktlokation: undefined }));
+                  }}
+                />
+                {t.maloUnbekannt}
+              </label>
             </div>
+            <Feld label={t.verbrauchRechnungLabel} fehler={fm(fehler.verbrauchRechnung)} hilfe={t.verbrauchRechnungHilfe}>
+              <input
+                className={ltr}
+                dir="ltr"
+                inputMode="numeric"
+                value={person.verbrauchRechnung}
+                onChange={(e) => setP("verbrauchRechnung", e.target.value.replace(/[^\d.]/g, ""))}
+              />
+            </Feld>
+
+            <fieldset>
+              <legend className="mb-2 text-sm font-medium text-marine">{t.gekuendigtFrage}</legend>
+              <div className="grid grid-cols-2 gap-2">
+                {(["nein", "ja"] as const).map((w) => (
+                  <button
+                    key={w}
+                    type="button"
+                    aria-pressed={person.bereitsGekuendigt === w}
+                    onClick={() => setP("bereitsGekuendigt", w)}
+                    className={`rounded-xl border py-3 text-marine ${
+                      person.bereitsGekuendigt === w ? "border-violet-brand bg-violet-brand/5" : "border-gray-200 bg-white"
+                    }`}
+                  >
+                    {w === "ja" ? t.ja : t.nein}
+                  </button>
+                ))}
+              </div>
+              {fehler.bereitsGekuendigt ? (
+                <span className="mt-1 block text-sm text-red-700">{fm(fehler.bereitsGekuendigt)}</span>
+              ) : null}
+              {person.bereitsGekuendigt === "nein" ? (
+                <p className="mt-2 text-xs leading-relaxed text-gray-500">{t.gekuendigtNeinHilfe}</p>
+              ) : null}
+            </fieldset>
+            {person.bereitsGekuendigt === "ja" ? (
+              <Feld label={t.lieferbeginnLabel} fehler={fm(fehler.lieferbeginnWunsch)} hilfe={t.lieferbeginnHilfe}>
+                <input
+                  className={ltr}
+                  dir="ltr"
+                  type="date"
+                  value={person.lieferbeginnWunsch}
+                  onChange={(e) => setP("lieferbeginnWunsch", e.target.value)}
+                />
+              </Feld>
+            ) : null}
+
             <Feld label={t.iban} fehler={fm(fehler.iban)} hilfe={t.ibanHilfe}>
               <input
                 className={ltr}
@@ -664,6 +774,7 @@ export default function CashbackFlow({
             </Haken>
           </div>
 
+          {hinweis ? <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">{hinweis}</p> : null}
           {sendeFehler ? <p className="mt-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{sendeFehler}</p> : null}
 
           <button type="submit" className={`${knopf} mt-6`} disabled={sendet}>

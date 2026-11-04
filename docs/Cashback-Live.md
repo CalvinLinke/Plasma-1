@@ -8,10 +8,29 @@ Stand: 04.11.2026. Baut auf Roberts Prototyp `/prototyp/wechsel` auf und macht d
 2. PLZ, Ort, Personen im Haushalt (oder kWh), freiwillig der heutige Abschlag.
 3. Angebot sofort: ein Tarif, Monatsabschlag, Jahreskosten, Ersparnis (wenn Abschlag angegeben), plus 50 €.
 4. Persönliche Daten.
-5. Zähler, Versorger, MaLo (freiwillig), Kundennummer (freiwillig), IBAN, drei Häkchen, „Zahlungspflichtig bestellen“.
+5. Wechseldaten von der Rechnung (siehe unten), IBAN, drei Häkchen, „Zahlungspflichtig bestellen“.
 6. Bestätigungsseite mit Vorgangsnummer `CB-JJMMTT-XXX`, Bestätigungsmail an den Kunden.
 
 Wer nicht tippen will: Foto-Upload weiter unten auf derselben Seite (bestehendes `AngebotForm`, Antwort in 48 Std.).
+
+## Wechseldaten: was der neue Versorger braucht
+
+Der neue Versorger meldet die Lieferstelle beim Netzbetreiber an und kündigt beim Altversorger. Seit dem 24-Stunden-Lieferantenwechsel (6.6.2025) ist die MaLo-ID der zentrale Schlüssel; ohne sie geht es nur über Zählernummer und Adresse und dauert länger oder wird abgelehnt.
+
+| Angabe | Wofür | Im Formular | NE-Feld |
+|---|---|---|---|
+| Bisheriger Versorger (voller Name) | Kündigung an den richtigen Altversorger | Pflicht | `currentProviderName` |
+| Kundennummer beim Altversorger | Altversorger ordnet die Kündigung zu | Pflicht | `clientNumber` |
+| Zählernummer | Zuordnung der Lieferstelle | Pflicht | `meterNumber` |
+| MaLo-ID (11 Ziffern) | Anmeldung beim Netzbetreiber | Pflicht, außer Haken „finde ich nicht“ (dann Notion „MaLo fehlt“) | `marketLocation`, `marketLocationId` |
+| Jahresverbrauch laut Rechnung | Abschlag, Stufentarife | Pflicht, vorbelegt; bei Abweichung wird der Preis neu berechnet und neu bestätigt | `consumption` |
+| Schon selbst gekündigt? | sonst doppelte Kündigung oder Lücke | Pflicht Ja/Nein | `appointment` |
+| Lieferbeginn-Wunsch (nur bei Ja) | Start nahtlos nach Vertragsende | Datum ab morgen | `appointment_exact_date` + `appointmentDate` |
+| Name und Adresse wie auf der Rechnung | Altversorger muss den Vertrag finden | Hinweis im Formular | `firstname`, `lastname`, … |
+
+Bei „Nein“ gilt `appointment_next_possible`: Der neue Versorger kündigt, die Kündigungsfrist des alten Vertrags läuft weiter (Grundversorgung zwei Wochen).
+
+Nicht abgedeckt: zweiter Vertragsinhaber und abweichende Rechnungsadresse (GFU-Formular kann beides). Solche Fälle laufen über den Foto-Weg oder Telefon.
 
 ## Technik
 
@@ -48,7 +67,7 @@ Sicherheitsnetz: Erst Notion, dann Neue Energie. Scheitert NE (Preis weicht ab, 
 
 ## Notion: Cashback-Wechsel
 
-Ein Eintrag pro Auftrag. Wichtige Spalten: Vorgang, Status, Code, Quelle, Eingang, Lieferbeginn, Cashback ausgezahlt am, Duplikat-Verdacht, IBAN, Kontoinhaber, Tarif, Provision € (intern), NE-Auftrags-ID, NE-Antwort.
+Ein Eintrag pro Auftrag. Wichtige Spalten: Vorgang, Status, MaLo fehlt, Selbst gekündigt, Lieferbeginn Wunsch, Code, Quelle, Eingang, Lieferbeginn, Cashback ausgezahlt am, Duplikat-Verdacht, IBAN, Kontoinhaber, Tarif, Provision € (intern), NE-Auftrags-ID, NE-Antwort.
 
 Status: Neu → Test ok, manuell anlegen / An Neue Energie übermittelt / Manuell prüfen → Belieferung gestartet → Cashback ausgezahlt (oder Abgelehnt / storniert).
 
@@ -61,7 +80,8 @@ Auszahlung: Filter „Status = Belieferung gestartet“ und „Lieferbeginn ält
    - Kommt aus dem Portal ein Tarif? Feldnamen in `portalTarifLesen` gegen eine echte Antwort abgleichen (ID, Anbieter, Provision, Bonus, Laufzeit).
    - Stimmt die Portal-Tarif-ID mit der `tariffId` der external_api überein? Sonst schlägt die Preisprüfung fehl.
    - Ist die Provision aus dem Portal der Betrag **nach** Bonus (Laura-Lauf: 104 € ohne, 68 € mit 50 € Bonus)?
-   - Antwortet `POST /contracts` mit testMode=1 ohne Fehler (Anrede Frau, Telefon, Geburtsdatum, MaLo)?
+   - Antwortet `POST /contracts` mit testMode=1 ohne Fehler (Anrede Frau, Telefon, Geburtsdatum, MaLo, Kundennummer)?
+   - Einmal mit „Ja, selbst gekündigt“ testen: akzeptiert die API `appointment_exact_date` mit Wunschdatum?
    - Landet der Vorgang in Notion, kommen beide Mails und Telegram an?
 3. Rechtlich prüfen lassen: Bestelltext, Pflichtinfos vor dem Bestell-Button (Vertragszusammenfassung, AGB und Widerrufsbelehrung des Versorgers), Datenschutzerklärung um Neue Energie / Versorger als Empfänger ergänzen.
 4. Ukrainisch und Arabisch gegenlesen lassen.

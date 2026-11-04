@@ -52,7 +52,7 @@ const steps = [
   {
     icon: FileText,
     titel: "Online abschließen",
-    text: "Name, Adresse, Zählernummer und IBAN eintragen. Alles steht auf Ihrer Stromrechnung. Kein Papier, keine Unterschrift.",
+    text: "Daten von Ihrer Stromrechnung abtippen: Kundennummer, Zählernummer, Marktlokations-ID, Verbrauch. Dazu Ihre IBAN. Kein Papier, keine Unterschrift.",
   },
   {
     icon: Wallet,
@@ -110,7 +110,7 @@ const faqs = [
   {
     frage: "Muss ich meinen alten Vertrag selbst kündigen?",
     antwort:
-      "Nein. Beim Wechsel kündigt der neue Versorger Ihren alten Vertrag. Wir behalten das im Blick. Sie müssen nichts tun.",
+      "Nein. Beim Wechsel kündigt der neue Versorger Ihren alten Vertrag. Dafür braucht er Ihre Kundennummer und die Zählernummer von der Rechnung. Die Kündigungsfrist Ihres alten Vertrags gilt weiter, in der Grundversorgung sind es zwei Wochen. Haben Sie schon selbst gekündigt, nennen Sie uns einfach den Tag, ab dem geliefert werden soll.",
   },
   {
     frage: "Muss ich etwas unterschreiben?",
@@ -120,7 +120,7 @@ const faqs = [
   {
     frage: "Welche Angaben brauche ich?",
     antwort:
-      "Ihre letzte Stromrechnung reicht. Dort stehen Zählernummer, Ihr bisheriger Versorger und oft die Marktlokations-ID. Dazu Ihre IBAN für die monatlichen Abschläge. Auf dasselbe Konto überweisen wir die 50 €.",
+      "Ihre letzte Stromrechnung reicht. Daraus brauchen wir Ihren bisherigen Versorger, Ihre Kundennummer dort, die Zählernummer, die Marktlokations-ID und den Jahresverbrauch. Damit meldet der neue Versorger Sie an und kündigt den alten Vertrag. Dazu Ihre IBAN für die monatlichen Abschläge. Auf dasselbe Konto überweisen wir die 50 €.",
   },
   {
     frage: "Woher kommen die 50 €?",

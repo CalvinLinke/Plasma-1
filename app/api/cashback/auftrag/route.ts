@@ -4,7 +4,7 @@ import { anNeueEnergieSenden, type NeErgebnis } from "@/lib/cashback/auftrag-ne"
 import { cashbackConfig, normalisiereCode, normalisiereQuelle } from "@/lib/cashback/config";
 import { interneMeldung, kundenBestaetigung } from "@/lib/cashback/mails";
 import { STATUS, notionBereit, vorgangAktualisieren, vorgangAnlegen, zaehlerBekannt } from "@/lib/cashback/notion";
-import { personBereinigen, personPruefen, vertragPruefen, type Zustimmungen } from "@/lib/cashback/pruefung";
+import { kwhAusText, personBereinigen, personPruefen, vertragPruefen, type Zustimmungen } from "@/lib/cashback/pruefung";
 import { clientIp, entsiegeln, gedrosselt } from "@/lib/cashback/siegel";
 import { notifyPartnerLeadTelegram } from "@/lib/telegram-notify";
 
@@ -59,6 +59,10 @@ export async function POST(request: Request) {
   if (Object.keys(fehler).length) {
     return NextResponse.json({ status: "ungueltig", fehler }, { status: 400 });
   }
+  // Der Preis gilt nur für den Verbrauch, mit dem er berechnet wurde.
+  if (kwhAusText(person.verbrauchRechnung) !== angebot.kwh) {
+    return NextResponse.json({ status: "verbrauchGeaendert" }, { status: 409 });
+  }
 
   const cfg = cashbackConfig();
   const code = normalisiereCode(String(body.code ?? ""));
@@ -96,7 +100,10 @@ export async function POST(request: Request) {
         Zählernummer: person.zaehlernummer.replace(/\s/g, ""),
         Marktlokation: person.marktlokation,
         "Kundennummer alt": person.kundennummer,
+        "MaLo fehlt": person.maloUnbekannt && !person.marktlokation,
         "Bisheriger Versorger": person.vorversorger,
+        "Selbst gekündigt": person.bereitsGekuendigt === "ja" ? "Ja" : "Nein",
+        "Lieferbeginn Wunsch": person.lieferbeginnWunsch || undefined,
         IBAN: person.iban,
         Kontoinhaber: person.kontoinhaber,
         "Neuer Versorger": angebot.anbieter,

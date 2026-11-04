@@ -50,7 +50,11 @@ export async function kundenBestaetigung(
   <ol style="padding-left: 20px;">
     <li>Wir leiten Ihren Auftrag an ${esc(angebot.anbieter)} weiter.</li>
     <li>${esc(angebot.anbieter)} schickt Ihnen die Vertragsbestätigung per E-Mail. Darin stehen auch die Vertragsbedingungen und Ihr Widerrufsrecht.</li>
-    <li>Ihren alten Vertrag kündigt der neue Versorger beim Wechsel für Sie. Sie müssen nichts tun.</li>
+    <li>${
+      person.bereitsGekuendigt === "ja"
+        ? "Sie haben Ihren alten Vertrag selbst gekündigt. Die Belieferung beginnt zu Ihrem Wunschtermin."
+        : "Ihren alten Vertrag kündigt der neue Versorger für Sie. Es gilt die Kündigungsfrist Ihres alten Vertrags. Sie müssen nichts tun."
+    }</li>
     <li>Sobald Sie beliefert werden, überweisen wir Ihnen ${euro.format(betragEur)} innerhalb von 6 Wochen.</li>
   </ol>
   <p>Fragen? Antworten Sie einfach auf diese E-Mail oder rufen Sie uns an: 0172 8182583.</p>
@@ -91,9 +95,10 @@ export async function interneMeldung(args: {
     ${zeile("Telefon", p.telefon)}
     ${zeile("Adresse", `${p.strasse} ${p.hausnummer}, ${p.plz} ${p.ort}`)}
     ${zeile("Zählernummer", p.zaehlernummer)}
-    ${zeile("Marktlokation", p.marktlokation || "nicht angegeben")}
-    ${zeile("Kundennummer alt", p.kundennummer || "nicht angegeben")}
+    ${zeile("Marktlokation", p.marktlokation || "FEHLT, beim Kunden oder Netzbetreiber nachfragen")}
+    ${zeile("Kundennummer alt", p.kundennummer)}
     ${zeile("Bisheriger Versorger", p.vorversorger)}
+    ${zeile("Alter Vertrag", p.bereitsGekuendigt === "ja" ? `selbst gekündigt, Lieferbeginn gewünscht ${p.lieferbeginnWunsch}` : "noch nicht gekündigt, neuer Versorger kündigt")}
     ${zeile("IBAN", iban)}
     ${zeile("Kontoinhaber", p.kontoinhaber)}
     ${zeile("Tarif", `${a.anbieter} ${a.name} (ID ${a.tariffId})`)}

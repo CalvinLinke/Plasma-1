@@ -38,6 +38,23 @@ function isoZuDe(iso: string): string {
   return `${t}.${m}.${j}`;
 }
 
+/**
+ * Lieferbeginn: Ist der alte Vertrag noch nicht gekündigt, kündigt der neue
+ * Versorger und liefert zum nächstmöglichen Termin (Kündigungsfrist des alten
+ * Vertrags gilt weiter). Hat der Kunde selbst gekündigt, liefern wir zu seinem
+ * Wunschtermin, damit er nicht in die Ersatzversorgung fällt und der neue
+ * Versorger nicht ein zweites Mal kündigt.
+ */
+export function terminAus(person: CashbackPerson): {
+  appointment: "appointment_next_possible" | "appointment_exact_date";
+  appointmentDate: string;
+} {
+  if (person.bereitsGekuendigt === "ja" && person.lieferbeginnWunsch) {
+    return { appointment: "appointment_exact_date", appointmentDate: isoZuDe(person.lieferbeginnWunsch) };
+  }
+  return { appointment: "appointment_next_possible", appointmentDate: lieferbeginn() };
+}
+
 function lieferbeginn(): string {
   const tage = Number(process.env.NEUE_ENERGIE_APPOINTMENT_DAYS || 14);
   const d = new Date();
@@ -68,12 +85,13 @@ function auftragFormular(
   vorgang: string,
 ): FormData {
   const [phoneCode, phone] = telefonTeilen(person.telefon);
+  const termin = terminAus(person);
   const felder: Record<string, string> = {
     testMode,
     tariffId: angebot.tariffId,
     type: "type_changing_provider",
-    appointment: "appointment_next_possible",
-    appointmentDate: lieferbeginn(),
+    appointment: termin.appointment,
+    appointmentDate: termin.appointmentDate,
     priceDate: datumDe(new Date()),
     ref: vorgang,
     externalId: process.env.NEUE_ENERGIE_EXTERNAL_ID || "13120",
@@ -94,6 +112,7 @@ function auftragFormular(
     phone,
     meterNumber: person.zaehlernummer.replace(/\s/g, ""),
     currentProviderName: person.vorversorger,
+    clientNumber: person.kundennummer,
     individualPayment: "false",
     accountHolder: person.kontoinhaber,
     iban: person.iban,
@@ -101,7 +120,6 @@ function auftragFormular(
     basePrice: preise.basePrice,
     workingPrice: preise.workingPrice,
   };
-  if (person.kundennummer) felder.clientNumber = person.kundennummer;
   if (person.marktlokation) {
     felder.marketLocation = person.marktlokation;
     felder.marketLocationId = person.marktlokation;
@@ -146,16 +164,17 @@ export async function anNeueEnergieSenden(
   if (!api) return { status: "fehler", meldung: "NEUE_ENERGIE_BASE_URI oder NEUE_ENERGIE_API_KEY fehlt" };
 
   // 1. Exakte Preise für die echte Adresse holen.
+  const termin = terminAus(person);
   const input: TariffCheckInput = {
     street: person.strasse,
     houseNumber: person.hausnummer,
     zip: person.plz,
     city: person.ort,
     consumptionKwh: angebot.kwh,
-    appointmentDate: lieferbeginn(),
+    appointmentDate: termin.appointmentDate,
     meterNumber: person.zaehlernummer.replace(/\s/g, ""),
     contractType: "type_changing_provider",
-    appointment: "appointment_next_possible",
+    appointment: termin.appointment,
     clientNumber: person.kundennummer || undefined,
     currentProviderName: person.vorversorger,
     marketLocationId: person.marktlokation || undefined,

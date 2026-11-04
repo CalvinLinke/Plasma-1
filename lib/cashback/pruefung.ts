@@ -15,6 +15,14 @@ export type CashbackPerson = {
   marktlokation: string;
   kundennummer: string;
   vorversorger: string;
+  /** Jahresverbrauch laut letzter Rechnung (kWh, als Text aus dem Feld). */
+  verbrauchRechnung: string;
+  /** Hat der Kunde den alten Vertrag schon selbst gekündigt? */
+  bereitsGekuendigt: "ja" | "nein" | "";
+  /** Nur bei bereitsGekuendigt = ja: gewünschter Lieferbeginn (ISO). */
+  lieferbeginnWunsch: string;
+  /** Kunde findet die MaLo-ID nicht. Wechsel geht dann über Zähler + Adresse, langsamer. */
+  maloUnbekannt: boolean;
   iban: string;
   kontoinhaber: string;
 };
@@ -40,6 +48,10 @@ export type CashbackFehler =
   | "hausnummer"
   | "zaehlernummer"
   | "marktlokation"
+  | "kundennummer"
+  | "verbrauchRechnung"
+  | "bereitsGekuendigt"
+  | "lieferbeginnWunsch"
   | "vorversorger"
   | "iban"
   | "ibanPruefziffer"
@@ -63,6 +75,10 @@ export const LEERE_PERSON: CashbackPerson = {
   marktlokation: "",
   kundennummer: "",
   vorversorger: "",
+  verbrauchRechnung: "",
+  bereitsGekuendigt: "",
+  lieferbeginnWunsch: "",
+  maloUnbekannt: false,
   iban: "",
   kontoinhaber: "",
 };
@@ -94,6 +110,23 @@ export function volljaehrig(iso: string): boolean {
 
 export type Fehlerliste = Partial<Record<keyof CashbackPerson | keyof Zustimmungen, CashbackFehler>>;
 
+export function kwhAusText(text: string): number {
+  const n = Number(text.replace(/\./g, "").replace(",", ".").replace(/[^\d.]/g, ""));
+  return Number.isFinite(n) ? Math.round(n) : 0;
+}
+
+/** Lieferbeginn-Wunsch: frühestens morgen, höchstens 12 Monate im Voraus. */
+export function lieferbeginnGueltig(iso: string): boolean {
+  const d = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return false;
+  const morgen = new Date();
+  morgen.setHours(0, 0, 0, 0);
+  morgen.setDate(morgen.getDate() + 1);
+  const spaetestens = new Date(morgen);
+  spaetestens.setFullYear(spaetestens.getFullYear() + 1);
+  return d >= morgen && d <= spaetestens;
+}
+
 export function personPruefen(p: CashbackPerson): Fehlerliste {
   const f: Fehlerliste = {};
   if (p.anrede !== "Frau" && p.anrede !== "Herr") f.anrede = "anrede";
@@ -114,8 +147,13 @@ export function vertragPruefen(p: CashbackPerson, z: Zustimmungen): Fehlerliste 
   const f: Fehlerliste = {};
   if (p.zaehlernummer.replace(/\s/g, "").length < 4) f.zaehlernummer = "zaehlernummer";
   const malo = p.marktlokation.replace(/\s/g, "");
-  if (malo && !/^\d{11}$/.test(malo)) f.marktlokation = "marktlokation";
+  if (malo ? !/^\d{11}$/.test(malo) : !p.maloUnbekannt) f.marktlokation = "marktlokation";
+  if (p.kundennummer.replace(/\s/g, "").length < 3) f.kundennummer = "kundennummer";
   if (p.vorversorger.trim().length < 3) f.vorversorger = "vorversorger";
+  const kwh = kwhAusText(p.verbrauchRechnung);
+  if (kwh < 300 || kwh > 50000) f.verbrauchRechnung = "verbrauchRechnung";
+  if (p.bereitsGekuendigt !== "ja" && p.bereitsGekuendigt !== "nein") f.bereitsGekuendigt = "bereitsGekuendigt";
+  if (p.bereitsGekuendigt === "ja" && !lieferbeginnGueltig(p.lieferbeginnWunsch)) f.lieferbeginnWunsch = "lieferbeginnWunsch";
   const iban = ibanNormal(p.iban);
   if (!/^DE\d{20}$/.test(iban)) f.iban = "iban";
   else if (!ibanGueltig(iban)) f.iban = "ibanPruefziffer";
@@ -135,6 +173,7 @@ export function personBereinigen(roh: unknown): CashbackPerson {
       .trim()
       .slice(0, max);
   const anrede = s("anrede");
+  const gekuendigt = s("bereitsGekuendigt");
   return {
     anrede: anrede === "Frau" || anrede === "Herr" ? anrede : "",
     vorname: s("vorname", 60),
@@ -150,6 +189,10 @@ export function personBereinigen(roh: unknown): CashbackPerson {
     marktlokation: s("marktlokation", 20).replace(/\s/g, ""),
     kundennummer: s("kundennummer", 40),
     vorversorger: s("vorversorger", 100),
+    verbrauchRechnung: s("verbrauchRechnung", 12),
+    bereitsGekuendigt: gekuendigt === "ja" || gekuendigt === "nein" ? gekuendigt : "",
+    lieferbeginnWunsch: gekuendigt === "ja" ? s("lieferbeginnWunsch", 10) : "",
+    maloUnbekannt: r.maloUnbekannt === true,
     iban: ibanNormal(s("iban", 40)),
     kontoinhaber: s("kontoinhaber", 80),
   };
