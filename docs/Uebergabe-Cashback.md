@@ -1,6 +1,6 @@
 # Übergabe: Cashback-Strecke /cashback (Code DRESDEN50)
 
-Stand: 04.11.2026, 16:00 Uhr. Vollständige Übergabe aus der Sitzung mit Calvin. Diese Datei als Prompt in eine neue Claude-Code-Sitzung im Projekt „WEBSITE Plasma“ geben oder mit „Lies docs/Uebergabe-Cashback.md und arbeite dort weiter“ starten.
+Stand: 04.11.2026, 18:30 Uhr (Foto-Weg entfernt, Flyer v4-Prompt). Vollständige Übergabe aus der Sitzung mit Calvin. Diese Datei als Prompt in eine neue Claude-Code-Sitzung im Projekt „WEBSITE Plasma“ geben oder mit „Lies docs/Uebergabe-Cashback.md und arbeite dort weiter“ starten.
 
 ---
 
@@ -68,7 +68,7 @@ Stand: 04.11.2026, 16:00 Uhr. Vollständige Übergabe aus der Sitzung mit Calvin
 
 | Datei | Inhalt |
 |---|---|
-| `app/(site)/cashback/page.tsx` | Landingpage umgebaut: Hero links Versprechen, rechts die Strecke; Foto-Weg als eigener Abschnitt; FAQ und Schritte neu; Code aus URL |
+| `app/(site)/cashback/page.tsx` | Landingpage umgebaut: Hero links Versprechen, rechts die Strecke; FAQ und Schritte neu; Code aus URL. Foto-Upload entfernt (siehe 5a) |
 | `components/cashback/CashbackFlow.tsx` | Client-Komponente der Strecke (4 Schritte + Fertig), Sprachumschalter, RTL |
 | `lib/cashback/config.ts` | Code, Aliase, Schwelle, Modus, Demo, Quelle |
 | `lib/cashback/angebot.ts` | Portal-Abruf, Tarif-Parser, Auswahl, Cache, Kundensicht |
@@ -89,7 +89,7 @@ Stand: 04.11.2026, 16:00 Uhr. Vollständige Übergabe aus der Sitzung mit Calvin
 1. QR öffnet `plasma-energie.de/cashback?f=<variante>`; optional `&code=…`. Standard ist `DRESDEN50`, `DD50` wird auf `DRESDEN50` umgeleitet, unbekannte Codes fallen auf den Standard zurück (`CASHBACK_CODES`).
 2. Schritt „Angaben“: PLZ, Ort (bei PLZ 01067 bis 01328 automatisch „Dresden“), Personen im Haushalt oder kWh, freiwillig „Ihr Abschlag heute in € pro Monat“.
 3. Schritt „Angebot“: Anbieter, Tarifname, großer Monatsabschlag (ohne Bonus), „X € im ersten Jahr, Bonus schon abgezogen“, Ersparnis „Sie sparen ungefähr X € im Jahr“ (nur wenn Abschlag angegeben und Ersparnis ≥ 10 €), Arbeitspreis, Grundpreis, Bonus, Laufzeit, Preisgarantie (wenn vorhanden), Ökostrom-Badge (wenn vorhanden), Balken „Plus 50 € von uns, sobald Ihr neuer Vertrag läuft“, Button „Weiter zum Abschluss“, Hinweis „Rechnung zur Hand nehmen“.
-   Kein Tarif: „Hier finden wir gerade keinen passenden Tarif.“ mit Buttons Foto schicken (#foto) und Anrufen. Fehler: „Der Preis lässt sich gerade nicht laden.“ gleiche Buttons.
+   Kein Tarif: „Hier finden wir gerade keinen passenden Tarif.“ mit Buttons WhatsApp (Text mit Code und PLZ vorbelegt) und Anrufen. Fehler: „Der Preis lässt sich gerade nicht laden.“ gleiche Buttons.
 4. Schritt „Person“: Anrede, Vorname, Nachname, Geburtstag (ab 18, max. 110 Jahre), E-Mail, Telefon, Straße, Hausnummer, PLZ (gesperrt, aus Schritt 1), Ort. Hinweis „Bitte genau so, wie es auf Ihrer Stromrechnung steht.“
 5. Schritt „Zähler und Konto“: bisheriger Versorger, Kundennummer, Zählernummer, MaLo-ID (+ Haken „finde ich nicht“), Jahresverbrauch laut Rechnung (vorbelegt), „Schon selbst gekündigt?“ Ja/Nein (+ Datum bei Ja), IBAN, Kontoinhaber, Zusammenfassung (Tarif, Preise, Bonus, Verbrauch, Lieferstelle), drei Häkchen (Bestellung inkl. Kündigungsauftrag, Datenschutz mit Link, Aktionsbedingungen mit Link #bedingungen), unsichtbarer Honeypot, Button „Zahlungspflichtig bestellen“, Hinweis 14 Tage Widerruf, bei Fremdsprache „Der Vertrag selbst bleibt auf Deutsch.“
 6. Fertig: „Geschafft. Ihr Auftrag ist da.“, Vorgangsnummer `CB-JJMMTT-XXX`, vier nächste Schritte.
@@ -137,7 +137,14 @@ Drosselung (6 Aufträge / 10 Min. je IP; Angebote 20 / 10 Min.) → Honeypot →
 
 - Hero: Pill „Aktion · Code DRESDEN50“, H1 „Strom wechseln und 50 € bekommen.“, Text „Postleitzahl eingeben, Preis sofort sehen, online abschließen. Sobald Ihr neuer Vertrag läuft, überweisen wir Ihnen 50 €. Kostenlos und ohne Vorkosten.“, Gutschein und Häkchen nur ab Desktop, Link „Lieber ohne Tippen? Rechnung als Foto schicken“. Rechts die Strecke.
 - Schritte: Preis berechnen · Online abschließen (Kundennummer, Zählernummer, MaLo, Verbrauch, IBAN; kein Papier, keine Unterschrift) · 50 € bekommen.
-- „Wann bekomme ich die 50 €?“ angepasst. Neuer Abschnitt `#foto` mit AngebotForm (aktion cashback, gebiet = Code + Quelle). FAQ neu: „Muss ich etwas unterschreiben?“, „Welche Angaben brauche ich?“, Kündigung inkl. Grundversorgung zwei Wochen. Bedingungen mit Anker `#bedingungen` und Satz zur Auszahlung auf das angegebene Konto.
+- „Wann bekomme ich die 50 €?“ angepasst. Kein Foto-Upload mehr. FAQ neu: „Muss ich etwas unterschreiben?“, „Welche Angaben brauche ich?“, Kündigung inkl. Grundversorgung zwei Wochen. Bedingungen mit Anker `#bedingungen` und Satz zur Auszahlung auf das angegebene Konto.
+
+### 5a. Foto-Weg entfernt (Entscheidung Calvin, 04.11.2026, 18:29)
+
+- Auf /cashback gibt es nur noch die manuelle Eingabe. Entfernt: Abschnitt `#foto` mit `AngebotForm`, Link „Lieber ohne Tippen? Rechnung als Foto schicken“ im Hero, Foto-Button bei „kein Tarif“ und „Preis lädt nicht“, Foto-Hinweise in FAQ und „Wann bekomme ich die 50 €?“.
+- Ersatz: Hero-Zeile „Fragen? Rufen Sie an: 0172 8182583“. Bei „kein Tarif“ und Ladefehler die Buttons „Per WhatsApp schreiben“ (Nachricht mit Code und PLZ vorbelegt) und „Anrufen“. Texte in allen vier Sprachen angepasst (`whatsappButton`, `keinTarifText`, `fehlerText`).
+- Folge: Alle Cashback-Kunden laufen durch die Strecke und landen damit vollständig in Notion. Die Lücke „Foto-Kunden nicht in Notion“ ist erledigt.
+- Grund für die Entscheidung: nur ein Prozess, sauber nachverfolgbar.
 
 ### Fix Handymenü (betrifft heute die Live-Seite)
 
@@ -158,7 +165,7 @@ Drosselung (6 Aufträge / 10 Min. je IP; Angebote 20 / 10 Min.) → Honeypot →
 | Wunsch-Lieferbeginn (bei Ja) | nahtloser Start | Datum | `appointment_exact_date`, `appointmentDate` |
 | Name und Adresse wie auf Rechnung | Zuordnung beim Altversorger | Hinweis | `firstname`, `lastname`, … |
 
-Nicht abgedeckt: zweiter Vertragsinhaber, abweichende Rechnungsadresse (GFU-Formular kann beides). Diese Fälle über Foto-Weg oder Telefon.
+Nicht abgedeckt: zweiter Vertragsinhaber, abweichende Rechnungsadresse (GFU-Formular kann beides). Diese Fälle über Telefon oder WhatsApp.
 
 ---
 
@@ -269,39 +276,58 @@ TECHNIK UND QUALITÄT
 
 - Im QR bleibt immer `plasma-energie.de/cashback`, nie `/prototyp` drucken. Je Variante eine Kennung: `?f=cashback-flyer`, `?f=cashback-karte`, `?f=weihnacht-flyer`, `?f=weihnacht-karte` (landet in Notion-Spalte „Quelle“).
 - Code einheitlich `DRESDEN50`.
-- Erst drucken, wenn die Strecke live ist. Muss Weihnachten vorher in Druck, den Foto-Ablauf drucken und nur Texte vereinheitlichen.
-- Zwei Wege zeigen: schnell online (QR) und ohne Tippen (Foto per Mail an Cashback@plasma-energie.de, Antwort in 48 Std.).
+- Erst drucken, wenn die Strecke live ist. Einen Foto- oder Mail-Weg als Ausweich gibt es nicht mehr.
+- Nur ein Weg: online über den QR. Für Fragen Telefon und WhatsApp 0172 8182583. Keine Mail-Adresse Cashback@ mehr auf den Drucksachen.
 - Satz „Legen Sie Ihre Stromrechnung bereit.“ auf den Flyer.
 - Auf dem Flyer „online abschließen“, nicht „unterschreiben“.
 
-Claude-Design-Prompt dafür (Stand nach dieser Sitzung):
+Stand Druckvorlagen: Calvin hat Version v3 umgesetzt (zwei Wege, Foto per Mail). Nach der Entscheidung von 18:29 muss v4 ohne Foto- und Mail-Weg entstehen. Prompt dafür:
 
 ```
-Überarbeite die vier bestehenden Plasma-Druckvorlagen (Cashback-Flyer A5 quer, Cashback-Postkarte Maxi, Weihnachts-Flyer A5 quer, Weihnachts-Postkarte Maxi). Layout, CI, Farben (Marine #1A1B4B, Indigo #4B0082, Violett #7B61FF, Cyan #00F0FF), Schriften, Gutschein-Optik und Vorderseiten bleiben unverändert. Geändert wird nur die Ablauf-Darstellung auf der Rückseite und die Kontaktzeile. Keine Gedankenstriche im Text, Sie-Form, einfache Sprache (B1), große Schrift.
+Erstelle aus den vier Plasma-Druckvorlagen in Version v3 (Cashback-Flyer A5 quer, Cashback-Postkarte Maxi, Weihnachts-Flyer A5 quer, Weihnachts-Postkarte Maxi) eine Version v4. v3 bleibt unverändert erhalten.
 
-Vorderseite: Aktionscode einheitlich „DRESDEN50“. Text neben dem QR: „Jetzt scannen. Preis sofort sehen.“
+Grund: Den Foto- und Mail-Weg gibt es nicht mehr. Kunden schließen nur noch online über den QR-Code ab. Für Fragen gibt es Telefon und WhatsApp.
 
-Rückseite, Titel „So funktioniert's“ (plus bestehende Zeilen auf Ukrainisch und Arabisch). Drei Schritte mit den bestehenden Icon-Karten:
-1. Icon Handy mit QR: „QR-Code scannen“ / Unterzeile: „Postleitzahl und Personen im Haushalt eingeben.“
-2. Icon Tarif/Preisschild: „Preis sofort sehen“ / Unterzeile: „Ihr neuer Tarif erscheint direkt auf dem Handy.“
-3. 50-€-Badge wie bisher: „Online abschließen“ / Unterzeile: „Der neue Versorger kündigt Ihren alten Vertrag. Nach Lieferbeginn überweisen wir Ihnen 50 €.“ (Weihnachtsvariante: „Ihr Geschenk: 50 € nach Lieferbeginn.“)
-Jede Zeile zusätzlich auf Ukrainisch und Arabisch, im selben Stil wie bisher (Arabisch rechtsbündig).
+Unverändert lassen: Layout, CI (Marine #1A1B4B, Indigo #4B0082, Violett #7B61FF, Cyan #00F0FF), Schriften, Gutschein-Optik, Code DRESDEN50, alle QR-Codes mit ihren Adressen (?f=cashback-flyer, ?f=cashback-karte, ?f=weihnacht-flyer, ?f=weihnacht-karte), QR mindestens 22 mm mit weißem Rand, Frankierzone und Adressfeld der Postkarten, Leiste „Kostenlos. Kein Risiko.“, NAP-Fußzeile. Keine Gedankenstriche, Sie-Form, einfache Sprache (B1).
 
-Unter den Schritten ein kleiner Hinweis mit Dokument-Icon: „Tipp: Legen Sie Ihre letzte Stromrechnung bereit.“
+ÄNDERUNGEN
 
-Kontaktbereich, zwei gleichwertige Wege:
-Links: „Online in 3 Minuten“ mit QR und plasma-energie.de/cashback
-Rechts: „Lieber ohne Tippen?“ „Foto der Rechnung an Cashback@plasma-energie.de. Wir melden uns innerhalb von 48 Stunden.“
-Vertrauensleiste bleibt: „Kostenlos. Kein Risiko.“ (dreisprachig).
+1. Mail-Adresse Cashback@plasma-energie.de überall entfernen, auf Vorder- und Rückseiten. In der NAP-Fußzeile bleibt box@plasma-energie.de als Firmenangabe stehen.
 
-Postkarte: dieselben drei Schritte, kompakter, Frankierzone und Adressfeld unverändert. Den Hinweis „Rechnung bereitlegen“ als eine Zeile unter Schritt 3.
+2. Flyer-Rückseite, Kontaktbereich: Statt zwei gleichwertiger Wege jetzt EIN Hauptweg und darunter eine kleine Hilfezeile.
+   Hauptweg, groß, mit QR: „Online in wenigen Minuten“ / „plasma-energie.de/cashback“.
+   Hilfezeile, klein, mit Telefon- und WhatsApp-Icon: „Fragen? Wir helfen persönlich: 0172 8182583, auch per WhatsApp.“
+   Den Block „Lieber ohne Tippen?“ komplett streichen.
 
-Kleingedrucktes unverändert lassen, ergänzen um: „Angebot abhängig von Postleitzahl und Verbrauch. Annahme durch den Versorger vorbehalten.“
+3. Tipp unter den drei Schritten erweitern (Dokument-Icon):
+   „Legen Sie Ihre letzte Stromrechnung bereit. Sie brauchen daraus Kundennummer, Zählernummer und Marktlokations-ID.“
+   Ukrainisch und Arabisch nur für den ersten Satz, im selben Stil wie die Schritt-Titel:
+   UK: „Підготуйте останній рахунок за електроенергію.“
+   AR: „جهّزوا آخر فاتورة كهرباء.“
 
-QR-Codes als austauschbare Platzhalter, mindestens 22 mm, mit Ruhezone, je Variante eigene URL:
-plasma-energie.de/cashback?f=cashback-flyer / ?f=cashback-karte / ?f=weihnacht-flyer / ?f=weihnacht-karte
+4. Schritte bleiben, nur Schritt 3 präzisieren:
+   1. „QR-Code scannen“ / „Postleitzahl und Personen im Haushalt eingeben.“
+   2. „Preis sofort sehen“ / „Ihr neuer Tarif erscheint direkt auf dem Handy.“
+   3. „Online abschließen“ / „Daten von der Rechnung eintragen, fertig. Der neue Versorger kündigt Ihren alten Vertrag. Nach Lieferbeginn überweisen wir Ihnen 50 €.“
+      Weihnachten: letzter Satz „Ihr Geschenk: 50 € nach Lieferbeginn.“
+   Ukrainische und arabische Schritt-Titel wie in v3.
 
-Ukrainische und arabische Zeilen vor dem Druck von Muttersprachlern gegenlesen lassen.
+5. Postkarten-Rückseite: Kurzform der beiden Wege streichen. Stattdessen unter den Schritten:
+   „Online: QR auf der Vorderseite scannen.“
+   „Fragen? 0172 8182583, auch per WhatsApp.“
+   Den Tipp „Stromrechnung bereitlegen“ als eine Zeile beibehalten.
+
+6. Vorderseiten: Text neben dem QR bleibt „Jetzt scannen. Preis sofort sehen.“ Sonst nichts ändern.
+
+7. Kleingedrucktes wie in v3 („Angebot abhängig von Postleitzahl und Verbrauch. Annahme durch den Versorger vorbehalten.“ bleibt drin).
+
+PRÜFUNG
+- Auf keiner der acht Seiten darf Cashback@ oder das Wort „Foto“ als Weg vorkommen.
+- Nichts läuft über, nichts bricht unschön um (Telefonnummer und URL dürfen nicht umbrechen).
+- Alle sechs QR-Codes zeigen auf ihre eigene Adresse und sind mindestens 22 mm groß, auch auf den Postkarten.
+- Druck-PDFs: 3 mm Beschnitt, CMYK, QR als Vektor.
+- Ukrainische und arabische Zeilen vor dem Druck von Muttersprachlern gegenlesen lassen.
+- Gedruckt wird erst, wenn die Strecke /cashback live ist.
 ```
 
 ---

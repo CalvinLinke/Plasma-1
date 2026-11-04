@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import { ArrowLeft, Camera, Check, Leaf, Loader2, Phone, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Check, Leaf, Loader2, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 import { FLAGGEN, SPRACHEN, formate, satz, type Sprache } from "@/lib/prototyp-texte";
 import { HAUSHALTE } from "@/lib/prototyp-wechsel";
 import { cashbackTexte, type CashbackTexte } from "@/lib/cashback/texte";
@@ -402,8 +402,13 @@ export default function CashbackFlow({
                 {problem === "keinTarif" ? t.keinTarifText : t.fehlerText}
               </p>
               <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                <a href="#foto" className="inline-flex items-center justify-center gap-2 rounded-xl bg-marine px-4 py-3 text-sm font-semibold text-white">
-                  <Camera className="h-4 w-4" /> {t.fotoButton}
+                <a
+                  href={`https://wa.me/491728182583?text=${encodeURIComponent(`Hallo Plasma, ich komme vom Flyer (Code ${code}) und brauche Hilfe beim Stromwechsel. Meine PLZ: ${plz}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-marine px-4 py-3 text-sm font-semibold text-white"
+                >
+                  <MessageCircle className="h-4 w-4" /> {t.whatsappButton}
                 </a>
                 <a href="tel:+491728182583" className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-marine">
                   <Phone className="h-4 w-4" /> {t.anrufen}

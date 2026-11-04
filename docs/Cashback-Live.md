@@ -11,7 +11,7 @@ Stand: 04.11.2026. Baut auf Roberts Prototyp `/prototyp/wechsel` auf und macht d
 5. Wechseldaten von der Rechnung (siehe unten), IBAN, drei Häkchen, „Zahlungspflichtig bestellen“.
 6. Bestätigungsseite mit Vorgangsnummer `CB-JJMMTT-XXX`, Bestätigungsmail an den Kunden.
 
-Wer nicht tippen will: Foto-Upload weiter unten auf derselben Seite (bestehendes `AngebotForm`, Antwort in 48 Std.).
+Nur Online-Eingabe. Den Foto-Upload gibt es auf /cashback nicht mehr (Entscheidung Calvin, 04.11.2026). Hilfe bei Problemen: Telefon und WhatsApp 0172 8182583.
 
 ## Wechseldaten: was der neue Versorger braucht
 
@@ -30,7 +30,7 @@ Der neue Versorger meldet die Lieferstelle beim Netzbetreiber an und kündigt be
 
 Bei „Nein“ gilt `appointment_next_possible`: Der neue Versorger kündigt, die Kündigungsfrist des alten Vertrags läuft weiter (Grundversorgung zwei Wochen).
 
-Nicht abgedeckt: zweiter Vertragsinhaber und abweichende Rechnungsadresse (GFU-Formular kann beides). Solche Fälle laufen über den Foto-Weg oder Telefon.
+Nicht abgedeckt: zweiter Vertragsinhaber und abweichende Rechnungsadresse (GFU-Formular kann beides). Solche Fälle laufen über Telefon oder WhatsApp.
 
 ## Technik
 

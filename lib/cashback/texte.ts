@@ -27,7 +27,7 @@ type NeueTexte = {
   keinTarifText: string;
   fehlerTitel: string;
   fehlerText: string;
-  fotoButton: string;
+  whatsappButton: string;
   anrufen: string;
   personTitel: string;
   weiterZaehler: string;
@@ -89,10 +89,10 @@ const NEU: Record<Sprache, NeueTexte> = {
     weiterAbschluss: "Weiter zum Abschluss",
     angabenAendern: "Angaben ändern",
     keinTarifTitel: "Hier finden wir gerade keinen passenden Tarif.",
-    keinTarifText: "Kein Problem. Schicken Sie uns ein Foto Ihrer Stromrechnung. Wir prüfen alles persönlich und melden uns innerhalb von 48 Stunden.",
+    keinTarifText: "Kein Problem. Rufen Sie uns an oder schreiben Sie uns per WhatsApp. Wir schauen persönlich nach einem Tarif für Sie.",
     fehlerTitel: "Der Preis lässt sich gerade nicht laden.",
-    fehlerText: "Versuchen Sie es in ein paar Minuten noch einmal. Oder schicken Sie uns ein Foto Ihrer Stromrechnung, wir melden uns innerhalb von 48 Stunden.",
-    fotoButton: "Rechnung als Foto schicken",
+    fehlerText: "Versuchen Sie es in ein paar Minuten noch einmal. Oder rufen Sie uns an, wir helfen Ihnen weiter.",
+    whatsappButton: "Per WhatsApp schreiben",
     anrufen: "Anrufen: 0172 8182583",
     personTitel: "Wer bekommt den Strom?",
     weiterZaehler: "Weiter",
@@ -167,10 +167,10 @@ const NEU: Record<Sprache, NeueTexte> = {
     weiterAbschluss: "Далі до оформлення",
     angabenAendern: "Змінити дані",
     keinTarifTitel: "Зараз ми не знайшли відповідного тарифу.",
-    keinTarifText: "Не проблема. Надішліть нам фото вашого рахунку за електроенергію. Ми все перевіримо особисто і відповімо протягом 48 годин.",
+    keinTarifText: "Не проблема. Зателефонуйте нам або напишіть у WhatsApp. Ми особисто підберемо для вас тариф.",
     fehlerTitel: "Ціну зараз не вдається завантажити.",
-    fehlerText: "Спробуйте ще раз за кілька хвилин. Або надішліть фото рахунку, ми відповімо протягом 48 годин.",
-    fotoButton: "Надіслати фото рахунку",
+    fehlerText: "Спробуйте ще раз за кілька хвилин. Або зателефонуйте нам, ми допоможемо.",
+    whatsappButton: "Написати у WhatsApp",
     anrufen: "Зателефонувати: 0172 8182583",
     personTitel: "Хто отримує електроенергію?",
     weiterZaehler: "Далі",
@@ -246,10 +246,10 @@ const NEU: Record<Sprache, NeueTexte> = {
     weiterAbschluss: "متابعة إلى إتمام الطلب",
     angabenAendern: "تعديل البيانات",
     keinTarifTitel: "لم نجد الآن تعرفة مناسبة.",
-    keinTarifText: "لا مشكلة. أرسلوا لنا صورة فاتورة الكهرباء. نراجع كل شيء شخصياً ونرد خلال 48 ساعة.",
+    keinTarifText: "لا مشكلة. اتصلوا بنا أو راسلونا عبر واتساب. نبحث لكم شخصياً عن تعرفة مناسبة.",
     fehlerTitel: "لا يمكن تحميل السعر حالياً.",
-    fehlerText: "حاولوا مرة أخرى بعد بضع دقائق. أو أرسلوا صورة الفاتورة، ونرد خلال 48 ساعة.",
-    fotoButton: "إرسال صورة الفاتورة",
+    fehlerText: "حاولوا مرة أخرى بعد بضع دقائق. أو اتصلوا بنا، وسنساعدكم.",
+    whatsappButton: "راسلونا عبر واتساب",
     anrufen: "اتصلوا: 0172 8182583",
     personTitel: "من يحصل على الكهرباء؟",
     weiterZaehler: "متابعة",
@@ -325,10 +325,10 @@ const NEU: Record<Sprache, NeueTexte> = {
     weiterAbschluss: "Continue to order",
     angabenAendern: "Change details",
     keinTarifTitel: "We cannot find a suitable tariff right now.",
-    keinTarifText: "No problem. Send us a photo of your electricity bill. We check everything personally and reply within 48 hours.",
+    keinTarifText: "No problem. Call us or message us on WhatsApp. We will look for a tariff for you personally.",
     fehlerTitel: "The price cannot be loaded right now.",
-    fehlerText: "Please try again in a few minutes. Or send us a photo of your bill, we reply within 48 hours.",
-    fotoButton: "Send a photo of the bill",
+    fehlerText: "Please try again in a few minutes. Or call us and we will help you.",
+    whatsappButton: "Message us on WhatsApp",
     anrufen: "Call: 0172 8182583",
     personTitel: "Who receives the electricity?",
     weiterZaehler: "Continue",

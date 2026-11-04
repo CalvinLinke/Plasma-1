@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  Camera,
   Calculator,
   FileText,
   Wallet,
@@ -16,7 +15,6 @@ import {
   MessageCircle,
   Check,
 } from "lucide-react";
-import AngebotForm from "@/components/AngebotForm";
 import CashbackFlow from "@/components/cashback/CashbackFlow";
 import { cashbackConfig, normalisiereCode, normalisiereQuelle } from "@/lib/cashback/config";
 import SchemaOrg from "@/components/SchemaOrg";
@@ -135,7 +133,7 @@ const faqs = [
   {
     frage: "Ich kenne mich mit so etwas nicht aus.",
     antwort:
-      "Das ist in Ordnung. Statt online abzuschließen, können Sie uns auch einfach ein Foto Ihrer Rechnung schicken. Dann melden wir uns innerhalb von 48 Stunden. Oder Sie rufen an oder schreiben per WhatsApp. Wir erklären Ihnen alles in Ruhe und in einfacher Sprache.",
+      "Das ist in Ordnung. Nehmen Sie Ihre letzte Stromrechnung zur Hand. Bei den Feldern steht, wo Sie die Angaben auf der Rechnung finden. Kommen Sie nicht weiter, rufen Sie an oder schreiben per WhatsApp. Wir erklären Ihnen alles in Ruhe und in einfacher Sprache.",
   },
 ];
 
@@ -209,9 +207,9 @@ export default async function Cashback({ searchParams }: PageProps) {
               </ul>
 
               <p className="mt-6 text-sm text-gray-500">
-                Lieber ohne Tippen?{" "}
-                <a href="#foto" className="font-semibold text-violet-brand underline underline-offset-2">
-                  Rechnung als Foto schicken
+                Fragen? Rufen Sie an:{" "}
+                <a href={TEL} className="font-semibold text-violet-brand underline underline-offset-2">
+                  0172 8182583
                 </a>
               </p>
             </div>
@@ -268,7 +266,7 @@ export default async function Cashback({ searchParams }: PageProps) {
             </p>
             <ol className="mt-8 space-y-4">
               {[
-                "Sie berechnen Ihren Preis und bestellen online. Oder Sie schicken uns ein Foto Ihrer Rechnung.",
+                "Sie berechnen Ihren Preis und bestellen online.",
                 "Der neue Versorger bestätigt Ihnen den Vertrag per E-Mail.",
                 "Ihr neuer Vertrag startet. Ab hier läuft Ihr Strom über den neuen Anbieter.",
                 "Wir überweisen Ihnen 50 € innerhalb von 6 Wochen nach diesem Start.",
@@ -281,45 +279,6 @@ export default async function Cashback({ searchParams }: PageProps) {
                 </li>
               ))}
             </ol>
-          </div>
-        </div>
-      </section>
-
-      {/* FOTO-WEG: für alle, die nicht tippen möchten */}
-      <section id="foto" className="bg-white border-t border-gray-100 scroll-mt-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
-            <div>
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-brand/10">
-                <Camera className="h-6 w-6 text-violet-brand" />
-              </span>
-              <h2 className="mt-4 text-2xl md:text-3xl font-bold tracking-tight text-marine">
-                Lieber ohne Tippen? Foto genügt.
-              </h2>
-              <p className="mt-4 text-gray-600 leading-relaxed">
-                Fotografieren Sie Ihre letzte Stromrechnung und laden Sie das Bild hier hoch. Wir
-                suchen den Tarif für Sie heraus und melden uns innerhalb von 48 Stunden. Die {betragEur} €
-                gibt es auf diesem Weg genauso.
-              </p>
-              <p className="mt-4 text-sm text-gray-500">
-                Oder per E-Mail an{" "}
-                <a href="mailto:cashback@plasma-energie.de" className="font-semibold text-violet-brand">
-                  cashback@plasma-energie.de
-                </a>
-                .
-              </p>
-            </div>
-            <AngebotForm
-              aktion="cashback"
-              gebiet={gebiet ? `${code} · ${gebiet}` : code}
-              submitLabel={`Rechnung senden und ${betragEur} € sichern`}
-              successNote={
-                <>
-                  <strong className="text-marine">Ihre {betragEur} €:</strong> Sobald Ihr neuer Stromvertrag
-                  läuft, überweisen wir Ihnen die {betragEur} € innerhalb von 6 Wochen.
-                </>
-              }
-            />
           </div>
         </div>
       </section>
