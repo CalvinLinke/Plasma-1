@@ -45,6 +45,8 @@ export type TariffCheckInput = {
   appointment?: "appointment_next_possible" | "appointment_exact_date";
   clientNumber?: string;
   currentProviderName?: string;
+  /** Marktlokation (MaLo-ID, 11 Ziffern). Pflicht bei manchen Versorgern. */
+  marketLocationId?: string;
 };
 
 export type TariffCheckResult = {
@@ -324,6 +326,11 @@ function buildValidationFormData(
     if (input.currentProviderName) {
       formData.set("currentProviderName", input.currentProviderName);
     }
+  }
+  const malo = input.marketLocationId?.replace(/\s/g, "");
+  if (malo) {
+    formData.set("marketLocation", malo);
+    formData.set("marketLocationId", malo);
   }
   formData.set("priceDate", formatGermanDate(new Date()));
   formData.set("externalId", process.env.NEUE_ENERGIE_EXTERNAL_ID || "13120");

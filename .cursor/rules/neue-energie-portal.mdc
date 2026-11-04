@@ -1,0 +1,14 @@
+---
+description: Neue-Energie API vs Partner-Portal — Provision nur aus dem Rechner, keine Aufträge anlegen
+globs: lib/neue-energie*.ts,scripts/ne-*.mts,docs/Partner-Tarifpruefung.md
+alwaysApply: false
+---
+
+# Neue Energie
+
+- Preise (Grund-/Arbeitspreis): `lib/neue-energie.ts` + `external_api`.
+- Provision und Bonus: Partner-Portal, `lib/neue-energie-portal.ts`. Skill `neue-energie-portal`, Fakten in `docs/Partner-Tarifpruefung.md`.
+- Login erkannt an Abmelden/`active-user-wrapper`, nicht an `/partner-area/` in der URL.
+- Tarife: `POST /partner-area/calculator/tariffs` mit verschachteltem `calculator[…]`, Antwort Base64.
+- Nur lesen. Kein `save-contract` / `pass-new` / `pass-draft`.
+- Portal-User/Passwort und Session liegen in `.env.local` / `data/` — nicht committen.

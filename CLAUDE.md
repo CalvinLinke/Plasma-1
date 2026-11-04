@@ -25,8 +25,10 @@ PDF-Text auslesen, Notion befüllen. Code: `lib/process-partner-mails.ts`, `lib/
 ## Partner-Anfragen & Antragsformular
 
 Partner-Leads landen in der Notion-Datenbank **Partner-Anfragen** (siehe `lib/notion-leads.ts`).
-Neue-Energie-API: Katalog, Preisprüfung im Testmodus, Wechsel statt Neueinzug —
-siehe [`docs/Partner-Tarifpruefung.md`](docs/Partner-Tarifpruefung.md).
+Neue-Energie-API: Katalog, Preisprüfung im Testmodus, Wechsel statt Neueinzug.
+Provision und Bonus sitzen im Partner-Login, nicht in der API — Skill
+`.claude/skills/neue-energie-portal/`, Fakten in
+[`docs/Partner-Tarifpruefung.md`](docs/Partner-Tarifpruefung.md).
 
 **Pflichtfelder für einen vollständigen Stromvertragsantrag** (Referenz GFU-Formular):
 → [`docs/Antragsformular-Pflichtfelder.md`](docs/Antragsformular-Pflichtfelder.md)
