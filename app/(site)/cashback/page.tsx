@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Camera,
-  Upload,
+  Calculator,
+  FileText,
   Wallet,
   ShieldCheck,
   MapPin,
@@ -16,12 +17,14 @@ import {
   Check,
 } from "lucide-react";
 import AngebotForm from "@/components/AngebotForm";
+import CashbackFlow from "@/components/cashback/CashbackFlow";
+import { cashbackConfig, normalisiereCode, normalisiereQuelle } from "@/lib/cashback/config";
 import SchemaOrg from "@/components/SchemaOrg";
 
 export const metadata: Metadata = {
   title: "50 € Cashback für Ihren Stromwechsel",
   description:
-    "Stromvertrag mit Plasma wechseln und 50 € geschenkt bekommen. Rechnung hochladen, wir kümmern uns um alles bis zur Kündigung. Auszahlung nach Start Ihres neuen Vertrags. Kostenlos und ohne Vorkosten.",
+    "Stromvertrag mit Plasma wechseln und 50 € bekommen. Postleitzahl eingeben, Preis sofort sehen, online abschließen. Auszahlung nach Start Ihres neuen Vertrags. Kostenlos und ohne Vorkosten.",
   alternates: { canonical: "/cashback" },
 };
 
@@ -34,27 +37,27 @@ const TEL = "tel:+491728182583";
 
 // Bullet-Punkte im Hero
 const heroBullets = [
-  "Kostenlos, keine Vorkosten",
-  "Wir kündigen Ihren alten Vertrag",
+  "Preis sofort sehen, online abschließen",
+  "Ihren alten Vertrag kündigt der neue Versorger",
   "Echter Ansprechpartner aus Dresden, kein Callcenter",
 ];
 
 // Ablauf in 3 Schritten
 const steps = [
   {
-    icon: Camera,
-    titel: "Rechnung abfotografieren",
-    text: "Machen Sie mit dem Handy ein Foto von Ihrer letzten Stromrechnung. Ein Blatt reicht.",
+    icon: Calculator,
+    titel: "Preis berechnen",
+    text: "Postleitzahl und Personen im Haushalt eingeben. Ihr neuer Preis steht sofort da.",
   },
   {
-    icon: Upload,
-    titel: "Foto hochladen",
-    text: "Laden Sie das Foto hier auf der Seite hoch. Das dauert keine zwei Minuten.",
+    icon: FileText,
+    titel: "Online abschließen",
+    text: "Name, Adresse, Zählernummer und IBAN eintragen. Alles steht auf Ihrer Stromrechnung. Kein Papier, keine Unterschrift.",
   },
   {
     icon: Wallet,
     titel: "50 € bekommen",
-    text: "Wir suchen einen günstigeren Tarif und übernehmen den Wechsel. Sobald Ihr neuer Vertrag läuft, überweisen wir Ihnen 50 €.",
+    text: "Der neue Versorger übernimmt den Wechsel. Sobald Ihr neuer Vertrag läuft, überweisen wir Ihnen 50 €.",
   },
 ];
 
@@ -88,7 +91,7 @@ const vorteile = [
   {
     icon: Check,
     titel: "Sie entscheiden",
-    text: "Erst zeigen wir Ihnen das Angebot. Wechseln tun wir nur, wenn Sie einverstanden sind.",
+    text: "Erst sehen Sie den Preis. Bestellt wird nur, wenn Sie selbst auf Bestellen tippen.",
   },
 ];
 
@@ -107,7 +110,17 @@ const faqs = [
   {
     frage: "Muss ich meinen alten Vertrag selbst kündigen?",
     antwort:
-      "Nein. Das machen wir für Sie. Wir kündigen Ihren alten Vertrag und melden Sie beim neuen Anbieter an. Sie müssen nichts unterschreiben, was Sie nicht verstehen.",
+      "Nein. Beim Wechsel kündigt der neue Versorger Ihren alten Vertrag. Wir behalten das im Blick. Sie müssen nichts tun.",
+  },
+  {
+    frage: "Muss ich etwas unterschreiben?",
+    antwort:
+      "Nein. Ein Stromvertrag braucht keine Unterschrift. Sie bestellen online, der neue Versorger schickt Ihnen die Vertragsbestätigung per E-Mail. Darin stehen auch alle Bedingungen und Ihr Widerrufsrecht.",
+  },
+  {
+    frage: "Welche Angaben brauche ich?",
+    antwort:
+      "Ihre letzte Stromrechnung reicht. Dort stehen Zählernummer, Ihr bisheriger Versorger und oft die Marktlokations-ID. Dazu Ihre IBAN für die monatlichen Abschläge. Auf dasselbe Konto überweisen wir die 50 €.",
   },
   {
     frage: "Woher kommen die 50 €?",
@@ -122,7 +135,7 @@ const faqs = [
   {
     frage: "Ich kenne mich mit so etwas nicht aus.",
     antwort:
-      "Das ist in Ordnung. Genau dafür sind wir da. Schicken Sie uns einfach das Foto Ihrer Rechnung. Wenn Sie Fragen haben, rufen Sie an oder schreiben Sie uns per WhatsApp. Wir erklären Ihnen alles in Ruhe und in einfacher Sprache.",
+      "Das ist in Ordnung. Statt online abzuschließen, können Sie uns auch einfach ein Foto Ihrer Rechnung schicken. Dann melden wir uns innerhalb von 48 Stunden. Oder Sie rufen an oder schreiben per WhatsApp. Wir erklären Ihnen alles in Ruhe und in einfacher Sprache.",
   },
 ];
 
@@ -136,13 +149,16 @@ export default async function Cashback({ searchParams }: PageProps) {
   // Rücklaufs, daher hart auf harmlose Zeichen begrenzt.
   const sp = (await searchParams) ?? {};
   const rawF = Array.isArray(sp.f) ? sp.f[0] : sp.f;
-  const gebiet = (rawF || "").replace(/[^a-zA-Z0-9äöüÄÖÜß \-]/g, "").slice(0, 40);
+  const rawCode = Array.isArray(sp.code) ? sp.code[0] : sp.code;
+  const gebiet = normalisiereQuelle(rawF);
+  const code = normalisiereCode(rawCode);
+  const { betragEur } = cashbackConfig();
 
   return (
     <>
       <SchemaOrg type="FAQPage" data={{ faqs }} />
 
-      {/* HERO — Versprechen links, Upload rechts (priorisierte Aktion) */}
+      {/* HERO: Versprechen links, Tarif-Strecke rechts */}
       <header
         className="relative overflow-hidden border-b border-gray-100"
         style={{ background: "linear-gradient(160deg, #EDE9FF 0%, #FFFFFF 45%, #E5F8FF 100%)" }}
@@ -151,38 +167,37 @@ export default async function Cashback({ searchParams }: PageProps) {
           className="absolute -top-40 -right-24 w-[34rem] h-[34rem] rounded-full opacity-50 blur-3xl"
           style={{ background: "radial-gradient(circle, rgba(123,97,255,0.28), transparent 70%)" }}
         />
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 lg:pt-32 lg:pb-20">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-14 lg:pt-32 lg:pb-20">
+          <div className="grid lg:grid-cols-[1fr_1.1fr] gap-8 lg:gap-14 items-start">
             {/* Linke Spalte: Versprechen */}
-            <div>
+            <div className="lg:sticky lg:top-28">
               <span className="inline-flex items-center gap-2 rounded-full bg-marine/5 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-violet-brand">
-                Aktion · nur mit diesem Flyer
+                Aktion · Code {code}
               </span>
               <h1 className="mt-5 text-4xl md:text-5xl font-bold tracking-tight text-marine leading-[1.1]">
-                Stromvertrag wechseln und{" "}
-                <span className="text-gradient">50 € geschenkt</span> bekommen.
+                Strom wechseln und{" "}
+                <span className="text-gradient">{betragEur} € bekommen.</span>
               </h1>
               <p className="mt-5 text-lg text-gray-600 leading-relaxed max-w-xl">
-                Sie schicken uns Ihre letzte Stromrechnung. Wir finden einen günstigeren Tarif und
-                kümmern uns um alles. Sobald Ihr neuer Vertrag läuft, überweisen wir Ihnen 50 €.
-                Kostenlos und ohne Vorkosten.
+                Postleitzahl eingeben, Preis sofort sehen, online abschließen. Sobald Ihr neuer
+                Vertrag läuft, überweisen wir Ihnen {betragEur} €. Kostenlos und ohne Vorkosten.
               </p>
 
               {/* Gutschein-Optik, greift den Flyer auf */}
-              <div className="mt-8 max-w-sm rounded-3xl border-2 border-dashed border-violet-brand/40 bg-white/70 p-6 shadow-ambient">
+              <div className="mt-8 hidden max-w-sm rounded-3xl border-2 border-dashed border-violet-brand/40 bg-white/70 p-6 shadow-ambient lg:block">
                 <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-violet-brand">
-                  Ihr Cashback-Gutschein
+                  Ihr Gutschein
                 </p>
-                <p className="mt-1 text-6xl font-extrabold leading-none text-gradient">50 €</p>
+                <p className="mt-1 text-6xl font-extrabold leading-none text-gradient">{betragEur} €</p>
                 <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
                   <span>Aktionscode</span>
                   <span className="rounded-lg bg-marine px-2.5 py-1 font-mono text-xs font-bold tracking-widest text-white">
-                    DD50
+                    {code}
                   </span>
                 </div>
               </div>
 
-              <ul className="mt-8 space-y-3">
+              <ul className="mt-8 hidden space-y-3 lg:block">
                 {heroBullets.map((b) => (
                   <li key={b} className="flex items-start gap-3">
                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cyan-brand/20">
@@ -192,25 +207,18 @@ export default async function Cashback({ searchParams }: PageProps) {
                   </li>
                 ))}
               </ul>
+
+              <p className="mt-6 text-sm text-gray-500">
+                Lieber ohne Tippen?{" "}
+                <a href="#foto" className="font-semibold text-violet-brand underline underline-offset-2">
+                  Rechnung als Foto schicken
+                </a>
+              </p>
             </div>
 
-            {/* Rechte Spalte: Upload-Formular (die wichtigste Aktion) */}
-            <div id="upload" className="scroll-mt-24">
-              <h2 className="mb-5 text-xl font-bold text-marine">
-                Rechnung hochladen und 50 € sichern
-              </h2>
-              <AngebotForm
-                aktion="cashback"
-                gebiet={gebiet}
-                submitLabel="Rechnung senden und 50 € sichern"
-                successNote={
-                  <>
-                    <strong className="text-marine">Ihre 50 €:</strong> Sobald Ihr neuer Stromvertrag
-                    läuft, überweisen wir Ihnen die 50 € innerhalb von 6 Wochen. Bis dahin kümmern wir
-                    uns um den kompletten Wechsel.
-                  </>
-                }
-              />
+            {/* Rechte Spalte: Tarif berechnen und abschließen */}
+            <div>
+              <CashbackFlow code={code} quelle={gebiet} betragEur={betragEur} />
             </div>
           </div>
         </div>
@@ -260,8 +268,8 @@ export default async function Cashback({ searchParams }: PageProps) {
             </p>
             <ol className="mt-8 space-y-4">
               {[
-                "Sie schicken uns Ihre Stromrechnung.",
-                "Wir finden einen günstigeren Tarif und Sie sagen Ja.",
+                "Sie berechnen Ihren Preis und bestellen online. Oder Sie schicken uns ein Foto Ihrer Rechnung.",
+                "Der neue Versorger bestätigt Ihnen den Vertrag per E-Mail.",
                 "Ihr neuer Vertrag startet. Ab hier läuft Ihr Strom über den neuen Anbieter.",
                 "Wir überweisen Ihnen 50 € innerhalb von 6 Wochen nach diesem Start.",
               ].map((t, i) => (
@@ -273,6 +281,45 @@ export default async function Cashback({ searchParams }: PageProps) {
                 </li>
               ))}
             </ol>
+          </div>
+        </div>
+      </section>
+
+      {/* FOTO-WEG: für alle, die nicht tippen möchten */}
+      <section id="foto" className="bg-white border-t border-gray-100 scroll-mt-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
+            <div>
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-brand/10">
+                <Camera className="h-6 w-6 text-violet-brand" />
+              </span>
+              <h2 className="mt-4 text-2xl md:text-3xl font-bold tracking-tight text-marine">
+                Lieber ohne Tippen? Foto genügt.
+              </h2>
+              <p className="mt-4 text-gray-600 leading-relaxed">
+                Fotografieren Sie Ihre letzte Stromrechnung und laden Sie das Bild hier hoch. Wir
+                suchen den Tarif für Sie heraus und melden uns innerhalb von 48 Stunden. Die {betragEur} €
+                gibt es auf diesem Weg genauso.
+              </p>
+              <p className="mt-4 text-sm text-gray-500">
+                Oder per E-Mail an{" "}
+                <a href="mailto:cashback@plasma-energie.de" className="font-semibold text-violet-brand">
+                  cashback@plasma-energie.de
+                </a>
+                .
+              </p>
+            </div>
+            <AngebotForm
+              aktion="cashback"
+              gebiet={gebiet ? `${code} · ${gebiet}` : code}
+              submitLabel={`Rechnung senden und ${betragEur} € sichern`}
+              successNote={
+                <>
+                  <strong className="text-marine">Ihre {betragEur} €:</strong> Sobald Ihr neuer Stromvertrag
+                  läuft, überweisen wir Ihnen die {betragEur} € innerhalb von 6 Wochen.
+                </>
+              }
+            />
           </div>
         </div>
       </section>
@@ -395,7 +442,7 @@ export default async function Cashback({ searchParams }: PageProps) {
       </section>
 
       {/* BEDINGUNGEN — UWG-Transparenz, vollständig */}
-      <section className="bg-white border-t border-gray-100">
+      <section id="bedingungen" className="bg-white border-t border-gray-100 scroll-mt-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-gray-400">
             <Ban className="h-4 w-4" /> Bedingungen zur 50-€-Aktion
@@ -404,7 +451,7 @@ export default async function Cashback({ searchParams }: PageProps) {
             Die 50 € Cashback gibt es einmal pro Haushalt und Stromzähler, wenn Sie über die Plasma
             Energie Solution einen neuen Stromvertrag abschließen. Die Auszahlung erfolgt per
             Überweisung innerhalb von 6 Wochen nach erfolgtem Lieferbeginn Ihres neuen Vertrags. Es
-            gibt keine Barauszahlung. Die Annahme durch den Energieversorger steht unter Vorbehalt,
+            gibt keine Barauszahlung. Wir überweisen auf das Konto, das Sie bei der Bestellung angegeben haben. Die Annahme durch den Energieversorger steht unter Vorbehalt,
             zum Beispiel bei der üblichen Bonitätsprüfung. Wir prüfen für Sie, welcher Wechsel möglich
             ist, und sagen Ihnen offen, wenn etwas nicht klappt. Diese Aktion ist Werbung der Plasma
             Energie Solution.

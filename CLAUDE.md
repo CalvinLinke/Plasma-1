@@ -36,6 +36,8 @@ Provision und Bonus sitzen im Partner-Login, nicht in der API — Skill
 Quelle der Feldliste: [esveo/gfu-website](https://github.com/esveo/gfu-website) · `src/app/SignupForm.tsx`.
 Dort nachlesen, welche Notion-Spalten fehlen oder aus Rechnung vs. Formular kommen sollen.
 
+**Cashback-Strecke `/cashback` (Code DRESDEN50):** Angebot live aus dem NE-Partner-Portal, Auftrag per API, Ablage in Notion **Cashback-Wechsel** → [`docs/Cashback-Live.md`](docs/Cashback-Live.md).
+
 Weitere technische Docs: [`docs/Mailversand-Graph.md`](docs/Mailversand-Graph.md) (E-Mail-Versand/Empfang),
 [`docs/Partner-Tarifpruefung.md`](docs/Partner-Tarifpruefung.md) (automatische NE-Tarifprüfung),
 [`docs/Partner-Telegram-Benachrichtigung.md`](docs/Partner-Telegram-Benachrichtigung.md) (Telegram-Gruppe).

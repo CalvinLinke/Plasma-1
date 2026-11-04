@@ -262,8 +262,10 @@ export default function Navigation() {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden border-t border-gray-100 overflow-y-auto max-h-[calc(100vh-5rem)] transition-all duration-300 bg-white ${
-          mobileOpen ? "opacity-100" : "max-h-0 opacity-0 overflow-hidden"
+        className={`md:hidden border-t border-gray-100 transition-all duration-300 bg-white ${
+          mobileOpen
+            ? "max-h-[calc(100vh-5rem)] overflow-y-auto opacity-100"
+            : "max-h-0 overflow-hidden opacity-0 pointer-events-none invisible"
         }`}
       >
         <div className="px-4 py-4 space-y-1">
