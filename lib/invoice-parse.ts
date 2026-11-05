@@ -12,6 +12,8 @@ export type InvoiceAnalysis = {
   tarif?: string;
   kundennummer?: string;
   zaehlernummer?: string;
+  /** Marktlokation, 11 Ziffern. Fehlt sie, bleiben Tarife weg, die sie verlangen. */
+  marktlokation?: string;
   rechnungsdatum?: string;
   zeitraum?: string;
   verbrauchKwh?: number;
@@ -195,6 +197,16 @@ export function parseInvoiceKontoinhaber(text: string): string | undefined {
   ]);
 }
 
+/** 11 Ziffern hinter Marktlokation oder MaLo-ID. Leer, wenn keine gültige Nummer dasteht. */
+export function parseMarketLocation(text: string): string | undefined {
+  const labeled = firstMatch(text, [
+    /Marktlokation(?:s-?ID)?[:\s]*((?:\d\s*){11})/i,
+    /MaLo(?:-?ID)?[:\s#]*((?:\d\s*){11})/i,
+  ]);
+  const digits = labeled?.replace(/\s/g, "");
+  return digits && /^\d{11}$/.test(digits) ? digits : undefined;
+}
+
 export function parseInvoiceText(text: string): InvoiceAnalysis {
   const normalized = normalizeWhitespace(text);
   const lower = normalized.toLowerCase();
@@ -229,9 +241,10 @@ export function parseInvoiceText(text: string): InvoiceAnalysis {
 
   const zaehlernummerRaw = firstMatch(normalized, [
     /Z[äa]hlernummer:\s*([^\n]+)/i,
-    /(?:Z[äa]hlernummer|Z[äa]hler[- ]?Nr\.?|Messlokation|MaLo)[:\s#]*([A-Z0-9][A-Z0-9\-]{4,})/i,
+    /(?:Z[äa]hlernummer|Z[äa]hler[- ]?Nr\.?|Messlokation)[:\s#]*([A-Z0-9][A-Z0-9\-]{4,})/i,
   ]);
   const zaehlernummer = zaehlernummerRaw?.replace(/\s+/g, " ").trim();
+  const marktlokation = parseMarketLocation(normalized);
 
   const rechnungsdatumRaw = firstMatch(normalized, [
     /Rechnungsnummer:[^\n]*vom\s+(\d{1,2}\.\d{1,2}\.\d{4})/i,
@@ -307,6 +320,7 @@ export function parseInvoiceText(text: string): InvoiceAnalysis {
     tarif,
     kundennummer,
     zaehlernummer,
+    marktlokation,
     rechnungsdatum,
     zeitraum,
     verbrauchKwh,

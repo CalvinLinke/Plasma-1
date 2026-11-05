@@ -204,6 +204,33 @@ export async function loadNeueEnergieTariffCatalog(): Promise<NeueEnergieTariffL
   };
 }
 
+/** 11 Ziffern, sonst keine Marktlokation. */
+export function normalizeMarketLocationId(value?: string): string | undefined {
+  const digits = value?.replace(/\s/g, "") ?? "";
+  return /^\d{11}$/.test(digits) ? digits : undefined;
+}
+
+export function isMissingMarketLocationError(message?: string): boolean {
+  return /no marketlocation/i.test(message ?? "");
+}
+
+/**
+ * Tarife mit Preis. Ohne Marktlokation fehlen die, deren Prüfung
+ * `No marketLocation` liefert. Mit gültiger ID wurden sie mitgeschickt
+ * und können in dieser Liste stehen.
+ */
+export function selectTariffsForMarketLocation<T extends Pick<TariffCheckResult, "status" | "errorMessage">>(
+  quotes: T[],
+  marketLocationId?: string,
+): T[] {
+  const hasMarketLocation = Boolean(normalizeMarketLocationId(marketLocationId));
+  return quotes.filter((quote) => {
+    if (quote.status !== "ok") return false;
+    if (hasMarketLocation) return true;
+    return !isMissingMarketLocationError(quote.errorMessage);
+  });
+}
+
 function formatGermanDate(date: Date): string {
   const parts = new Intl.DateTimeFormat("de-DE", {
     timeZone: "Europe/Berlin",
@@ -327,7 +354,7 @@ function buildValidationFormData(
       formData.set("currentProviderName", input.currentProviderName);
     }
   }
-  const malo = input.marketLocationId?.replace(/\s/g, "");
+  const malo = normalizeMarketLocationId(input.marketLocationId);
   if (malo) {
     formData.set("marketLocation", malo);
     formData.set("marketLocationId", malo);
@@ -367,6 +394,7 @@ export function buildTariffCheckInput(lead: LeadForTariffCheck): TariffCheckInpu
     consumptionKwh: Number.isFinite(consumptionKwh) ? consumptionKwh : 2500,
     appointmentDate: defaultAppointmentDate(),
     meterNumber: analysis?.zaehlernummer?.trim() || "00000000",
+    marketLocationId: normalizeMarketLocationId(analysis?.marktlokation),
   };
 }
 

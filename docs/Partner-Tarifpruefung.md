@@ -78,7 +78,7 @@ Plasma-Fall ist **Wechsel**, nicht Neueinzug.
 | `appointment` | `appointment_next_possible` |
 | `clientNumber` | Vertragskonto aus der Rechnung |
 | `currentProviderName` | **voller** Name, z. B. `Vattenfall Europe Sales GmbH` |
-| `marketLocation` / `marketLocationId` | MaLo-ID, z. B. `10062705754` — ohne sie lehnen mehrere Versorger ab |
+| `marketLocation` / `marketLocationId` | MaLo-ID, 11 Ziffern, optional. Mit ID können Tarife einen Preis liefern, die sie verlangen. Ohne ID bleiben genau diese Tarife draußen (`No marketLocation`). Auswahl: `selectTariffsForMarketLocation` |
 
 Nur „Vattenfall“ kann `Der gewünschte Tarif ist unter dieser PLZ nicht verfügbar` auslösen — auch wenn der Tarif in der PLZ lieferbar ist. Immer den Namen aus `/providers` bzw. der Rechnung verwenden.
 

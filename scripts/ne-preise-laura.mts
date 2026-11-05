@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 import {
   checkTariffPricesBatch,
   enrichTariffs,
+  isMissingMarketLocationError,
   loadNeueEnergieTariffCatalog,
+  selectTariffsForMarketLocation,
   type TariffCheckInput,
 } from "../lib/neue-energie.ts";
 
@@ -49,7 +51,7 @@ const started = Date.now();
 const quotes = await checkTariffPricesBatch(input, stromPrivat, 5);
 const elapsedMs = Date.now() - started;
 
-const ok = quotes.filter((q) => q.status === "ok");
+const ok = selectTariffsForMarketLocation(quotes, input.marketLocationId);
 ok.sort((a, b) => {
   const yearA =
     (a.basePriceEurYear ?? 0) + ((a.workingPriceCtKwh ?? 0) / 100) * input.consumptionKwh;
@@ -72,7 +74,9 @@ const payload = {
     contractType: input.contractType,
   },
   queried: quotes.length,
+  marketLocationId: input.marketLocationId ?? null,
   withPrices: ok.length,
+  needsMarketLocation: quotes.filter((q) => isMissingMarketLocationError(q.errorMessage)).length,
   failed: quotes.filter((q) => q.status === "failed").length,
   quotes,
 };
@@ -94,7 +98,9 @@ console.log(
       ok: true,
       file: outFile,
       queried: quotes.length,
+      marketLocationId: input.marketLocationId ?? null,
       withPrices: ok.length,
+      needsMarketLocation: payload.needsMarketLocation,
       failed: payload.failed,
       elapsedMs,
       cheapest: ok.slice(0, 8).map((q) => ({
